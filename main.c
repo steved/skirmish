@@ -1,17 +1,4 @@
-#include <stdlib.h>
-#include <stdbool.h>
-#include "SDL.h"
-
-#define WIDTH 640
-#define HEIGHT 480
-#define TICKS_PER_SECOND 25
-#define MAX_FRAME_SKIP 5
-
-void poll_for_events();
-
-const float SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-SDL_Surface *screen;
-SDL_Event event;
+#include "main.h"
 
 int main(int argc, char *argv[]) {
   if(SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO) < 0) {
@@ -50,6 +37,8 @@ int main(int argc, char *argv[]) {
     }
 
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
+    filledCircleColor(screen, 100, 100, 100, 0xFF0000FF);
+    SDL_Flip(screen);
     //display_game(interpolation);
   }
 
@@ -59,6 +48,9 @@ int main(int argc, char *argv[]) {
 void poll_for_events() {
   while(SDL_PollEvent(&event)) {
     switch(event.type) {
+      case SDL_KEYDOWN:
+        handle_keypress(event.key.keysym.sym);
+        break;
       case SDL_MOUSEMOTION:
         printf("Mouse moved by %d,%d to (%d,%d)\n", 
             event.motion.xrel, event.motion.yrel,
@@ -71,5 +63,13 @@ void poll_for_events() {
       case SDL_QUIT:
         exit(0);
     }
+  }
+}
+
+void handle_keypress(int key) {
+  printf("Keypress: %d\n", key);
+  switch(key) {
+    case SDLK_ESCAPE:
+      exit(0);
   }
 }
