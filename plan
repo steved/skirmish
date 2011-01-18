@@ -1,0 +1,38 @@
+Semi-realistic (sort of arcade) historical (pre-gunpowder) battle simulator. Sort of a rip of Rome Total War's battles.
+May have sieges at some point.
+Things that need to happen:
+Maps
+  - Terrain
+    - 2d topography?
+    - high ground = better
+  - Water
+  - Grass (neutral?)
+  - Desert 
+  - Plain (neutral?)
+  - Being able to hide
+    - forests
+    - tall grass
+Units
+  - Calvary
+    - Limited armor to fully
+    - Ranged attacks
+  - Artillery
+    - Archers
+    - Onagers
+    - Trebuchets (?)
+  - Infantry
+    - Spearmen
+    - Swordsmen
+  - Combo artillery + infantry
+  - Combo calvary + artillery
+Zooming
+  Should be able to zoom and see more individual units or zoom out and see unit grouped by division
+  Basically, at 1x you see units grouped with like units (aka 30 infantry, 20 archers, etc)
+  But if you zoom in you can see individual units (and control them?)
+  And if you zoom out you cna see them grouped by division (aka those 30 infantry and 20 archers are 1 division)
+Strategy
+  Able to place units before the beginning of the battle (aka no movement costs)
+  Able to move units during battle for strategy (takes time, makes them tired, etc)
+  - maybe able to draw strategies before battle even starts
+    - if you can see enemy first (aka ambush?)
+  - should always be able to see where a unit is going from individual up to largest

@@ -20,10 +20,17 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
+  if(init_ttf() == -1) {
+    fprintf(stderr, "Unable to set TTF.\n");
+    exit(1);
+  }
+
   uint32_t next_game_tick = SDL_GetTicks();
 
   int loops;
   float interpolation;
+
+  unit *u = create_empty_unit();
 
   bool game_running = true;
   while(game_running) {
@@ -37,39 +44,11 @@ int main(int argc, char *argv[]) {
     }
 
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
-    filledCircleColor(screen, 100, 100, 100, 0xFF0000FF);
+    SDL_Surface *buffer = display_game(interpolation);
+    SDL_BlitSurface(buffer, NULL, screen, NULL);
     SDL_Flip(screen);
-    //display_game(interpolation);
   }
 
   return 0;
 }
 
-void poll_for_events() {
-  while(SDL_PollEvent(&event)) {
-    switch(event.type) {
-      case SDL_KEYDOWN:
-        handle_keypress(event.key.keysym.sym);
-        break;
-      case SDL_MOUSEMOTION:
-        printf("Mouse moved by %d,%d to (%d,%d)\n", 
-            event.motion.xrel, event.motion.yrel,
-            event.motion.x, event.motion.y);
-        break;
-      case SDL_MOUSEBUTTONDOWN:
-        printf("Mouse button %d pressed at (%d,%d)\n",
-            event.button.button, event.button.x, event.button.y);
-        break;
-      case SDL_QUIT:
-        exit(0);
-    }
-  }
-}
-
-void handle_keypress(int key) {
-  printf("Keypress: %d\n", key);
-  switch(key) {
-    case SDLK_ESCAPE:
-      exit(0);
-  }
-}
