@@ -30,8 +30,6 @@ int main(int argc, char *argv[]) {
   int loops;
   float interpolation;
 
-  unit *u = create_empty_unit();
-
   bool game_running = true;
   while(game_running) {
     poll_for_events();
@@ -46,9 +44,11 @@ int main(int argc, char *argv[]) {
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
     SDL_Surface *buffer = display_game(interpolation);
     SDL_BlitSurface(buffer, NULL, screen, NULL);
+    SDL_FreeSurface(buffer);
     SDL_Flip(screen);
   }
 
+  SDL_FreeSurface(screen);
   return 0;
 }
 

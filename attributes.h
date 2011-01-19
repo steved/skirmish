@@ -17,6 +17,7 @@ typedef enum state {
 typedef enum unit_type {
   infantry, cavalry, artillery
 } unit_type;
+
 typedef enum unit_weapon {
   none, bow, sword, spear
 } unit_weapon;

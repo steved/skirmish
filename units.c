@@ -17,9 +17,14 @@ unit *create_empty_unit() {
 
   empty_unit->attributes = attrs;
 
-  print_unit(empty_unit);
+  //print_unit(empty_unit);
 
   return empty_unit;
+}
+
+void place(unit *unit, int x, int y) {
+  gsl_vector_set(unit->vector, 0, x);
+  gsl_vector_set(unit->vector, 1, y);
 }
 
 void print_unit(unit *unit) {
