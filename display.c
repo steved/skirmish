@@ -28,6 +28,11 @@ SDL_Surface *display_game(float interpolation) {
   SDL_FreeSurface(frames_per);
   */
 
+  // display the title in the upper right
+  SDL_Surface *title = draw_text("Skirmish");
+  SDL_BlitSurface(title, NULL, buffer, NULL);
+  SDL_FreeSurface(title);
+
   //filledCircleColor(buffer, 100, 100, 100, 0xFF0000FF);
 
   return buffer;
