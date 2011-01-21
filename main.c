@@ -1,11 +1,12 @@
 #include "main.h"
+#include <time.h>
 
 int main(int argc, char *argv[]) {
-  player *human = (player *) malloc(sizeof(player));
-  human->name = "Steven Davidovitz";
-  human->num_units = 2;
+  srand(time(NULL)); // seed the random
 
-  human->units = (unit **) malloc(sizeof(unit) * human->num_units);
+  remove_player(create_ai_player(10));
+
+  player *human = create_human_player("Steven Davidovitz", 2);
   human->units[0] = create_legionary_unit();
   place(human->units[0], 100, 100);
   human->units[1] = create_legionary_unit();
@@ -58,8 +59,8 @@ int main(int argc, char *argv[]) {
     SDL_Flip(screen);
   }
 
-  free(human->units);
-  free(human);
+
+  remove_player(human);
 
   SDL_FreeSurface(screen);
   return 0;
