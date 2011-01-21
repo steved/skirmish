@@ -1,5 +1,5 @@
-#include "zoom.h"
-ZOOM_LEVEL = 2;
+#include "camera.h"
+int ZOOM_LEVEL = 2;
 
 void zoom_out() {
   if(ZOOM_LEVEL < 4) {

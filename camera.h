@@ -1,5 +1,5 @@
-#ifndef SKIRMISH_ZOOM
-#define SKIRMISH_ZOOM
+#ifndef SKIRMISH_CAMERA
+#define SKIRMISH_CAMERA
 
 extern int ZOOM_LEVEL;
 

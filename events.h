@@ -2,7 +2,7 @@
 #define SKIRMISH_EVENTS
 
 #include "SDL.h"
-#include "zoom.h"
+#include "camera.h"
 
 SDL_Event event;
 void poll_for_events();

@@ -1,8 +1,13 @@
 #include "display.h"
 
-SDL_Surface *display_game(float interpolation) {
+SDL_Surface *display_game(unit **units, int len) {
   SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, 16, 0, 0, 0, 0);
 
+  for(int i = 0; i < len; i++) {
+    display_unit(buffer, units[i]);
+  }
+
+  /*
   unit *u = create_empty_unit();
   place(u, 250, 250);
   display_unit(buffer, u);
@@ -16,6 +21,7 @@ SDL_Surface *display_game(float interpolation) {
   display_unit(buffer, u);
 
   free(u);
+  */
 
   /* Print interpolation
   char buf[255];

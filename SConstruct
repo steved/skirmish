@@ -13,7 +13,7 @@ env.ParseConfig('gsl-config --libs')
 SOURCES = glob.glob('*.c')
 
 # add additional compiler flags
-env.Append(CFLAGS = ['-Wall'])
+env.Append(CFLAGS = ['-Wall', '--std=c99'])
 # add additional libraries to link against
 env.Append(LIBS = ['SDL_gfx', 'SDL_ttf'])
 

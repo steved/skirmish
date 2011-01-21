@@ -11,7 +11,7 @@ typedef struct attributes {
 
 // to add: flanking, 
 typedef enum state {
-  waiting, attacking, charging, retreating
+  waiting, attacking, charging, retreating, moving
 } state;
 
 typedef enum unit_type {
