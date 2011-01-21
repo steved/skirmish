@@ -4,6 +4,7 @@
 #include "SDL_gfxPrimitives.h"
 #include "text.h"
 #include "units.h"
+#include "zoom.h"
 
 #define WIDTH 640
 #define HEIGHT 480

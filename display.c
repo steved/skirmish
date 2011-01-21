@@ -28,10 +28,20 @@ SDL_Surface *display_game(float interpolation) {
   SDL_FreeSurface(frames_per);
   */
 
+
   // display the title in the upper right
   SDL_Surface *title = draw_text("Skirmish");
   SDL_BlitSurface(title, NULL, buffer, NULL);
   SDL_FreeSurface(title);
+
+  char zoom[7];
+  snprintf(zoom, 7, "Zoom %i", ZOOM_LEVEL);
+  int w,h;
+  TTF_SizeUTF8(font, zoom, &w, &h);
+  SDL_Surface *zoom_surf = draw_text(zoom);
+  SDL_Rect zo = { 0, h, w * 7, h };
+  SDL_BlitSurface(zoom_surf, NULL, buffer, &zo);
+  SDL_FreeSurface(zoom_surf);
 
   //filledCircleColor(buffer, 100, 100, 100, 0xFF0000FF);
 

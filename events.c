@@ -12,8 +12,7 @@ void poll_for_events() {
             event.motion.x, event.motion.y);
         break;
       case SDL_MOUSEBUTTONDOWN:
-        printf("Mouse button %d pressed at (%d,%d)\n",
-            event.button.button, event.button.x, event.button.y);
+        handle_mousedown(event.button.button, event.button.x, event.button.y);
         break;
       case SDL_QUIT:
         exit(0);
@@ -21,9 +20,27 @@ void poll_for_events() {
   }
 }
 
+void handle_mousedown(int button, int x, int y) {
+  printf("Mouse button %d pressed at (%d,%d)\n",
+      event.button.button, event.button.x, event.button.y);
+  switch(event.button.button) {
+    case 4:
+      zoom_in();
+      break;
+    case 5:
+      zoom_out();
+  }
+}
+
 void handle_keypress(int key) {
   printf("Keypress: %d\n", key);
   switch(key) {
+    case SDLK_PAGEUP:
+      zoom_in();
+      break;
+    case SDLK_PAGEDOWN:
+      zoom_out();
+      break;
     case SDLK_ESCAPE:
       exit(0);
   }
