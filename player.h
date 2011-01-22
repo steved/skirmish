@@ -2,6 +2,7 @@
 #define SKIRMISH_PLAYER
 
 #include "attributes.h"
+#include <stdint.h>
 
 typedef struct division {
   unit **units;
@@ -10,6 +11,7 @@ typedef struct division {
 
 typedef struct player {
   const char *name;
+  uint32_t color;
   //bool human;
 
   division **divisions;
@@ -23,12 +25,5 @@ typedef struct player {
 player *create_human_player(const char *name, int units);
 player *create_ai_player(int units);
 void remove_player(player *player);
-
-static const char *AI_NAMES[] = {
-  "Hannibal", "Sun Tzu", "Ramesses II", "Ambiorix",
-  "Leonidas", "Philip II of Macedon", "Alexander the Great",
-  "David", "Hammurabi", "Nebuchadrezzar II", "Xerxes", "Darius", 
-  "Marcus Licinius Crassus", "Julius Caesar", "Scipio Africanus"
-};
 
 #endif

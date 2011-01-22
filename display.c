@@ -1,10 +1,13 @@
 #include "display.h"
 
-SDL_Surface *display_game(unit **units, int len) {
+SDL_Surface *display_game(camera *camera, player **players, int len) {
   SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, 16, 0, 0, 0, 0);
 
   for(int i = 0; i < len; i++) {
-    display_unit(buffer, units[i]);
+    player *player = players[i];
+    for(int j = 0; j < player->num_units; j++) {
+      display_unit(buffer, camera, player->units[j], player->color);
+    }
   }
 
   /*
@@ -45,28 +48,40 @@ SDL_Surface *display_game(unit **units, int len) {
   int w,h;
   TTF_SizeUTF8(font, zoom, &w, &h);
   SDL_Surface *zoom_surf = draw_text(zoom);
-  SDL_Rect zo = { 0, h, w * 7, h };
+  SDL_Rect zo = { 0, HEIGHT- h, WIDTH - (w * 7), h };
   SDL_BlitSurface(zoom_surf, NULL, buffer, &zo);
   SDL_FreeSurface(zoom_surf);
-
-  //filledCircleColor(buffer, 100, 100, 100, 0xFF0000FF);
 
   return buffer;
 }
 
-void display_unit(SDL_Surface *surface, unit *unit) { 
+double unit_radius[][2] = {
+  {1.5, 3}, {2.5, 2.5}, {2.5, 2.5}
+};
+
+void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color) { 
   double x, y;
-  x = gsl_vector_get(unit->vector, 0);
-  y = gsl_vector_get(unit->vector, 1);
+  x = gsl_vector_get(unit->vector, 0) - gsl_vector_get(camera->vector, 0);
+  y = gsl_vector_get(unit->vector, 1) - gsl_vector_get(camera->vector, 1);
+
+  double rad_x = unit_radius[unit->type][0];
+  double rad_y = unit_radius[unit->type][1];
+
+  if(x < -rad_x || y < -rad_y || x > WIDTH + rad_x || y > WIDTH + rad_y)
+    return;
+
+  rad_x *= 2;
+  // special case for infantry since they're triangles
+  rad_y *= (unit->type == infantry ? 1 : 2);
 
   switch(unit->type) {
     case infantry:
-      filledTrigonColor(surface, x, y, x + 3, y + 6, x - 3, y + 6 , 0xff0000ff);
+      filledTrigonColor(surface, x, y - rad_y, x + rad_x, y + rad_y, x - rad_x, y + rad_y, color);
       break;
     case cavalry:
-      filledCircleColor(surface, x, y, 5, 0xff0000ff); 
+      filledCircleColor(surface, x, y, rad_x, color); 
       break;
     case artillery:
-      boxColor(surface, x - 5, y - 5, x + 5, y + 5, 0xff0000ff); 
+      boxColor(surface, x - rad_x, y - rad_y, x + rad_x, y + rad_y, color); 
   }
 }

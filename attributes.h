@@ -18,6 +18,10 @@ typedef enum unit_type {
   infantry, cavalry, artillery
 } unit_type;
 
+// an 'associative' array for each unit type
+// that defines the radius of each unit in the x, y range
+extern double unit_radius[][2];
+
 typedef enum unit_weapon {
   none, bow, sword, spear
 } unit_weapon;
