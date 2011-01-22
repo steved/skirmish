@@ -1,4 +1,7 @@
 #include "events.h"
+int arrows_camera_delta = 10;
+int mouse_camera_delta = 1;
+int mouse_camera_epsilon = 10;
 
 void poll_for_events(camera *camera) {
   while(SDL_PollEvent(&event)) {
@@ -21,17 +24,15 @@ void poll_for_events(camera *camera) {
   SDL_GetMouseState(&mouse_x, &mouse_y);
 
   int x = 0, y = 0;
-  int eps = 10;
-  int move = 1;
-  if(mouse_x > WIDTH - eps) 
-    x = move;
-  else if(mouse_x < eps)
-    x = -move;
+  if(mouse_x > WIDTH - mouse_camera_epsilon) 
+    x = mouse_camera_delta;
+  else if(mouse_x < mouse_camera_epsilon)
+    x = -mouse_camera_delta;
 
-  if(mouse_y > HEIGHT - eps)
-    y = move;
-  else if(mouse_y < eps)
-    y = -move;
+  if(mouse_y > HEIGHT - mouse_camera_epsilon)
+    y = mouse_camera_delta;
+  else if(mouse_y < mouse_camera_epsilon)
+    y = -mouse_camera_delta;
 
   move_camera(camera, x, y);
 }
@@ -57,16 +58,16 @@ void handle_keypress(int key, camera *camera) {
   printf("Keypress: %d\n", key);
   switch(key) {
     case SDLK_LEFT:
-      move_camera(camera, -15, 0);
+      move_camera(camera, -arrows_camera_delta, 0);
       break;
     case SDLK_RIGHT:
-      move_camera(camera, 15, 0);
+      move_camera(camera, arrows_camera_delta, 0);
       break;
     case SDLK_UP:
-      move_camera(camera, 0, -15);
+      move_camera(camera, 0, -arrows_camera_delta);
       break;
     case SDLK_DOWN:
-      move_camera(camera, 0, 15);
+      move_camera(camera, 0, arrows_camera_delta);
       break;
     case SDLK_PAGEUP:
       zoom_in();
