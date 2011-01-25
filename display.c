@@ -1,14 +1,12 @@
 #include "display.h"
 
-SDL_Surface *display_game(camera *camera, player **players, int len) {
-  SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, 16, 0, 0, 0, 0);
-
-  for(int i = 0; i < len; i++) {
+SDL_Surface *display_game(SDL_Surface *buffer, camera *camera, player **players, int len) {
+  /*for(int i = 0; i < len; i++) {
     player *player = players[i];
     for(int j = 0; j < player->num_units; j++) {
       display_unit(buffer, camera, player->units[j], player->color);
     }
-  }
+  }*/
 
   /*
   unit *u = create_empty_unit();

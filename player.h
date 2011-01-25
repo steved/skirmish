@@ -22,8 +22,8 @@ typedef struct player {
 } player;
 
 
-player *create_human_player(const char *name, int units);
-player *create_ai_player(int units);
-void remove_player(player *player);
+player *create_human_player(const char *, int);
+player *create_ai_player(int);
+void remove_player(player *);
 
 #endif

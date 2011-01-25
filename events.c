@@ -71,6 +71,9 @@ void handle_keypress(int key, camera *camera) {
       break;
     case SDLK_PAGEUP:
       zoom_in();
+      if(MAP_SIZE / ZOOM_LEVEL == WIDTH) {
+        set_camera_position(camera, 0, 0);
+      }
       break;
     case SDLK_PAGEDOWN:
       zoom_out();

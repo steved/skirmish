@@ -47,6 +47,9 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
+  generate_fractal_terrain();
+  SDL_Surface *terrain = print_terrain();
+
   uint32_t next_game_tick = SDL_GetTicks();
 
   int loops;
@@ -63,8 +66,19 @@ int main(int argc, char *argv[]) {
       loops++;
     }
 
+    SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, bpp, 0, 0, 0, 0);
+    SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
+    if(ZOOM_LEVEL > 1) {
+      SDL_Surface *shrunken_surface = shrinkSurface(terrain, ZOOM_LEVEL, ZOOM_LEVEL);
+      SDL_BlitSurface(shrunken_surface, &terrain_rect, buffer, NULL);
+      SDL_FreeSurface(shrunken_surface);
+    } else {
+      SDL_BlitSurface(terrain, &terrain_rect, buffer, NULL);
+    }
+ 
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
-    SDL_Surface *buffer = display_game(camera, players, 2);
+    display_game(buffer, camera, players, 2);
+
     SDL_BlitSurface(buffer, NULL, screen, NULL);
     SDL_FreeSurface(buffer);
     SDL_Flip(screen);
@@ -75,6 +89,7 @@ int main(int argc, char *argv[]) {
     remove_player(players[i]);
   remove_camera(camera);
 
+  SDL_FreeSurface(terrain);
   SDL_FreeSurface(screen);
   return 0;
 }

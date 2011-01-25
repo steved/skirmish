@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "attributes.h"
+#include "terrain.h"
 
 extern int ZOOM_LEVEL;
 
@@ -12,11 +13,12 @@ typedef struct camera {
 } camera;
 
 camera *create_camera();
-void move_camera(camera *camera, int x, int y);
-void set_camera_position(camera *camera, int x, int y);
+void move_camera(camera *, int, int);
+void set_camera_position(camera *, int, int);
 void zoom_out();
 void zoom_in();
-void print_camera(camera *camera);
-void remove_camera(camera *camera);
+void print_camera(camera *);
+void remove_camera(camera *);
 
+#include "display.h"
 #endif

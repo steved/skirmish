@@ -6,10 +6,11 @@
 #include "player.h"
 #include "camera.h"
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 512
+#define HEIGHT 512
 
-SDL_Surface *display_game(camera *camera, player **players, int len);
-void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color);
+SDL_Surface *display_game(SDL_Surface *, camera *, player **, int);
+void display_unit(SDL_Surface *, camera *, unit *, uint32_t);
+extern SDL_Surface *screen;
 
 #endif

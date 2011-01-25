@@ -1,6 +1,6 @@
 #include "camera.h"
 
-int ZOOM_LEVEL = 2;
+int ZOOM_LEVEL = 1;
 
 camera *create_camera() {
   camera *cam = (camera *) malloc(sizeof(camera));
@@ -14,7 +14,7 @@ void move_camera(camera *camera, int x, int y) {
 }
 
 void set_camera_position(camera *camera, int x, int y) {
-  if(x >= 0 && y >= 0) {
+  if(x >= 0 && y >= 0 && x + WIDTH <= MAP_SIZE / ZOOM_LEVEL && y + HEIGHT <= MAP_SIZE / ZOOM_LEVEL) {
     gsl_vector_set(camera->vector, 0, x);
     gsl_vector_set(camera->vector, 1, y);
   }
