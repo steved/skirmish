@@ -19,13 +19,13 @@ void set_camera_position(camera *camera, int x, int y) {
   int rel_map_size = MAP_SIZE / ZOOM_LEVEL;
   if(x < 0) {
     x = 0;
-  } else if(x + WIDTH > rel_map_size) {
+  } else if(x + WIDTH >= rel_map_size) {
     x = rel_map_size - WIDTH;
   }
 
   if(y < 0) {
     y = 0;
-  } else if(y + HEIGHT > rel_map_size) {
+  } else if(y + HEIGHT >= rel_map_size) {
     y = rel_map_size - HEIGHT;
   }
 

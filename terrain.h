@@ -9,12 +9,14 @@
 
 #define MAP_SIZE 2048 
 #define HALF_MAP_SIZE 1024
-#define NOISE 1.3f
+#define NOISE 1.5f
 
 float random_float();
 float displace(float);
 void generate_fractal_terrain();
 float diamond(float, float, float, float, float);
+float square(float, float, float);
+float cap(float);
 SDL_Surface *print_terrain();
 extern SDL_Surface *screen;
 

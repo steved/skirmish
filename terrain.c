@@ -41,10 +41,10 @@ void generate_fractal_terrain() {
         terrain[midx][midy] = diamond(terrain[xlen][ylen], terrain[xllen][ylen],
             terrain[xlen][yllen], terrain[xllen][yllen], displacement);
 
-        terrain[midx][ylen] = (terrain[xlen][ylen] + terrain[xllen][ylen]) / 2; // top left + top right
-        terrain[midx][yllen] = (terrain[xlen][ylen] + terrain[xlen][yllen]) / 2; // top left + bottom left
-        terrain[xlen][midy] = (terrain[xllen][ylen] + terrain[xllen][yllen]) / 2; // top right + bottom right
-        terrain[xllen][midy] = (terrain[xlen][yllen] + terrain[xllen][yllen]) / 2; // bottom left + bottom right
+        terrain[midx][ylen] = square(terrain[xlen][ylen], terrain[xllen][ylen], displacement); // top left + top right
+        terrain[midx][yllen] = square(terrain[xlen][ylen], terrain[xlen][yllen], displacement); // top left + bottom left
+        terrain[xlen][midy] = square(terrain[xllen][ylen],terrain[xllen][yllen], displacement); // top right + bottom right
+        terrain[xllen][midy] = square(terrain[xlen][yllen], terrain[xllen][yllen], displacement); // bottom left + bottom right
       }
     }
    
@@ -74,8 +74,8 @@ SDL_Surface *print_terrain() {
       uint8_t blue = 0;
 
       int water = 15;
-      int forest = 180;
-      int mountains = 210;
+      int forest = 150;
+      int mountains = 150;
 
       if(c < water) {
         blue = 92 + c;
@@ -84,7 +84,9 @@ SDL_Surface *print_terrain() {
       } else if (c >= forest && c < mountains) {
         red = green = blue = c / 1.2;
       } else {
-        red = green = blue = c;
+        red = c / 1.4;
+        green = (c + 80) / 1.5;
+        blue = c / 1.6;
       }
 
 
@@ -99,6 +101,15 @@ SDL_Surface *print_terrain() {
 
 float diamond(float tleft, float tright, float bleft, float bright, float displacement) {
   float num = (tleft + tright + bleft + bright) / 4  + displace(displacement);
+  return cap(num);
+}
+
+float square(float left, float right, float displacement) {
+  float num = (left + right) / 2 + displace(displacement);
+  return cap(num);
+}
+
+float cap(float num) {
   if(num > 1)
     num = 1;
   else if(num < 0)
