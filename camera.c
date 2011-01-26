@@ -35,19 +35,17 @@ void set_camera_position(camera *camera, int x, int y) {
 
 void zoom_in(camera *camera) {
   if(ZOOM_LEVEL > ZOOM_MIN) {
-    int map_bef = MAP_SIZE / ZOOM_LEVEL;
     ZOOM_LEVEL -= 1;
-    int map_aft = (MAP_SIZE / ZOOM_LEVEL - map_bef) / 2;
-    move_camera(camera, map_aft, map_aft);
+    int zoom_diff = HALF_MAP_SIZE * ( 1.0f / (ZOOM_LEVEL * (ZOOM_LEVEL + 1)));
+    move_camera(camera, zoom_diff, zoom_diff);
   }
 }
 
 void zoom_out(camera *camera) {
   if(ZOOM_LEVEL < ZOOM_MAX) {
-    int map_bef = MAP_SIZE / ZOOM_LEVEL;
     ZOOM_LEVEL += 1;
-    int map_aft = (MAP_SIZE / ZOOM_LEVEL - map_bef) / 2;
-    move_camera(camera, map_aft, map_aft);
+    int zoom_diff = HALF_MAP_SIZE * ( -1.0f / (ZOOM_LEVEL * (ZOOM_LEVEL - 1)));
+    move_camera(camera, zoom_diff, zoom_diff);
   }
 }
 

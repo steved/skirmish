@@ -8,6 +8,7 @@
 #include "SDL_gfxPrimitives.h"
 
 #define MAP_SIZE 2048 
+#define HALF_MAP_SIZE 1024
 #define HEIGHT_SCALE 2 
 
 float random_float(float);
