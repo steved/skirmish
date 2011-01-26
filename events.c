@@ -13,7 +13,7 @@ void poll_for_events(camera *camera) {
         handle_mousemove(event.motion);
         break;
       case SDL_MOUSEBUTTONDOWN:
-        handle_mousedown(event.button);
+        handle_mousedown(event.button, camera);
         break;
       case SDL_QUIT:
         exit(0);
@@ -25,32 +25,31 @@ void poll_for_events(camera *camera) {
 
   int x = 0, y = 0;
   if(mouse_x > WIDTH - mouse_camera_epsilon) 
-    x = mouse_camera_delta;
+    x = mouse_camera_delta * ZOOM_LEVEL;
   else if(mouse_x < mouse_camera_epsilon)
-    x = -mouse_camera_delta;
+    x = -mouse_camera_delta * ZOOM_LEVEL;
 
   if(mouse_y > HEIGHT - mouse_camera_epsilon)
-    y = mouse_camera_delta;
+    y = mouse_camera_delta * ZOOM_LEVEL;
   else if(mouse_y < mouse_camera_epsilon)
-    y = -mouse_camera_delta;
+    y = -mouse_camera_delta * ZOOM_LEVEL;
 
-  move_camera(camera, x, y);
+  if(x != 0 && y != 0)
+    move_camera(camera, x, y);
 }
 
 void handle_mousemove(SDL_MouseMotionEvent motion) {
-  printf("Mouse moved by %d,%d to (%d,%d)\n", 
-      motion.xrel, motion.yrel, motion.x, motion.y);
 }
 
-void handle_mousedown(SDL_MouseButtonEvent button) {
+void handle_mousedown(SDL_MouseButtonEvent button, camera *camera) {
   printf("Mouse button %d pressed at (%d,%d)\n",
       button.button, button.x, button.y);
   switch(event.button.button) {
     case 4:
-      zoom_in();
+      zoom_in(camera);
       break;
     case 5:
-      zoom_out();
+      zoom_out(camera);
   }
 }
 
@@ -70,13 +69,10 @@ void handle_keypress(int key, camera *camera) {
       move_camera(camera, 0, arrows_camera_delta);
       break;
     case SDLK_PAGEUP:
-      zoom_in();
-      if(MAP_SIZE / ZOOM_LEVEL == WIDTH) {
-        set_camera_position(camera, 0, 0);
-      }
+      zoom_in(camera);
       break;
     case SDLK_PAGEDOWN:
-      zoom_out();
+      zoom_out(camera);
       break;
     case SDLK_ESCAPE:
       exit(0);

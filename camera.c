@@ -1,6 +1,8 @@
 #include "camera.h"
 
-int ZOOM_LEVEL = 1;
+#define ZOOM_MIN 1
+#define ZOOM_MAX 4
+int ZOOM_LEVEL = ZOOM_MIN;
 
 camera *create_camera() {
   camera *cam = (camera *) malloc(sizeof(camera));
@@ -14,22 +16,38 @@ void move_camera(camera *camera, int x, int y) {
 }
 
 void set_camera_position(camera *camera, int x, int y) {
-  if(x >= 0 && y >= 0 && x + WIDTH <= MAP_SIZE / ZOOM_LEVEL && y + HEIGHT <= MAP_SIZE / ZOOM_LEVEL) {
-    gsl_vector_set(camera->vector, 0, x);
-    gsl_vector_set(camera->vector, 1, y);
+  int rel_map_size = MAP_SIZE / ZOOM_LEVEL;
+  if(x < 0) {
+    x = 0;
+  } else if(x + WIDTH >= rel_map_size) {
+    x = rel_map_size - WIDTH;
   }
 
+  if(y < 0) {
+    y = 0;
+  } else if(y + HEIGHT >= rel_map_size) {
+    y = rel_map_size - HEIGHT;
+  }
+
+  gsl_vector_set(camera->vector, 0, x);
+  gsl_vector_set(camera->vector, 1, y);
 }
 
-void zoom_out() {
-  if(ZOOM_LEVEL > 1) {
+void zoom_in(camera *camera) {
+  if(ZOOM_LEVEL > ZOOM_MIN) {
+    int map_bef = MAP_SIZE / ZOOM_LEVEL;
     ZOOM_LEVEL -= 1;
+    int map_aft = (MAP_SIZE / ZOOM_LEVEL - map_bef) / 2;
+    move_camera(camera, map_aft, map_aft);
   }
 }
 
-void zoom_in() {
-  if(ZOOM_LEVEL < 4) {
+void zoom_out(camera *camera) {
+  if(ZOOM_LEVEL < ZOOM_MAX) {
+    int map_bef = MAP_SIZE / ZOOM_LEVEL;
     ZOOM_LEVEL += 1;
+    int map_aft = (MAP_SIZE / ZOOM_LEVEL - map_bef) / 2;
+    move_camera(camera, map_aft, map_aft);
   }
 }
 

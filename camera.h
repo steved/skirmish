@@ -15,8 +15,8 @@ typedef struct camera {
 camera *create_camera();
 void move_camera(camera *, int, int);
 void set_camera_position(camera *, int, int);
-void zoom_out();
-void zoom_in();
+void zoom_out(camera *);
+void zoom_in(camera *);
 void print_camera(camera *);
 void remove_camera(camera *);
 

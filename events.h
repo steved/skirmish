@@ -8,7 +8,7 @@
 SDL_Event event;
 void poll_for_events(camera *);
 void handle_keypress(int, camera *);
-void handle_mousedown(SDL_MouseButtonEvent);
+void handle_mousedown(SDL_MouseButtonEvent, camera *);
 void handle_mousemove(SDL_MouseMotionEvent);
 
 #endif
