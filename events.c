@@ -1,6 +1,6 @@
 #include "events.h"
 int arrows_camera_delta = 10;
-int mouse_camera_delta = 1;
+int mouse_camera_delta = 2;
 int mouse_camera_epsilon = 10;
 
 void poll_for_events(camera *camera) {
@@ -34,7 +34,7 @@ void poll_for_events(camera *camera) {
   else if(mouse_y < mouse_camera_epsilon)
     y = -mouse_camera_delta * ZOOM_LEVEL;
 
-  if(x != 0 && y != 0)
+  if(x != 0 || y != 0)
     move_camera(camera, x, y);
 }
 
@@ -57,16 +57,16 @@ void handle_keypress(int key, camera *camera) {
   printf("Keypress: %d\n", key);
   switch(key) {
     case SDLK_LEFT:
-      move_camera(camera, -arrows_camera_delta, 0);
+      move_camera(camera, -arrows_camera_delta * ZOOM_LEVEL, 0);
       break;
     case SDLK_RIGHT:
-      move_camera(camera, arrows_camera_delta, 0);
+      move_camera(camera, arrows_camera_delta * ZOOM_LEVEL, 0);
       break;
     case SDLK_UP:
-      move_camera(camera, 0, -arrows_camera_delta);
+      move_camera(camera, 0, -arrows_camera_delta * ZOOM_LEVEL);
       break;
     case SDLK_DOWN:
-      move_camera(camera, 0, arrows_camera_delta);
+      move_camera(camera, 0, arrows_camera_delta * ZOOM_LEVEL);
       break;
     case SDLK_PAGEUP:
       zoom_in(camera);
