@@ -21,7 +21,6 @@ typedef struct player {
   int num_units;
 } player;
 
-
 player *create_human_player(const char *, int);
 player *create_ai_player(int);
 void remove_player(player *);

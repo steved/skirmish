@@ -1,12 +1,12 @@
 #include "display.h"
 
 SDL_Surface *display_game(SDL_Surface *buffer, camera *camera, player **players, int len) {
-  /*for(int i = 0; i < len; i++) {
+  for(int i = 0; i < len; i++) {
     player *player = players[i];
     for(int j = 0; j < player->num_units; j++) {
       display_unit(buffer, camera, player->units[j], player->color);
     }
-  }*/
+  }
 
   /*
   unit *u = create_empty_unit();
@@ -82,4 +82,7 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
     case artillery:
       boxColor(surface, x - rad_x, y - rad_y, x + rad_x, y + rad_y, color); 
   }
+
+  // this unit is selected!
+  //circleColor(surface, x, y, rad_x + 5, (0xffffff00 - color) | 0x000000ff);
 }

@@ -20,6 +20,9 @@ void poll_for_events(camera *camera) {
     }
   }
 
+  if(paused)
+    return;
+
   int mouse_x,mouse_y;
   SDL_GetMouseState(&mouse_x, &mouse_y);
 
@@ -45,6 +48,10 @@ void handle_mousedown(SDL_MouseButtonEvent button, camera *camera) {
   printf("Mouse button %d pressed at (%d,%d)\n",
       button.button, button.x, button.y);
   switch(event.button.button) {
+    case 1:
+      if(paused)
+        toggle_pause();
+      break;
     case 4:
       zoom_in(camera);
       break;
@@ -73,6 +80,9 @@ void handle_keypress(int key, camera *camera) {
       break;
     case SDLK_PAGEDOWN:
       zoom_out(camera);
+      break;
+    case SDLK_p:
+      toggle_pause();
       break;
     case SDLK_ESCAPE:
       exit(0);

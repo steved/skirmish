@@ -1,13 +1,19 @@
 #include "terrain.h"
 
-float terrain[MAP_SIZE + 1][MAP_SIZE + 1];
+static float terrain[MAP_SIZE + 1][MAP_SIZE + 1];
+static float diamond(float, float, float, float, float);
+static float square(float, float, float);
+static float cap(float);
+static void blur();
+static float random_float();
+static float displace(float);
 
 // random float from 0.0 to 1.0
-float random_float() {
+static float random_float() {
   return (rand() / (float) RAND_MAX);
 }
 
-float displace(float num) {
+static float displace(float num) {
   float random = random_float() * num - (num / 2);
   return random;
 }
@@ -51,6 +57,9 @@ void generate_fractal_terrain() {
     side_length >>= 1;
     displacement /= NOISE;
   }
+
+  blur();
+  blur();
 }
 
 SDL_Surface *print_terrain() {
@@ -74,15 +83,16 @@ SDL_Surface *print_terrain() {
       uint8_t blue = 0;
 
       int water = 15;
-      int forest = 150;
+      int forest = 140;
       int mountains = 150;
 
       if(c < water) {
         blue = 92 + c;
       } else if (c >= water && c < forest) {
-        green = (c + 120) / 1.5;
+        green = (255 - c) / 1.3;
       } else if (c >= forest && c < mountains) {
-        red = green = blue = c / 1.2;
+        red = blue = c / 1.2;
+        green = c;
       } else {
         red = c / 1.4;
         green = (c + 80) / 1.5;
@@ -99,20 +109,70 @@ SDL_Surface *print_terrain() {
   return buffer;
 }
 
-float diamond(float tleft, float tright, float bleft, float bright, float displacement) {
+static void blur() {
+  for(int i = 0; i < MAP_SIZE; i++) {
+    for(int j = 0; j < MAP_SIZE; j++) {
+      float accum = 0;
+      int weights = 0;
+
+      if(j > 0) {
+        accum += terrain[i][j - 1];
+        weights++;
+
+        if(i > 0) {
+          accum += terrain[i - 1][j - 1];
+          weights++;
+        }
+        if(i < MAP_SIZE) {
+          accum += terrain[i + 1][j - 1];
+          weights++;
+        }
+      }
+      if(i > 0) {
+        accum += terrain[i - 1][j];
+        weights++;
+      }
+      if(j < MAP_SIZE) {
+        accum += terrain[i][j + 1];
+        weights++;
+
+        if(i > 0) {
+          accum += terrain[i - 1][j + 1];
+          weights++;
+        }
+        if(i < MAP_SIZE) {
+          accum += terrain[i + 1][j + 1];
+          weights++;
+        }
+      }
+      if(i < MAP_SIZE) { 
+        accum += terrain[i + 1][j];
+        weights++;
+      }
+
+      terrain[i][j] = accum / weights;
+    }
+  }
+}
+
+static float diamond(float tleft, float tright, float bleft, float bright, float displacement) {
   float num = (tleft + tright + bleft + bright) / 4  + displace(displacement);
   return cap(num);
 }
 
-float square(float left, float right, float displacement) {
+static float square(float left, float right, float displacement) {
   float num = (left + right) / 2 + displace(displacement);
   return cap(num);
 }
 
-float cap(float num) {
+static float cap(float num) {
   if(num > 1)
     num = 1;
   else if(num < 0)
     num = 0;
   return num;
+}
+
+float height_at(int x, int y) {
+  return terrain[x][y];
 }

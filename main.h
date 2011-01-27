@@ -19,5 +19,7 @@
 SDL_Surface *screen;
 const float SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 player *human;
+bool paused = false;
+void toggle_pause();
 
 #endif

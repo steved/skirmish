@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
+#include <stdbool.h>
 #include "SDL.h"
 #include "SDL_gfxPrimitives.h"
 
@@ -11,12 +12,9 @@
 #define HALF_MAP_SIZE 1024
 #define NOISE 1.5f
 
-float random_float();
-float displace(float);
+
 void generate_fractal_terrain();
-float diamond(float, float, float, float, float);
-float square(float, float, float);
-float cap(float);
+float height_at(int, int);
 SDL_Surface *print_terrain();
 extern SDL_Surface *screen;
 

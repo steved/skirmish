@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     poll_for_events(camera);
     loops = 0;
 
-    while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP) {
+    while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP && !paused) {
       //update_game(interpolation);
       next_game_tick += SKIP_TICKS;
       loops++;
@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
  
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
     display_game(buffer, camera, players, 2);
+    //printf("height at camera (%f, %f) - %f\n", gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), height_at(gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1)));
 
     SDL_BlitSurface(buffer, NULL, screen, NULL);
     SDL_FreeSurface(buffer);
@@ -92,4 +93,13 @@ int main(int argc, char *argv[]) {
   SDL_FreeSurface(terrain);
   SDL_FreeSurface(screen);
   return 0;
+}
+
+void toggle_pause() {
+  paused = !paused;
+  if(paused)
+    SDL_WM_GrabInput(SDL_GRAB_OFF);
+  else
+    SDL_WM_GrabInput(SDL_GRAB_ON);
+  printf(paused ? "paused\n" : "unpaused\n");
 }
