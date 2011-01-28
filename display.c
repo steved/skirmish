@@ -58,9 +58,8 @@ double unit_radius[][2] = {
 };
 
 void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color) { 
-  double x, y;
-  x = gsl_vector_get(unit->vector, 0) - gsl_vector_get(camera->vector, 0);
-  y = gsl_vector_get(unit->vector, 1) - gsl_vector_get(camera->vector, 1);
+  double x = gsl_vector_get(unit->vector, 0) / ZOOM_LEVEL - gsl_vector_get(camera->vector, 0);
+  double y = gsl_vector_get(unit->vector, 1) / ZOOM_LEVEL - gsl_vector_get(camera->vector, 1);
 
   double rad_x = unit_radius[unit->type][0];
   double rad_y = unit_radius[unit->type][1];

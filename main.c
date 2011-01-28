@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
 
   generate_fractal_terrain();
   SDL_Surface *terrain = print_terrain();
+  SDL_Surface *background = terrain;
 
   uint32_t next_game_tick = SDL_GetTicks();
 
@@ -57,6 +58,7 @@ int main(int argc, char *argv[]) {
 
   bool game_running = true;
   while(game_running) {
+    int zoom = ZOOM_LEVEL;
     poll_for_events(camera);
     loops = 0;
 
@@ -68,21 +70,21 @@ int main(int argc, char *argv[]) {
 
     SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, bpp, 0, 0, 0, 0);
     SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
-    if(ZOOM_LEVEL > 1) {
-      SDL_Surface *shrunken_surface = shrinkSurface(terrain, ZOOM_LEVEL, ZOOM_LEVEL);
-      SDL_BlitSurface(shrunken_surface, &terrain_rect, buffer, NULL);
-      SDL_FreeSurface(shrunken_surface);
-    } else {
-      SDL_BlitSurface(terrain, &terrain_rect, buffer, NULL);
-    }
- 
+    // if the zoom level changes, free the
+    // current background surface if isn't the base and then re-shrink the surface
+    if(zoom != ZOOM_LEVEL) {
+      if(background != terrain)
+        SDL_FreeSurface(background);
+      background = shrinkSurface(terrain, ZOOM_LEVEL, ZOOM_LEVEL);
+    }  
+    SDL_BlitSurface(background, &terrain_rect, buffer, NULL);
+
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
     display_game(buffer, camera, players, 2);
-    //printf("height at camera (%f, %f) - %f\n", gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), height_at(gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1)));
 
     SDL_BlitSurface(buffer, NULL, screen, NULL);
-    SDL_FreeSurface(buffer);
     SDL_Flip(screen);
+    SDL_FreeSurface(buffer);
   }
 
 
