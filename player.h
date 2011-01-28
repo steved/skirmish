@@ -2,7 +2,9 @@
 #define SKIRMISH_PLAYER
 
 #include "attributes.h"
+#include "camera.h"
 
+#include "SDL_events.h"
 #include <stdint.h>
 
 typedef struct division {
@@ -25,5 +27,6 @@ typedef struct player {
 player *create_human_player(const char *, int);
 player *create_ai_player(int);
 void remove_player(player *);
+void check_for_unit_at(camera *, player **, int, SDL_MouseButtonEvent);
 
 #endif

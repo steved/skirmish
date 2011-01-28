@@ -1,7 +1,12 @@
+#include "camera.h"
 #include "units.h"
+
+#include <assert.h>
+#include <gsl/gsl_vector.h>
 
 unit *create_empty_unit() {
   unit *empty_unit = (unit *) malloc(sizeof(unit));
+  assert(empty_unit != NULL);
   empty_unit->type = infantry;
 
   empty_unit->cur_state = waiting;
@@ -47,4 +52,12 @@ void print_weapons(weapons weapons) {
   printf("primary weapon %d, left %d. secondary weapon %d\n",
       weapons.primary_weapon, weapons.primary_weapon_left,
       weapons.secondary_weapon);
+}
+
+gsl_vector *calculate_display_position(unit *unit, camera *c) {
+  gsl_vector *pos = gsl_vector_alloc(2);
+  gsl_vector_memcpy(pos, unit->vector);
+  gsl_vector_scale(pos, 1.0f / ZOOM_LEVEL);
+  gsl_vector_sub(pos, c->vector);
+  return pos;
 }

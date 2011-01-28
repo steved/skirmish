@@ -5,6 +5,7 @@
 #include "attributes.h"
 #include "player.h"
 #include "camera.h"
+#include "selected.h"
 
 #define WIDTH 512
 #define HEIGHT 512

@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
   player *human = create_human_player("Steven Davidovitz", 2);
   human->units[0] = create_legionary_unit();
   place(human->units[0], 100, 100);
+  select_unit(human->units[0]);
   human->units[1] = create_legionary_unit();
   place(human->units[1], 50, 100);
   players[1] = human;
@@ -75,7 +76,7 @@ int main(int argc, char *argv[]) {
   bool game_running = true;
   while(game_running) {
     int zoom = ZOOM_LEVEL;
-    poll_for_events(camera);
+    poll_for_events(camera, players, 2);
     loops = 0;
 
     while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP && !paused) {

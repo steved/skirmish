@@ -2,12 +2,15 @@
 #include "display.h"
 #include "terrain.h"
 
+#include <assert.h>
+
 #define ZOOM_MIN 1
 #define ZOOM_MAX 4
 int ZOOM_LEVEL = ZOOM_MAX;
 
 camera *create_camera() {
   camera *cam = (camera *) malloc(sizeof(camera));
+  assert(cam != NULL);
   cam->vector = gsl_vector_calloc(2);
   set_camera_position(cam, 0, 0);
   return cam;

@@ -1,7 +1,7 @@
 #include "display.h"
 #include "events.h"
 
-#include "SDL.h"
+#include "SDL_events.h"
 
 SDL_Event event;
 int arrows_camera_delta = 10;
@@ -12,7 +12,7 @@ void handle_keypress(int, camera *);
 void handle_mousedown(SDL_MouseButtonEvent, camera *);
 void handle_mousemove(SDL_MouseMotionEvent);
 
-void poll_for_events(camera *camera) {
+void poll_for_events(camera *camera, player **players, int player_len) {
   while(SDL_PollEvent(&event)) {
     switch(event.type) {
       case SDL_KEYDOWN:
@@ -23,6 +23,7 @@ void poll_for_events(camera *camera) {
         break;
       case SDL_MOUSEBUTTONDOWN:
         handle_mousedown(event.button, camera);
+        check_for_unit_at(camera, players, player_len, event.button);
         break;
       case SDL_QUIT:
         exit(0);

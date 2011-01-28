@@ -1,9 +1,12 @@
 #include "selected.h"
 
+#include <assert.h>
+
 selected_node *selected_head = NULL;
 
 void select_unit(unit *unit) {
   selected_node *node = malloc(sizeof(selected_node));
+  assert(node != NULL);
   node->unit = unit;
   node->next = selected_head;
   selected_head = node;
@@ -21,12 +24,13 @@ void select_division(division *division) {
 
 void unselect_all() {
   selected_node *node = selected_head;
-  while(node->next) {
+  while(node) {
     selected_node *next = node->next;
     free(node);
     node = next;
   }
   free(node);
+  selected_head = NULL;
 }
 
 void unselect_unit(unit *unit) {

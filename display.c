@@ -38,7 +38,6 @@ SDL_Surface *display_game(SDL_Surface *buffer, camera *camera, player **players,
   SDL_FreeSurface(frames_per);
   */
 
-
   // display the title in the upper right
   SDL_Surface *title = draw_text("Skirmish");
   SDL_BlitSurface(title, NULL, buffer, NULL);
@@ -85,6 +84,8 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
       boxColor(surface, x - rad_x, y - rad_y, x + rad_x, y + rad_y, color); 
   }
 
-  // this unit is selected!
-  //circleColor(surface, x, y, rad_x + 5, (0xffffff00 - color) | 0x000000ff);
+  if(selected(unit)) {
+   // this unit is selected!
+   circleColor(surface, x, y, rad_x + 5, (0xffffff00 - color) | 0x000000ff);
+  }
 }

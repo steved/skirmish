@@ -4,7 +4,7 @@
 #include "camera.h"
 #include <stdbool.h>
 
-void poll_for_events(camera *);
+void poll_for_events(camera *, player **, int);
 extern void toggle_pause();
 extern bool paused;
 
