@@ -1,4 +1,7 @@
 #include "display.h"
+#include "text.h"
+
+#include "SDL_gfxPrimitives.h"
 
 SDL_Surface *display_game(SDL_Surface *buffer, camera *camera, player **players, int len) {
   for(int i = 0; i < len; i++) {

@@ -1,4 +1,6 @@
 #include "camera.h"
+#include "display.h"
+#include "terrain.h"
 
 #define ZOOM_MIN 1
 #define ZOOM_MAX 4

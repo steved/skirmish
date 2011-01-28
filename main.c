@@ -1,5 +1,21 @@
+#include "attributes.h"
+#include "camera.h"
+#include "display.h"
+#include "events.h"
 #include "main.h"
+#include "player.h"
+#include "romans.h"
+#include "terrain.h"
+#include "text.h"
+#include "units.h"
+
+#include "SDL_rotozoom.h"
 #include <time.h>
+
+#define TICKS_PER_SECOND 25
+#define MAX_FRAME_SKIP 5
+const float SKIP_TICKS = 1000 / TICKS_PER_SECOND;
+player *human;
 
 int main(int argc, char *argv[]) {
   srand(time(NULL));

@@ -2,6 +2,7 @@
 #define SKIRMISH_PLAYER
 
 #include "attributes.h"
+
 #include <stdint.h>
 
 typedef struct division {

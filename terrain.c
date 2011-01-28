@@ -1,5 +1,8 @@
 #include "terrain.h"
 
+#include "SDL_gfxPrimitives.h"
+#include <assert.h>
+
 static float terrain[MAP_SIZE + 1][MAP_SIZE + 1];
 static float diamond(float, float, float, float, float);
 static float square(float, float, float);

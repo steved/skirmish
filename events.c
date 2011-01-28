@@ -1,7 +1,16 @@
+#include "display.h"
 #include "events.h"
+
+#include "SDL.h"
+
+SDL_Event event;
 int arrows_camera_delta = 10;
 int mouse_camera_delta = 2;
 int mouse_camera_epsilon = 10;
+
+void handle_keypress(int, camera *);
+void handle_mousedown(SDL_MouseButtonEvent, camera *);
+void handle_mousemove(SDL_MouseMotionEvent);
 
 void poll_for_events(camera *camera) {
   while(SDL_PollEvent(&event)) {

@@ -1,10 +1,7 @@
 #ifndef SKIRMISH_CAMERA
 #define SKIRMISH_CAMERA
 
-#include <stdlib.h>
-#include <stdio.h>
-#include "attributes.h"
-#include "terrain.h"
+#include <gsl/gsl_vector.h>
 
 extern int ZOOM_LEVEL;
 
@@ -20,5 +17,4 @@ void zoom_in(camera *);
 void print_camera(camera *);
 void remove_camera(camera *);
 
-#include "display.h"
 #endif

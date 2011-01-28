@@ -1,8 +1,8 @@
 #ifndef SKIRMISH_DISPLAY
 #define SKIRMISH_DISPLAY
 
-#include "SDL_gfxPrimitives.h"
-#include "text.h"
+#include "SDL.h"
+#include "attributes.h"
 #include "player.h"
 #include "camera.h"
 

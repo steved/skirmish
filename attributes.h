@@ -2,7 +2,6 @@
 #define SKIRMISH_ATTR
 
 #include <gsl/gsl_vector.h>
-#include <gsl/gsl_blas.h>
 
 typedef struct attributes {
   int strength, speed, stamina;
