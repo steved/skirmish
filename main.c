@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
   generate_fractal_terrain();
   SDL_Surface *terrain = print_terrain();
-  SDL_Surface *background = terrain;
+  SDL_Surface *background = shrinkSurface(terrain, ZOOM_LEVEL, ZOOM_LEVEL);
 
   uint32_t next_game_tick = SDL_GetTicks();
 
