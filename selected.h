@@ -15,6 +15,7 @@ void select_unit(unit *);
 void select_units(unit **, int);
 void select_division(division *);
 void unselect_all();
+void unselect_unit(unit *);
 bool selected(unit *);
 
 #endif

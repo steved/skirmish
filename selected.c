@@ -34,14 +34,19 @@ void unselect_all() {
 }
 
 void unselect_unit(unit *unit) {
-  selected_node *prev = 0;
+  selected_node *prev = NULL;
   selected_node *node = selected_head;
   while(node) {
     if(node->unit == unit) {
-      prev->next = node->next;
+      if(prev == NULL) {
+        selected_head = node->next;
+      } else {
+        prev->next = node->next;
+      }
       free(node);
       return;
     }
+    prev = node;
     node = node->next;
   }
 }

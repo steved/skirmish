@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
       loops++;
     }
 
-    SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, bpp, 0, 0, 0, 0);
+    SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, bpp, 0, 0, 0, 0xff);
     SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
     // if the zoom level changes, free the
     // current background surface if isn't the base and then re-shrink the surface

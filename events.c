@@ -7,35 +7,39 @@ SDL_Event event;
 int arrows_camera_delta = 10;
 int mouse_camera_delta = 2;
 int mouse_camera_epsilon = 10;
+int mouse_x = 0, mouse_y = 0;
 
 void handle_keypress(int, camera *);
-void handle_mousedown(SDL_MouseButtonEvent, camera *);
-void handle_mousemove(SDL_MouseMotionEvent);
+static void handle_mousedown(SDL_MouseButtonEvent, camera *);
+static void handle_mousemove(SDL_MouseMotionEvent);
 
 void poll_for_events(camera *camera, player **players, int player_len) {
   while(SDL_PollEvent(&event)) {
-    switch(event.type) {
-      case SDL_KEYDOWN:
-        handle_keypress(event.key.keysym.sym, camera);
-        break;
-      case SDL_MOUSEMOTION:
-        handle_mousemove(event.motion);
-        break;
-      case SDL_MOUSEBUTTONDOWN:
-        handle_mousedown(event.button, camera);
-        check_for_unit_at(camera, players, player_len, event.button);
-        break;
-      case SDL_QUIT:
-        exit(0);
+    if(paused) {
+      if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_p) {
+        toggle_pause();
+      }
+      return;
+    } else {
+      switch(event.type) {
+        case SDL_KEYDOWN:
+          handle_keypress(event.key.keysym.sym, camera);
+          break;
+        case SDL_MOUSEMOTION:
+          handle_mousemove(event.motion);
+          break;
+        case SDL_MOUSEBUTTONDOWN:
+          handle_mousedown(event.button, camera);
+          check_for_unit_at(camera, players, player_len, event.button);
+          break;
+        case SDL_QUIT:
+          exit(0);
+      }
     }
   }
 
-  if(paused)
-    return;
-
-  int mouse_x,mouse_y;
-  SDL_GetMouseState(&mouse_x, &mouse_y);
-
+  // code to move the camera if the mouse
+  // is within mouse_camera_epsilon of the edges
   int x = 0, y = 0;
   if(mouse_x > WIDTH - mouse_camera_epsilon) 
     x = mouse_camera_delta * ZOOM_LEVEL;
@@ -51,10 +55,12 @@ void poll_for_events(camera *camera, player **players, int player_len) {
     move_camera(camera, x, y);
 }
 
-void handle_mousemove(SDL_MouseMotionEvent motion) {
+static void handle_mousemove(SDL_MouseMotionEvent motion) {
+  mouse_x = motion.x;
+  mouse_y = motion.y;
 }
 
-void handle_mousedown(SDL_MouseButtonEvent button, camera *camera) {
+static void handle_mousedown(SDL_MouseButtonEvent button, camera *camera) {
   printf("Mouse button %d pressed at (%d,%d)\n",
       button.button, button.x, button.y);
   switch(event.button.button) {

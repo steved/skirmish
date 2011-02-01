@@ -6,6 +6,7 @@
 
 #include "SDL_events.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct division {
   unit **units;

@@ -1,5 +1,6 @@
 #include "display.h"
 #include "text.h"
+#include "units.h"
 
 #include "SDL_gfxPrimitives.h"
 
@@ -48,9 +49,24 @@ SDL_Surface *display_game(SDL_Surface *buffer, camera *camera, player **players,
   int w,h;
   TTF_SizeUTF8(font, zoom, &w, &h);
   SDL_Surface *zoom_surf = draw_text(zoom);
-  SDL_Rect zo = { 0, HEIGHT- h, WIDTH - (w * 7), h };
+  SDL_Rect zo = { 0, HEIGHT - h, w, h };
   SDL_BlitSurface(zoom_surf, NULL, buffer, &zo);
   SDL_FreeSurface(zoom_surf);
+
+  if(paused) {
+    TTF_SizeUTF8(font, "PAUSED", &w, &h);
+    SDL_Surface *paused_surf = draw_text("PAUSED");
+    SDL_Rect paused_rect = { WIDTH / 2 - (w / 2), HEIGHT / 2 - (h / 2), w, h };
+
+    SDL_Surface *overlay = SDL_CreateRGBSurface(SDL_SRCALPHA, WIDTH, HEIGHT, buffer->format->BitsPerPixel, 0, 0, 0, 0);
+    SDL_FillRect(overlay, NULL, SDL_MapRGB(buffer->format, 0, 0, 0));
+    SDL_SetAlpha(overlay, SDL_SRCALPHA, 128);
+
+    SDL_BlitSurface(paused_surf, NULL, overlay, &paused_rect);
+    SDL_BlitSurface(overlay, NULL, buffer, NULL);
+    SDL_FreeSurface(overlay);
+    SDL_FreeSurface(paused_surf);
+  }
 
   return buffer;
 }
@@ -60,8 +76,10 @@ double unit_radius[][2] = {
 };
 
 void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color) { 
-  double x = gsl_vector_get(unit->vector, 0) / ZOOM_LEVEL - gsl_vector_get(camera->vector, 0);
-  double y = gsl_vector_get(unit->vector, 1) / ZOOM_LEVEL - gsl_vector_get(camera->vector, 1);
+  gsl_vector *pos = calculate_display_position(unit, camera);
+  double x = gsl_vector_get(pos, 0);
+  double y = gsl_vector_get(pos, 1);
+  gsl_vector_free(pos);
 
   double rad_x = unit_radius[unit->type][0];
   double rad_y = unit_radius[unit->type][1];

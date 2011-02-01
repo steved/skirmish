@@ -50,24 +50,32 @@ void remove_player(player *player) {
 
 void check_for_unit_at(camera *cam, player **players, int player_len, SDL_MouseButtonEvent button) {
   int eps = 3;
-  if(button.button == 1) {
-    unselect_all(); // eventually check for CTRL button to add to selections
-    printf("looking for unit at (%d, %d)\n", button.x, button.y);
-    for(int i = 0; i < player_len; i++) {
-      player *pl = players[i];
-      printf("checking player %d\n", i);
-      for(int j = 0; j < pl->num_units; j++) {
-        unit *un = pl->units[j];
-        printf("checking unit %d\n", j);
-        gsl_vector *pos = calculate_display_position(un, cam);
-        double x = gsl_vector_get(pos, 0); double y = gsl_vector_get(pos, 1);
-        printf("unit @ (%f, %f)\n", x, y);
-        gsl_vector_free(pos);
-        if((x >= button.x - eps && x <= button.x + eps) && (y >= button.y - eps && y <= button.y + eps)) {
+  bool modifier = (SDL_GetModState() & KMOD_CTRL) > 0;
+  if(button.button != 1)
+    return;
+
+  if(!modifier) {
+    unselect_all();
+  }
+
+  for(int i = 0; i < player_len; i++) {
+    player *pl = players[i];
+    for(int j = 0; j < pl->num_units; j++) {
+      unit *un = pl->units[j];
+
+      gsl_vector *pos = calculate_display_position(un, cam);
+      double x = gsl_vector_get(pos, 0);
+      double y = gsl_vector_get(pos, 1);
+      gsl_vector_free(pos);
+
+      if((x >= button.x - eps && x <= button.x + eps) && (y >= button.y - eps && y <= button.y + eps)) {
+        if(selected(un) && modifier) {
+          unselect_unit(un);
+        } else {
           printf("found unit to select\n");
           select_unit(un);
-          return;
         }
+        return;
       }
     }
   }
