@@ -56,7 +56,7 @@ SDL_Surface *display_game(SDL_Surface *buffer, camera *camera, player **players,
   if(paused) {
     TTF_SizeUTF8(font, "PAUSED", &w, &h);
     SDL_Surface *paused_surf = draw_text("PAUSED");
-    SDL_Rect paused_rect = { WIDTH / 2 - (w / 2), HEIGHT / 2 - (h / 2), w, h };
+    SDL_Rect paused_rect = { (WIDTH / 2) - (w / 2), (HEIGHT / 2) - (h / 2), w, h };
 
     SDL_Surface *overlay = SDL_CreateRGBSurface(SDL_SRCALPHA, WIDTH, HEIGHT, buffer->format->BitsPerPixel, 0, 0, 0, 0);
     SDL_FillRect(overlay, NULL, SDL_MapRGB(buffer->format, 0, 0, 0));

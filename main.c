@@ -120,5 +120,4 @@ void toggle_pause() {
     SDL_WM_GrabInput(SDL_GRAB_OFF);
   else
     SDL_WM_GrabInput(SDL_GRAB_ON);
-  printf(paused ? "paused\n" : "unpaused\n");
 }

@@ -16,10 +16,12 @@ static void handle_mousemove(SDL_MouseMotionEvent);
 void poll_for_events(camera *camera, player **players, int player_len) {
   while(SDL_PollEvent(&event)) {
     if(paused) {
-      if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_p) {
-        toggle_pause();
+      if(event.type == SDL_KEYDOWN) {
+        if(event.key.keysym.sym == SDLK_p)
+          toggle_pause();
+        else if(event.key.keysym.sym == SDLK_ESCAPE)
+          exit(0);
       }
-      return;
     } else {
       switch(event.type) {
         case SDL_KEYDOWN:
@@ -37,6 +39,10 @@ void poll_for_events(camera *camera, player **players, int player_len) {
       }
     }
   }
+
+  // don't attempt to move the camera if paused
+  if(paused)
+    return;
 
   // code to move the camera if the mouse
   // is within mouse_camera_epsilon of the edges
