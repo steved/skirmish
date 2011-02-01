@@ -62,8 +62,8 @@ SDL_Surface *display_game(SDL_Surface *buffer, camera *camera, player **players,
     SDL_FillRect(overlay, NULL, SDL_MapRGB(buffer->format, 0, 0, 0));
     SDL_SetAlpha(overlay, SDL_SRCALPHA, 128);
 
-    SDL_BlitSurface(paused_surf, NULL, overlay, &paused_rect);
     SDL_BlitSurface(overlay, NULL, buffer, NULL);
+    SDL_BlitSurface(paused_surf, NULL, buffer, &paused_rect);
     SDL_FreeSurface(overlay);
     SDL_FreeSurface(paused_surf);
   }
