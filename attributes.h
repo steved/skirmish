@@ -3,14 +3,25 @@
 
 #include <gsl/gsl_vector.h>
 
+struct unit;
+
 typedef struct attributes {
   int strength, speed, stamina;
   int health, armor;
 } attributes;
 
 // to add: flanking, 
-typedef enum state {
+typedef enum state_description {
   waiting, attacking, charging, retreating, moving
+} state_description;
+
+typedef struct state {
+  state_description current;
+  union {
+    gsl_vector *vector;
+    struct unit *unit;
+    struct unit **units;
+  } subject;
 } state;
 
 typedef enum unit_type {
@@ -36,9 +47,13 @@ typedef struct weapons {
 typedef struct unit {
   attributes attributes;
   gsl_vector *vector;
-  state cur_state;
+  state state;
   unit_type type;
   weapons weapons;
 } unit;
+
+// an 'associative' array for each state
+// that defines which method is called for the unit
+extern void (*state_functions[5])(unit *);
 
 #endif

@@ -9,7 +9,7 @@ unit *create_empty_unit() {
   assert(empty_unit != NULL);
   empty_unit->type = infantry;
 
-  empty_unit->cur_state = waiting;
+  empty_unit->state.current = waiting;
   empty_unit->vector = gsl_vector_calloc(2);
 
   weapons empty = {none, none, 0};
@@ -34,7 +34,7 @@ void place(unit *unit, int x, int y) {
 
 void print_unit(unit *unit) {
   printf("type %d, cur_state %d, vector (%f, %f)\n", 
-      unit->type, unit->cur_state, 
+      unit->type, unit->state.current, 
       gsl_vector_get(unit->vector, 0), gsl_vector_get(unit->vector, 1));
   printf("\t");
   print_attributes(unit->attributes);
