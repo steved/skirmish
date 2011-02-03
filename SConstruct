@@ -10,7 +10,7 @@ env.ParseConfig('gsl-config --cflags')
 env.ParseConfig('gsl-config --libs')
 
 # gather a list of source files
-SOURCES = glob.glob('*.c')
+SOURCES = glob.glob('*.c') + glob.glob('ui/*.c')
 
 # add additional compiler flags
 env.Append(CFLAGS = ['-Wall', '--std=c99', "-g"])
