@@ -10,9 +10,7 @@
 #define WIDTH 640
 #define HEIGHT 480
 
-SDL_Surface *display_game(SDL_Surface *, camera *, player **, int);
 void display_unit(SDL_Surface *, camera *, unit *, uint32_t);
-extern SDL_Surface *screen;
 extern bool paused;
 
 #endif

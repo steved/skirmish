@@ -9,6 +9,8 @@
 #include "text.h"
 #include "units.h"
 
+#include "ui/game.h"
+
 #include "SDL_rotozoom.h"
 #include <time.h>
 
@@ -19,6 +21,7 @@ player *human;
 
 int main(int argc, char *argv[]) {
   srand(time(NULL));
+  ui_state *current_state = &game_state;
 
   player *players[2];
 
@@ -76,11 +79,11 @@ int main(int argc, char *argv[]) {
   bool game_running = true;
   while(game_running) {
     int zoom = ZOOM_LEVEL;
-    poll_for_events(camera, players, 2);
+    poll_for_events(camera, players, 2, current_state);
     loops = 0;
 
     while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP && !paused) {
-      //update_game(interpolation);
+      current_state->update(players, 2, interpolation);
       next_game_tick += SKIP_TICKS;
       loops++;
     }
@@ -97,7 +100,7 @@ int main(int argc, char *argv[]) {
     SDL_BlitSurface(background, &terrain_rect, buffer, NULL);
 
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
-    display_game(buffer, camera, players, 2);
+    current_state->render(buffer, camera, players, 2);
 
     SDL_BlitSurface(buffer, NULL, screen, NULL);
     SDL_Flip(screen);

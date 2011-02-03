@@ -5,10 +5,9 @@
 #include "../player.h"
 
 typedef struct ui_state {
-  void (*render)(SDL_Surface *, camera *, player *, int);
-  void (*update)(player *, int);
+  void (*render)(SDL_Surface *, camera *, player **, int);
+  void (*update)(player **, int, float);
   void (*handle_event)(SDL_Event, camera *);
-
 } ui_state;
 
 #endif

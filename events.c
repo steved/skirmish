@@ -13,7 +13,7 @@ void handle_keypress(int, camera *);
 static void handle_mousedown(SDL_MouseButtonEvent, camera *);
 static void handle_mousemove(SDL_MouseMotionEvent);
 
-void poll_for_events(camera *camera, player **players, int player_len) {
+void poll_for_events(camera *camera, player **players, int player_len, ui_state *current_state) {
   while(SDL_PollEvent(&event)) {
     if(paused) {
       if(event.type == SDL_KEYDOWN) {
@@ -38,6 +38,7 @@ void poll_for_events(camera *camera, player **players, int player_len) {
           exit(0);
       }
     }
+    current_state->handle_event(event, camera);
   }
 
   // don't attempt to move the camera if paused
