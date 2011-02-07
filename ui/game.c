@@ -1,11 +1,39 @@
+#include "../camera.h"
 #include "../display.h"
 #include "game.h"
 #include "../text.h"
+#include "../terrain.h"
 #include "../units.h"
 
-ui_state game_state = { &game_render, &game_update, &game_handle_event };
+#include "SDL_rotozoom.h"
 
-void game_render(SDL_Surface *buffer, camera *camera, player **players, int player_len) {
+ui_state game_state = { &game_render, &game_update, &game_handle_event, &game_cleanup };
+
+int prev_zoom_level = -1;
+SDL_Surface *full_terrain = NULL;
+SDL_Surface *background = NULL;
+
+void game_render(SDL_Surface *buffer, camera *camera, player **players, int player_len, float interpolation) {
+  int w, h;
+
+  if(!full_terrain) {
+    TTF_SizeUTF8(font, "LOADING", &w, &h);
+    SDL_Surface *loading_surf = draw_text("LOADING");
+    SDL_Rect loading_rect = { (WIDTH / 2) - (w / 2), (HEIGHT / 2) - (h / 2), w, h };
+    SDL_BlitSurface(loading_surf, NULL, buffer, &loading_rect);
+    return;
+  }
+
+  SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
+  // if the zoom level changes, free the
+  // current background surface if isn't the base and then re-shrink the surface
+  if(prev_zoom_level != ZOOM_LEVEL) {
+    if(background != full_terrain)
+      SDL_FreeSurface(background);
+    background = shrinkSurface(full_terrain, ZOOM_LEVEL, ZOOM_LEVEL);
+  }  
+  SDL_BlitSurface(background, &terrain_rect, buffer, NULL);
+
   for(int i = 0; i < player_len; i++) {
     player *player = players[i];
     for(int j = 0; j < player->num_units; j++) {
@@ -13,41 +41,14 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
     }
   }
 
-  /*
-  unit *u = create_empty_unit();
-  place(u, 250, 250);
-  display_unit(buffer, u);
-
-  u->type = cavalry;
-  place(u, 200, 250);
-  display_unit(buffer, u);
-
-  u->type = artillery;
-  place(u, 250, 200);
-  display_unit(buffer, u);
-
-  free(u);
-  */
-
-  /* Print interpolation
-  char buf[255];
-  snprintf(buf, 255, "%f", interpolation);
-  SDL_Surface *frames_per = draw_text(buf);
-  int w,h;
-  TTF_SizeUTF8(font, buf, &w, &h);
-  SDL_Rect place = {WIDTH - w, HEIGHT - h};
-  SDL_BlitSurface(frames_per, NULL, buffer, &place);
-  SDL_FreeSurface(frames_per);
-  */
-
-  // display the title in the upper right
+  // display the title in the upper left 
   SDL_Surface *title = draw_text("Skirmish");
   SDL_BlitSurface(title, NULL, buffer, NULL);
   SDL_FreeSurface(title);
 
+  // display the zoom level in the bottom left
   char zoom[7];
   snprintf(zoom, 7, "Zoom %i", ZOOM_LEVEL);
-  int w,h;
   TTF_SizeUTF8(font, zoom, &w, &h);
   SDL_Surface *zoom_surf = draw_text(zoom);
   SDL_Rect zo = { 0, HEIGHT - h, w, h };
@@ -69,12 +70,22 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
     SDL_FreeSurface(paused_surf);
   }
 
+  prev_zoom_level = ZOOM_LEVEL;
 }
 
-void game_update(player **players, int player_len, float interpolation) {
-
+void game_update(player **players, int player_len) {
+  // background hasn't been generated; do it
+  if(full_terrain == NULL) {
+    generate_fractal_terrain();
+    full_terrain = print_terrain();
+    background = shrinkSurface(full_terrain, ZOOM_LEVEL, ZOOM_LEVEL);
+  }
 }
 
 void game_handle_event(SDL_Event event, camera *camera) {
+}
 
+void game_cleanup() {
+  SDL_FreeSurface(background);
+  SDL_FreeSurface(full_terrain);
 }

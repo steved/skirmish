@@ -7,6 +7,5 @@
 SDL_Surface *screen;
 bool paused = false;
 void toggle_pause();
-extern ui_state *current_state;
 
 #endif

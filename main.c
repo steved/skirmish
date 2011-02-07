@@ -5,13 +5,12 @@
 #include "main.h"
 #include "player.h"
 #include "romans.h"
-#include "terrain.h"
 #include "text.h"
 #include "units.h"
 
 #include "ui/game.h"
+#include "ui/menu.h"
 
-#include "SDL_rotozoom.h"
 #include <time.h>
 
 #define TICKS_PER_SECOND 25
@@ -21,7 +20,6 @@ player *human;
 
 int main(int argc, char *argv[]) {
   srand(time(NULL));
-  ui_state *current_state = &game_state;
 
   player *players[2];
 
@@ -67,9 +65,7 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  generate_fractal_terrain();
-  SDL_Surface *terrain = print_terrain();
-  SDL_Surface *background = shrinkSurface(terrain, ZOOM_LEVEL, ZOOM_LEVEL);
+  change_state(&menu_state);
 
   uint32_t next_game_tick = SDL_GetTicks();
 
@@ -78,41 +74,35 @@ int main(int argc, char *argv[]) {
 
   bool game_running = true;
   while(game_running) {
-    int zoom = ZOOM_LEVEL;
+    if(!current_state) {
+      fprintf(stderr, "There is no current state.\n");
+      exit(1);
+    }
+
     poll_for_events(camera, players, 2, current_state);
     loops = 0;
 
     while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP && !paused) {
-      current_state->update(players, 2, interpolation);
+      current_state->update(players, 2);
       next_game_tick += SKIP_TICKS;
       loops++;
     }
 
     SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, bpp, 0, 0, 0, 0xff);
-    SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
-    // if the zoom level changes, free the
-    // current background surface if isn't the base and then re-shrink the surface
-    if(zoom != ZOOM_LEVEL) {
-      if(background != terrain)
-        SDL_FreeSurface(background);
-      background = shrinkSurface(terrain, ZOOM_LEVEL, ZOOM_LEVEL);
-    }  
-    SDL_BlitSurface(background, &terrain_rect, buffer, NULL);
-
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
-    current_state->render(buffer, camera, players, 2);
+    current_state->render(buffer, camera, players, 2, interpolation);
 
     SDL_BlitSurface(buffer, NULL, screen, NULL);
     SDL_Flip(screen);
     SDL_FreeSurface(buffer);
   }
 
+  current_state->cleanup();
 
   for(int i = 0; i < 2; i++)
     remove_player(players[i]);
   remove_camera(camera);
 
-  SDL_FreeSurface(terrain);
   SDL_FreeSurface(screen);
   return 0;
 }
