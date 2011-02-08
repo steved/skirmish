@@ -9,15 +9,23 @@ ui_state *current_state = NULL;
 void change_state(ui_state *next_state) {
   if(current_state)
     current_state->cleanup();
-  SDL_CreateThread(prepare_state, next_state);
+
+  // prepare and set the current state to the loading state 
+  loading_state.prepare();
   current_state = &loading_state;
+
+  // spawn a thread to prepare the next state
+  // and then set the current_state to it
+  SDL_CreateThread(prepare_state, next_state);
 }
 
 int prepare_state(void *data) {
+  // prepare and set the current state to the next state
   ui_state *state_to_prep = (ui_state *) data;
-  SDL_WM_GrabInput(SDL_GRAB_OFF);
   state_to_prep->prepare();
-  SDL_WM_GrabInput(SDL_GRAB_ON);
   current_state = state_to_prep;
+
+  // cleanup the loading state before it gets switched
+  loading_state.cleanup();
   return 0;
 }

@@ -8,6 +8,8 @@
 #include "SDL_rotozoom.h"
 
 static void update_camera_position(camera *);
+static void handle_mousedown(SDL_MouseButtonEvent, camera *);
+static void handle_keypress(int, camera *);
 
 ui_state game_state = { &game_render, &game_update, &game_handle_event, &game_prepare, &game_cleanup };
 
@@ -15,6 +17,7 @@ int prev_zoom_level = -1;
 SDL_Surface *full_terrain = NULL;
 SDL_Surface *background = NULL;
 
+int arrows_camera_delta = 10;
 int mouse_camera_delta = 2;
 int mouse_camera_epsilon = 10;
 int mouse_x = 0, mouse_y = 0;
@@ -78,9 +81,15 @@ void game_update(player **players, int player_len, camera *camera) {
 
 void game_handle_event(SDL_Event event, camera *camera) {
   switch(event.type) {
+    case SDL_MOUSEBUTTONDOWN:
+      handle_mousedown(event.button, camera);
+      break;
     case SDL_MOUSEMOTION:
       mouse_x = event.motion.x;
       mouse_y = event.motion.y;
+      break;
+    case SDL_KEYDOWN:
+      handle_keypress(event.key.keysym.sym, camera);
   }
 }
 
@@ -114,4 +123,36 @@ static void update_camera_position(camera *camera) {
 
   if(x != 0 || y != 0)
     move_camera(camera, x, y);
+}
+
+static void handle_mousedown(SDL_MouseButtonEvent button_event, camera *camera) {
+  switch(button_event.button) {
+    case 4:
+      zoom_in(camera);
+      break;
+    case 5:
+      zoom_out(camera);
+  }
+}
+
+static void handle_keypress(int key, camera *camera) {
+  switch(key) {
+    case SDLK_LEFT:
+      move_camera(camera, -arrows_camera_delta * ZOOM_LEVEL, 0);
+      break;
+    case SDLK_RIGHT:
+      move_camera(camera, arrows_camera_delta * ZOOM_LEVEL, 0);
+      break;
+    case SDLK_UP:
+      move_camera(camera, 0, -arrows_camera_delta * ZOOM_LEVEL);
+      break;
+    case SDLK_DOWN:
+      move_camera(camera, 0, arrows_camera_delta * ZOOM_LEVEL);
+      break;
+    case SDLK_PAGEUP:
+      zoom_in(camera);
+      break;
+    case SDLK_PAGEDOWN:
+      zoom_out(camera);
+  }
 }

@@ -18,6 +18,7 @@
 #define MAX_FRAME_SKIP 5
 const float SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 player *human;
+bool game_running = true;
 
 int main(int argc, char *argv[]) {
   srand(time(NULL));
@@ -73,7 +74,6 @@ int main(int argc, char *argv[]) {
   int loops;
   float interpolation;
 
-  bool game_running = true;
   while(game_running) {
     assert(current_state != NULL);
 
