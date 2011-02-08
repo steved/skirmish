@@ -1,13 +1,11 @@
 #include "display.h"
 #include "events.h"
+#include "ui/loading.h"
 
 #include "SDL_events.h"
 
 SDL_Event event;
 int arrows_camera_delta = 10;
-int mouse_camera_delta = 2;
-int mouse_camera_epsilon = 10;
-int mouse_x = 0, mouse_y = 0;
 
 void handle_keypress(int, camera *);
 static void handle_mousedown(SDL_MouseButtonEvent, camera *);
@@ -40,32 +38,9 @@ void poll_for_events(camera *camera, player **players, int player_len, ui_state 
     }
     current_state->handle_event(event, camera);
   }
-
-  // don't attempt to move the camera if paused
-  if(paused)
-    return;
-
-  // code to move the camera if the mouse
-  // is within mouse_camera_epsilon of the edges
-  int x = 0, y = 0;
-  if(mouse_x > WIDTH - mouse_camera_epsilon) 
-    x = mouse_camera_delta * ZOOM_LEVEL;
-  else if(mouse_x < mouse_camera_epsilon)
-    x = -mouse_camera_delta * ZOOM_LEVEL;
-
-  if(mouse_y > HEIGHT - mouse_camera_epsilon)
-    y = mouse_camera_delta * ZOOM_LEVEL;
-  else if(mouse_y < mouse_camera_epsilon)
-    y = -mouse_camera_delta * ZOOM_LEVEL;
-
-  if(x != 0 || y != 0)
-    move_camera(camera, x, y);
 }
 
-static void handle_mousemove(SDL_MouseMotionEvent motion) {
-  mouse_x = motion.x;
-  mouse_y = motion.y;
-}
+static void handle_mousemove(SDL_MouseMotionEvent motion) {}
 
 static void handle_mousedown(SDL_MouseButtonEvent button, camera *camera) {
   printf("Mouse button %d pressed at (%d,%d)\n",

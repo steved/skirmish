@@ -7,11 +7,17 @@
 
 #include "SDL_rotozoom.h"
 
-ui_state game_state = { &game_render, &game_update, &game_handle_event, &game_prepare, &game_cleanup, false };
+static void update_camera_position(camera *);
+
+ui_state game_state = { &game_render, &game_update, &game_handle_event, &game_prepare, &game_cleanup };
 
 int prev_zoom_level = -1;
 SDL_Surface *full_terrain = NULL;
 SDL_Surface *background = NULL;
+
+int mouse_camera_delta = 2;
+int mouse_camera_epsilon = 10;
+int mouse_x = 0, mouse_y = 0;
 
 void game_render(SDL_Surface *buffer, camera *camera, player **players, int player_len, float interpolation) {
   int w, h;
@@ -60,16 +66,22 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
     SDL_BlitSurface(paused_surf, NULL, buffer, &paused_rect);
     SDL_FreeSurface(overlay);
     SDL_FreeSurface(paused_surf);
+  } else {
+    update_camera_position(camera);
   }
 
   prev_zoom_level = ZOOM_LEVEL;
 }
 
-void game_update(player **players, int player_len) {
-
+void game_update(player **players, int player_len, camera *camera) {
 }
 
 void game_handle_event(SDL_Event event, camera *camera) {
+  switch(event.type) {
+    case SDL_MOUSEMOTION:
+      mouse_x = event.motion.x;
+      mouse_y = event.motion.y;
+  }
 }
 
 void game_prepare() {
@@ -84,4 +96,22 @@ void game_prepare() {
 void game_cleanup() {
   SDL_FreeSurface(background);
   SDL_FreeSurface(full_terrain);
+}
+
+static void update_camera_position(camera *camera) {
+  // code to move the camera if the mouse
+  // is within mouse_camera_epsilon of the edges
+  int x = 0, y = 0;
+  if(mouse_x > WIDTH - mouse_camera_epsilon) 
+    x = mouse_camera_delta * ZOOM_LEVEL;
+  else if(mouse_x < mouse_camera_epsilon)
+    x = -mouse_camera_delta * ZOOM_LEVEL;
+
+  if(mouse_y > HEIGHT - mouse_camera_epsilon)
+    y = mouse_camera_delta * ZOOM_LEVEL;
+  else if(mouse_y < mouse_camera_epsilon)
+    y = -mouse_camera_delta * ZOOM_LEVEL;
+
+  if(x != 0 || y != 0)
+    move_camera(camera, x, y);
 }

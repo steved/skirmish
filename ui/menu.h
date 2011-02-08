@@ -4,7 +4,7 @@
 #include "ui_state.h"
 
 void menu_render(SDL_Surface *, camera *, player **, int, float);
-void menu_update(player **, int);
+void menu_update(player **, int, camera *);
 void menu_handle_event(SDL_Event, camera *);
 void menu_prepare();
 void menu_cleanup();
