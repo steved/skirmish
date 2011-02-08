@@ -7,7 +7,7 @@
 
 #include "SDL_rotozoom.h"
 
-ui_state game_state = { &game_render, &game_update, &game_handle_event, &game_cleanup };
+ui_state game_state = { &game_render, &game_update, &game_handle_event, &game_prepare, &game_cleanup, false };
 
 int prev_zoom_level = -1;
 SDL_Surface *full_terrain = NULL;
@@ -15,14 +15,6 @@ SDL_Surface *background = NULL;
 
 void game_render(SDL_Surface *buffer, camera *camera, player **players, int player_len, float interpolation) {
   int w, h;
-
-  if(!full_terrain) {
-    TTF_SizeUTF8(font, "LOADING", &w, &h);
-    SDL_Surface *loading_surf = draw_text("LOADING");
-    SDL_Rect loading_rect = { (WIDTH / 2) - (w / 2), (HEIGHT / 2) - (h / 2), w, h };
-    SDL_BlitSurface(loading_surf, NULL, buffer, &loading_rect);
-    return;
-  }
 
   SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
   // if the zoom level changes, free the
@@ -74,15 +66,19 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
 }
 
 void game_update(player **players, int player_len) {
+
+}
+
+void game_handle_event(SDL_Event event, camera *camera) {
+}
+
+void game_prepare() {
   // background hasn't been generated; do it
   if(full_terrain == NULL) {
     generate_fractal_terrain();
     full_terrain = print_terrain();
     background = shrinkSurface(full_terrain, ZOOM_LEVEL, ZOOM_LEVEL);
   }
-}
-
-void game_handle_event(SDL_Event event, camera *camera) {
 }
 
 void game_cleanup() {

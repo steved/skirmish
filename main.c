@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
     poll_for_events(camera, players, 2, current_state);
     loops = 0;
 
-    while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP && !paused) {
+    while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP && !current_state->preparing && !paused) {
       current_state->update(players, 2);
       next_game_tick += SKIP_TICKS;
       loops++;
@@ -90,7 +90,15 @@ int main(int argc, char *argv[]) {
 
     SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, bpp, 0, 0, 0, 0xff);
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
-    current_state->render(buffer, camera, players, 2, interpolation);
+    if(current_state->preparing) {
+      int w, h;
+      TTF_SizeUTF8(font, "LOADING", &w, &h);
+      SDL_Surface *loading_surf = draw_text("LOADING");
+      SDL_Rect loading_rect = { (WIDTH / 2) - (w / 2), (HEIGHT / 2) - (h / 2), w, h };
+      SDL_BlitSurface(loading_surf, NULL, buffer, &loading_rect);
+    } else {
+      current_state->render(buffer, camera, players, 2, interpolation);
+    }
 
     SDL_BlitSurface(buffer, NULL, screen, NULL);
     SDL_Flip(screen);
