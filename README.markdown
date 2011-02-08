@@ -39,7 +39,11 @@ Control
 =======
 
 The arrows keys and mouse can be used to move around the map.
+
 Page up / Scrollwheel up - Zoom in
+
 Page down / Scrollwheel down - Zoom out
+
 P - Pause
+
 Left mouse click - (Un)Select unit
