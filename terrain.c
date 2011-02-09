@@ -102,7 +102,6 @@ SDL_Surface *print_terrain() {
         blue = c / 1.6;
       }
 
-
       pixelRGBA(buffer, i, j, red, green, blue, 0xff);
     }
   }
