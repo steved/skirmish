@@ -10,6 +10,7 @@
 
 #include "ui/game.h"
 #include "ui/menu.h"
+#include "ui/ui_state.h"
 
 #include <assert.h>
 #include <time.h>
@@ -21,6 +22,7 @@ player *human;
 bool game_running = true;
 
 int main(int argc, char *argv[]) {
+  current_state_mutex = SDL_CreateMutex();
   srand(time(NULL));
 
   player *players[2];
@@ -31,6 +33,11 @@ int main(int argc, char *argv[]) {
   printf("creating ai player\n");
   players[0] = create_ai_player(1);
   players[0]->units[0] = create_legionary_unit();
+  players[0]->units[0]->state.current = moving;
+  gsl_vector *v = gsl_vector_alloc(2);
+  gsl_vector_set(v, 0, 600);
+  gsl_vector_set(v, 1, 600);
+  players[0]->units[0]->state.subject.vector = v;
   place(players[0]->units[0], 250, 250);
 
   player *human = create_human_player("Steven Davidovitz", 2);
@@ -75,6 +82,7 @@ int main(int argc, char *argv[]) {
   float interpolation;
 
   while(game_running) {
+    SDL_mutexP(current_state_mutex);
     assert(current_state != NULL);
 
     poll_for_events(camera, players, 2, current_state);
@@ -90,6 +98,7 @@ int main(int argc, char *argv[]) {
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
     current_state->render(buffer, camera, players, 2, interpolation);
 
+    SDL_mutexV(current_state_mutex);
     SDL_BlitSurface(buffer, NULL, screen, NULL);
     SDL_Flip(screen);
     SDL_FreeSurface(buffer);

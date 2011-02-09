@@ -77,6 +77,12 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
 }
 
 void game_update(player **players, int player_len, camera *camera) {
+  for(int i = 0; i < player_len; i++) {
+    for(int j = 0; j < players[i]->num_units; j++) {
+      unit *u = players[i]->units[j];
+      state_functions[u->state.current](u);
+    }
+  }
 }
 
 void game_handle_event(SDL_Event event, camera *camera) {
