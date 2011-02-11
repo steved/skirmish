@@ -38,7 +38,7 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
   for(int i = 0; i < player_len; i++) {
     player *player = players[i];
     for(int j = 0; j < player->num_units; j++) {
-      display_unit(buffer, camera, player->units[j], player->color);
+      display_unit(buffer, camera, player->units[j], player->color, interpolation);
     }
   }
 

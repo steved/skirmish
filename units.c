@@ -54,9 +54,11 @@ void print_weapons(weapons weapons) {
       weapons.secondary_weapon);
 }
 
-gsl_vector *calculate_display_position(unit *unit, camera *c) {
+gsl_vector *calculate_display_position(unit *unit, camera *c, float interpolation) {
   gsl_vector *pos = gsl_vector_alloc(2);
   gsl_vector_memcpy(pos, unit->vector);
+  //if(unit->state.current == moving)
+  //  gsl_vector_add_constant(pos, interpolation);
   gsl_vector_scale(pos, 1.0f / ZOOM_LEVEL);
   gsl_vector_sub(pos, c->vector);
   return pos;

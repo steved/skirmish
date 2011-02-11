@@ -5,6 +5,7 @@
 #include "main.h"
 #include "player.h"
 #include "romans.h"
+#include "selected.h"
 #include "text.h"
 #include "units.h"
 

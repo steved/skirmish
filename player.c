@@ -63,7 +63,7 @@ void check_for_unit_at(camera *cam, player **players, int player_len, SDL_MouseB
     for(int j = 0; j < pl->num_units; j++) {
       unit *un = pl->units[j];
 
-      gsl_vector *pos = calculate_display_position(un, cam);
+      gsl_vector *pos = calculate_display_position(un, cam, 0);
       double x = gsl_vector_get(pos, 0);
       double y = gsl_vector_get(pos, 1);
       gsl_vector_free(pos);

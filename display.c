@@ -1,5 +1,5 @@
 #include "display.h"
-#include "text.h"
+#include "selected.h"
 #include "units.h"
 
 #include "SDL_gfxPrimitives.h"
@@ -8,8 +8,8 @@ double unit_radius[][2] = {
   {1.5, 3}, {2.5, 2.5}, {2.5, 2.5}
 };
 
-void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color) { 
-  gsl_vector *pos = calculate_display_position(unit, camera);
+void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color, float interpolation) { 
+  gsl_vector *pos = calculate_display_position(unit, camera, interpolation);
   double x = gsl_vector_get(pos, 0);
   double y = gsl_vector_get(pos, 1);
   gsl_vector_free(pos);
