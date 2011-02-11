@@ -77,6 +77,9 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
 }
 
 void game_update(player **players, int player_len, camera *camera) {
+  if(paused)
+    return;
+
   for(int i = 0; i < player_len; i++) {
     for(int j = 0; j < players[i]->num_units; j++) {
       unit *u = players[i]->units[j];
@@ -86,6 +89,9 @@ void game_update(player **players, int player_len, camera *camera) {
 }
 
 void game_handle_event(SDL_Event event, camera *camera) {
+  if(paused)
+    return;
+
   switch(event.type) {
     case SDL_MOUSEBUTTONDOWN:
       handle_mousedown(event.button, camera);

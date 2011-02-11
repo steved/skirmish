@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     poll_for_events(camera, players, 2, current_state);
     loops = 0;
 
-    while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP && !paused) {
+    while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP) {
       current_state->update(players, 2, camera);
       next_game_tick += SKIP_TICKS;
       loops++;
