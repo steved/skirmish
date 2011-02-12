@@ -1,0 +1,21 @@
+2 # number of players
+10 # human / first player
+1 # number of divisions
+0 # division 0
+2 # number of units (type, x, y)
+legionary
+200
+200
+legionary
+200
+250
+01 # ai / second player
+1 # number of divisions
+0 # division 0
+2 # number of units
+legionary
+600
+650
+legionary
+600
+600

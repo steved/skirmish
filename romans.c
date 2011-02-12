@@ -12,8 +12,6 @@ unit *create_legionary_unit() {
 
   unit->weapons.primary_weapon = sword;
 
-  print_unit(unit);
-
   return unit;
 }
 

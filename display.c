@@ -14,7 +14,6 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
   double y = gsl_vector_get(pos, 1);
   gsl_vector_free(pos);
 
-
   double rad_x, rad_y;
   if(ZOOM_LEVEL == 4) {
     rad_x = rad_y = 1;
