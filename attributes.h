@@ -3,8 +3,6 @@
 
 #include <gsl/gsl_vector.h>
 
-struct unit;
-
 typedef struct attributes {
   int strength, speed, stamina;
   int health, armor;
@@ -50,6 +48,7 @@ typedef struct unit {
   state state;
   unit_type type;
   weapons weapons;
+  int division_idx;
 } unit;
 
 // an 'associative' array for each state

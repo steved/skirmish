@@ -22,8 +22,6 @@ unit *create_empty_unit() {
 
   empty_unit->attributes = attrs;
 
-  //print_unit(empty_unit);
-
   return empty_unit;
 }
 
@@ -62,4 +60,9 @@ gsl_vector *calculate_display_position(unit *unit, camera *c, float interpolatio
   gsl_vector_scale(pos, 1.0f / ZOOM_LEVEL);
   gsl_vector_sub(pos, c->vector);
   return pos;
+}
+
+void remove_unit(unit *u) {
+  free(u->vector);
+  free(u);
 }

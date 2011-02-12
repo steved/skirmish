@@ -37,8 +37,11 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
 
   for(int i = 0; i < player_len; i++) {
     player *player = players[i];
-    for(int j = 0; j < player->num_units; j++) {
-      display_unit(buffer, camera, player->units[j], player->color, interpolation);
+    for(int j = 0; j < player->num_divisions; j++) {
+      division *div = player->divisions[j];
+      for(int k = 0; k < div->size; k++) {
+        display_unit(buffer, camera, div->units[k], player->color, interpolation);
+      }
     }
   }
 
@@ -81,9 +84,12 @@ void game_update(player **players, int player_len, camera *camera) {
     return;
 
   for(int i = 0; i < player_len; i++) {
-    for(int j = 0; j < players[i]->num_units; j++) {
-      unit *u = players[i]->units[j];
-      state_functions[u->state.current](u);
+    player *player = players[i];
+    for(int j = 0; j < player->num_divisions; j++) {
+      division *div = player->divisions[j];
+      for(int k = 0; k < div->size; k++) {
+        state_functions[div->units[k]->state.current](div->units[k]);
+      }
     }
   }
 }

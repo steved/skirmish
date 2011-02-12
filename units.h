@@ -10,5 +10,6 @@ void print_unit(unit *);
 void print_attributes(attributes);
 void print_weapons(weapons);
 gsl_vector *calculate_display_position(unit *, camera *, float);
+void remove_unit(unit *);
 
 #endif

@@ -33,20 +33,49 @@ int main(int argc, char *argv[]) {
 
   printf("creating ai player\n");
   players[0] = create_ai_player(1);
-  players[0]->units[0] = create_legionary_unit();
-  players[0]->units[0]->state.current = moving;
-  gsl_vector *v = gsl_vector_alloc(2);
-  gsl_vector_set(v, 0, 600);
-  gsl_vector_set(v, 1, 600);
-  players[0]->units[0]->state.subject.vector = v;
-  place(players[0]->units[0], 250, 250);
 
-  player *human = create_human_player("Steven Davidovitz", 2);
-  human->units[0] = create_legionary_unit();
-  place(human->units[0], 100, 100);
-  select_unit(human->units[0]);
-  human->units[1] = create_legionary_unit();
-  place(human->units[1], 50, 100);
+  division *div = (division *) malloc(sizeof(division));
+  assert(div != NULL);
+
+  div->units = (unit **) malloc(sizeof(unit *) * 2); 
+  div->size = 2;
+  assert(div->units != NULL);
+
+  unit *un;
+  for(int i = 0; i < 2; i++) {
+    un = create_legionary_unit();
+
+    /*
+    if(i == 0) {
+      un->state.current = moving;
+      gsl_vector *v = gsl_vector_alloc(2);
+      gsl_vector_set(v, 0, 600);
+      gsl_vector_set(v, 1, 600);
+      un->state.subject.vector = v;
+    }*/
+
+    un->division_idx = 0;
+    place(un, 600, 600 + (i * 50));
+    div->units[i] = un;
+  }
+  players[0]->divisions[0] = div;
+
+  player *human = create_human_player("Steven Davidovitz", 1);
+
+  div = (division *) malloc(sizeof(division));
+  assert(div != NULL);
+
+  div->units = (unit **) malloc(sizeof(unit *) * 2); 
+  div->size = 2;
+  assert(div->units != NULL);
+
+  for(int i = 0; i < 2; i++) {
+    un = create_legionary_unit();
+    un->division_idx = 0;
+    place(un, 250 + (i * 50), 250);
+    div->units[i] = un;
+  }
+  human->divisions[0] = div;
   players[1] = human;
 
   if(SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO) < 0) {

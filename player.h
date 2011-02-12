@@ -9,8 +9,8 @@
 #include <stdbool.h>
 
 typedef struct division {
-  unit **units;
   int size;
+  unit **units;
 } division;
 
 typedef struct player {
@@ -20,9 +20,6 @@ typedef struct player {
 
   division **divisions;
   int num_divisions;
-
-  unit **units;
-  int num_units;
 } player;
 
 player *create_human_player(const char *, int);
