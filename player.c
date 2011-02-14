@@ -54,41 +54,37 @@ void remove_player(player *player) {
   free(player);
 }
 
-void check_for_unit_at(camera *cam, player **players, int player_len, SDL_MouseButtonEvent button) {
+bool check_for_unit_at(bool modifier, int chk_x, int chk_y, camera *cam, PLAYERS *players) {
   int eps = 3;
-  bool modifier = (SDL_GetModState() & KMOD_CTRL) > 0;
-  if(button.button != 1)
-    return;
 
-  if(!modifier) {
+  if(!modifier)
     unselect_all();
-  }
 
-  for(int i = 0; i < player_len; i++) {
-    player *pl = players[i];
+  for(int i = 0; i < players->num; i++) {
+    player *pl = players->players[i];
     for(int j = 0; j < pl->num_divisions; j++) {
       division *div = pl->divisions[j];
       for(int k = 0; k < div->size; k++) {
         unit *un = div->units[k];
 
-        gsl_vector *pos = calculate_display_position(un, cam, 0);
+        gsl_vector *pos = calculate_unit_display_position(un, cam, 0);
         double x = gsl_vector_get(pos, 0);
         double y = gsl_vector_get(pos, 1);
         gsl_vector_free(pos);
 
-        if((x >= button.x - eps && x <= button.x + eps) && (y >= button.y - eps && y <= button.y + eps)) {
-          if(selected(un) && modifier) {
+        if((x >= chk_x - eps && x <= chk_x + eps) && (y >= chk_y - eps && y <= chk_y + eps)) {
+          bool unit_selected = selected(un);
+          if(unit_selected && modifier) {
             unselect_unit(un);
+          } else if(ZOOM_LEVEL == 3 || ZOOM_LEVEL == 4) {
+            select_division(div);
           } else {
-            if(ZOOM_LEVEL == 3 || ZOOM_LEVEL == 4) {
-              select_division(div);
-            } else {
-              select_unit(un);
-            }
+            select_unit(un);
           }
-          return;
+          return true;
         }
       }
     }
   }
+  return false;
 }

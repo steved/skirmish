@@ -22,9 +22,14 @@ typedef struct player {
   int num_divisions;
 } player;
 
+typedef struct players {
+  int num;
+  player **players;
+} PLAYERS;
+
 player *create_human_player(const char *, int);
 player *create_ai_player(int);
 void remove_player(player *);
-void check_for_unit_at(camera *, player **, int, SDL_MouseButtonEvent);
+bool check_for_unit_at(bool, int, int, camera *, PLAYERS *players);
 
 #endif

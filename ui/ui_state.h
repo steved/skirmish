@@ -7,9 +7,9 @@
 #include "SDL_thread.h"
 
 typedef struct ui_state {
-  void (*render)(SDL_Surface *, camera *, player **, int, float);
-  void (*update)(player **, int, camera *);
-  void (*handle_event)(SDL_Event, camera *);
+  void (*render)(SDL_Surface *, camera *, PLAYERS *, float);
+  void (*update)(camera *, PLAYERS *);
+  void (*handle_event)(SDL_Event, camera *, PLAYERS *);
   void (*prepare)();
   void (*cleanup)();
 } ui_state;

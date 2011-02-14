@@ -1,6 +1,7 @@
 #include "../camera.h"
 #include "../display.h"
 #include "game.h"
+#include "../selected.h"
 #include "../text.h"
 #include "../terrain.h"
 #include "../units.h"
@@ -8,7 +9,7 @@
 #include "SDL_rotozoom.h"
 
 static void update_camera_position(camera *);
-static void handle_mousedown(SDL_MouseButtonEvent, camera *);
+static void handle_mousedown(SDL_MouseButtonEvent, camera *, PLAYERS *);
 static void handle_keypress(int, camera *);
 
 ui_state game_state = { &game_render, &game_update, &game_handle_event, &game_prepare, &game_cleanup };
@@ -22,7 +23,7 @@ int mouse_camera_delta = 2;
 int mouse_camera_epsilon = 10;
 int mouse_x = 0, mouse_y = 0;
 
-void game_render(SDL_Surface *buffer, camera *camera, player **players, int player_len, float interpolation) {
+void game_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float interpolation) {
   int w, h;
 
   SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
@@ -35,8 +36,8 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
   }  
   SDL_BlitSurface(background, &terrain_rect, buffer, NULL);
 
-  for(int i = 0; i < player_len; i++) {
-    player *player = players[i];
+  for(int i = 0; i < players->num; i++) {
+    player *player = players->players[i];
     for(int j = 0; j < player->num_divisions; j++) {
       division *div = player->divisions[j];
       for(int k = 0; k < div->size; k++) {
@@ -79,12 +80,12 @@ void game_render(SDL_Surface *buffer, camera *camera, player **players, int play
   prev_zoom_level = ZOOM_LEVEL;
 }
 
-void game_update(player **players, int player_len, camera *camera) {
+void game_update(camera *camera, PLAYERS *players) {
   if(paused)
     return;
 
-  for(int i = 0; i < player_len; i++) {
-    player *player = players[i];
+  for(int i = 0; i < players->num; i++) {
+    player *player = players->players[i];
     for(int j = 0; j < player->num_divisions; j++) {
       division *div = player->divisions[j];
       for(int k = 0; k < div->size; k++) {
@@ -94,13 +95,13 @@ void game_update(player **players, int player_len, camera *camera) {
   }
 }
 
-void game_handle_event(SDL_Event event, camera *camera) {
+void game_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
   if(paused)
     return;
 
   switch(event.type) {
     case SDL_MOUSEBUTTONDOWN:
-      handle_mousedown(event.button, camera);
+      handle_mousedown(event.button, camera, players);
       break;
     case SDL_MOUSEMOTION:
       mouse_x = event.motion.x;
@@ -143,8 +144,15 @@ static void update_camera_position(camera *camera) {
     move_camera(camera, x, y);
 }
 
-static void handle_mousedown(SDL_MouseButtonEvent button_event, camera *camera) {
+static void handle_mousedown(SDL_MouseButtonEvent button_event, camera *camera, PLAYERS *players) {
+  bool modifier = (SDL_GetModState() & KMOD_CTRL) > 0;
   switch(button_event.button) {
+    case 1:
+      check_for_unit_at(modifier, button_event.x, button_event.y, camera, players);
+      break;
+    case 3:
+      move_selected_units_to(calculate_map_position(button_event.x, button_event.y, camera));
+      break;
     case 4:
       zoom_in(camera);
       break;

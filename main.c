@@ -1,11 +1,8 @@
-#include "attributes.h"
 #include "camera.h"
 #include "display.h"
 #include "events.h"
+#include "file_load.h"
 #include "main.h"
-#include "player.h"
-#include "romans.h"
-#include "selected.h"
 #include "text.h"
 #include "units.h"
 
@@ -16,12 +13,9 @@
 #include <assert.h>
 #include <time.h>
 
-#include "file_load.h"
-
 #define TICKS_PER_SECOND 25
 #define MAX_FRAME_SKIP 5
 const float SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-player *human;
 bool game_running = true;
 
 int main(int argc, char *argv[]) {
@@ -72,18 +66,18 @@ int main(int argc, char *argv[]) {
     SDL_mutexP(current_state_mutex);
     assert(current_state != NULL);
 
-    poll_for_events(camera, players->players, players->num, current_state);
+    poll_for_events(camera, players, current_state);
     loops = 0;
 
     while(SDL_GetTicks() > next_game_tick && loops < MAX_FRAME_SKIP) {
-      current_state->update(players->players, players->num, camera);
+      current_state->update(camera, players);
       next_game_tick += SKIP_TICKS;
       loops++;
     }
 
     SDL_Surface *buffer = SDL_CreateRGBSurface(0, WIDTH, HEIGHT, bpp, 0, 0, 0, 0xff);
     interpolation = (SDL_GetTicks() + SKIP_TICKS - next_game_tick) / SKIP_TICKS;
-    current_state->render(buffer, camera, players->players, players->num, interpolation);
+    current_state->render(buffer, camera, players, interpolation);
 
     SDL_mutexV(current_state_mutex);
     SDL_BlitSurface(buffer, NULL, screen, NULL);

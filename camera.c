@@ -11,7 +11,7 @@ int ZOOM_LEVEL = ZOOM_MAX;
 camera *create_camera() {
   camera *cam = (camera *) malloc(sizeof(camera));
   assert(cam != NULL);
-  cam->vector = gsl_vector_calloc(2);
+  cam->vector = gsl_vector_calloc(3);
   set_camera_position(cam, 0, 0);
   return cam;
 }
@@ -41,6 +41,7 @@ void set_camera_position(camera *camera, int x, int y) {
 
   gsl_vector_set(camera->vector, 0, x);
   gsl_vector_set(camera->vector, 1, y);
+  gsl_vector_set(camera->vector, 2, 0);
 }
 
 void zoom_in(camera *camera) {

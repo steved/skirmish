@@ -3,11 +3,6 @@
 
 #include "player.h"
 
-typedef struct players {
-  int num;
-  player **players;
-} PLAYERS;
-
 PLAYERS *read_file(char *name);
 
 #endif

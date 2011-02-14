@@ -17,5 +17,6 @@ void select_division(division *);
 void unselect_all();
 void unselect_unit(unit *);
 bool selected(unit *);
+void move_selected_units_to(gsl_vector *);
 
 #endif

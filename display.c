@@ -9,7 +9,7 @@ double unit_radius[][2] = {
 };
 
 void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color, float interpolation) { 
-  gsl_vector *pos = calculate_display_position(unit, camera, interpolation);
+  gsl_vector *pos = calculate_unit_display_position(unit, camera, interpolation);
   double x = gsl_vector_get(pos, 0);
   double y = gsl_vector_get(pos, 1);
   gsl_vector_free(pos);

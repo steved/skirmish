@@ -9,7 +9,7 @@ extern bool game_running;
 
 static void handle_keypress(int, camera *);
 
-void poll_for_events(camera *camera, player **players, int player_len, ui_state *current_state) {
+void poll_for_events(camera *camera, PLAYERS *players, ui_state *current_state) {
   while(SDL_PollEvent(&event)) {
     switch(event.type) {
       case SDL_KEYDOWN:
@@ -19,13 +19,11 @@ void poll_for_events(camera *camera, player **players, int player_len, ui_state 
         if(event.button.button == 1 && paused)
           toggle_pause();
 
-        // have to move this out of here and into game.c somehow
-        check_for_unit_at(camera, players, player_len, event.button);
         break;
       case SDL_QUIT:
         game_running = false;
     }
-    current_state->handle_event(event, camera);
+    current_state->handle_event(event, camera, players);
   }
 }
 
