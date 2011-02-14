@@ -46,4 +46,6 @@ Page down / Scrollwheel down - Zoom out
 
 P - Pause
 
-Left mouse click - (Un)Select unit
+Left mouse click - (Un)Select unit / division
+
+Right mouse click - Move selected unit(s)
