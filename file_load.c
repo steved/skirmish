@@ -74,9 +74,10 @@ static int read_int(FILE *fp) {
   int read_in;
 
   // if there isn't a comment, then
-  // make comment_index the idx of the \n
-  if(comment_index >= strlen(line))
-    comment_index--;
+  // make the last char the idx of the \0
+  int len = strlen(line);
+  if(comment_index >= len)
+    comment_index = len - 1;
 
   strncpy(copy, line, comment_index);
   copy[comment_index] = '\0';
@@ -85,7 +86,6 @@ static int read_int(FILE *fp) {
   if(errno != 0 || *p != '\0' || p == copy) {
     fprintf(stderr, "there was an error reading an int in\n");
     exit(1);
-    // error ?
   }
 
   return read_in;
