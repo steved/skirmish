@@ -51,8 +51,4 @@ typedef struct unit {
   int division_idx;
 } unit;
 
-// an 'associative' array for each state
-// that defines which method is called for the unit
-extern void (*state_functions[5])(unit *);
-
 #endif

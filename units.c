@@ -91,3 +91,38 @@ void change_unit_state(unit *u, state_description desc, void *subj) {
   u->state.current = desc;
   u->state.subject.vector = (gsl_vector *) subj;
 }
+
+/*
+ * should be bounding circle check?
+ */
+bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, unit *unit_except) {
+  for(int i = 0; i < players->num; i++) {
+    player *pl = players->players[i];
+    for(int j = 0; j < pl->num_divisions; j++) {
+      division *div = pl->divisions[j];
+      for(int k = 0; k < div->size; k++) {
+        unit *un = div->units[k];
+
+        if(un == unit_except)
+          continue;
+
+        if(close(location, un->vector))
+          return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool close(gsl_vector *subj, gsl_vector *dest) {
+  gsl_vector *temp = gsl_vector_alloc(3);
+  gsl_vector_memcpy(temp, subj);
+  gsl_vector_sub(temp, dest);
+  gsl_vector_set(temp, 2, 0);
+  double max, min;
+  gsl_vector_minmax(temp, &min, &max);
+  gsl_vector_free(temp);
+  printf("%i|%i\n", abs(max), abs(min));
+
+  return abs(max) <= 3 && abs(min) <= 3;
+}

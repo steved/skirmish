@@ -3,6 +3,10 @@
 #include "SDL_gfxPrimitives.h"
 #include <assert.h>
 
+#define WATER 15
+#define FOREST 140
+#define MOUNTAINS 150
+
 static float terrain[MAP_SIZE + 1][MAP_SIZE + 1];
 static float diamond(float, float, float, float, float);
 static float square(float, float, float);
@@ -85,15 +89,13 @@ SDL_Surface *print_terrain() {
       uint8_t green = 0;
       uint8_t blue = 0;
 
-      int water = 15;
-      int forest = 140;
-      int mountains = 150;
 
-      if(c < water) {
+
+      if(c < WATER) {
         blue = 92 + c;
-      } else if (c >= water && c < forest) {
+      } else if (c >= WATER && c < FOREST) {
         green = (255 - c) / 1.3;
-      } else if (c >= forest && c < mountains) {
+      } else if (c >= FOREST && c < MOUNTAINS) {
         red = blue = c / 1.2;
         green = c;
       } else {
@@ -177,4 +179,9 @@ static float cap(float num) {
 
 float height_at(int x, int y) {
   return terrain[x][y];
+}
+
+bool allowed(gsl_vector *vector) {
+  float height = 255 * height_at(gsl_vector_get(vector, 0), gsl_vector_get(vector, 1));
+  return height >= WATER; 
 }

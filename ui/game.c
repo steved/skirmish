@@ -5,6 +5,7 @@
 #include "../text.h"
 #include "../terrain.h"
 #include "../units.h"
+#include "../unit_state_functions.h"
 
 #include "SDL_rotozoom.h"
 
@@ -89,7 +90,7 @@ void game_update(camera *camera, PLAYERS *players) {
     for(int j = 0; j < player->num_divisions; j++) {
       division *div = player->divisions[j];
       for(int k = 0; k < div->size; k++) {
-        state_functions[div->units[k]->state.current](div->units[k]);
+        state_functions[div->units[k]->state.current](players, camera, div->units[k]);
       }
     }
   }
