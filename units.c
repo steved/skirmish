@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "collision.h"
 #include "terrain.h"
 #include "units.h"
 
@@ -92,6 +93,9 @@ void change_unit_state(unit *u, state_description desc, void *subj) {
   u->state.subject.vector = (gsl_vector *) subj;
 }
 
+// defined in attributes.h
+double unit_radius[] = {4, 3, 3};
+
 /*
  * should be bounding circle check?
  */
@@ -106,23 +110,10 @@ bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, un
         if(un == unit_except)
           continue;
 
-        if(close(location, un->vector))
+        if(bounding_circle_collision(location, unit_radius[unit_except->type], un->vector, unit_radius[un->type]))
           return true;
       }
     }
   }
   return false;
-}
-
-bool close(gsl_vector *subj, gsl_vector *dest) {
-  gsl_vector *temp = gsl_vector_alloc(3);
-  gsl_vector_memcpy(temp, subj);
-  gsl_vector_sub(temp, dest);
-  gsl_vector_set(temp, 2, 0);
-  double max, min;
-  gsl_vector_minmax(temp, &min, &max);
-  gsl_vector_free(temp);
-  printf("%i|%i\n", abs(max), abs(min));
-
-  return abs(max) <= 3 && abs(min) <= 3;
 }

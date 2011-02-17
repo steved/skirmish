@@ -1,3 +1,4 @@
+#include "collision.h"
 #include "player.h"
 #include "terrain.h"
 #include "units.h"
@@ -46,15 +47,14 @@ void do_move(PLAYERS *players, camera *camera, unit *u) {
   gsl_vector_add(go_to, u->vector);
 
   bool unit_at = check_for_unit_near(go_to, camera, players, u);
-  printf("unit near: %i\n", unit_at);
-
-  if(allowed(go_to) && !unit_at) {
+  if(allowed_on_terrain(go_to) && !unit_at) {
+    // find a way around?
     gsl_vector_memcpy(u->vector, go_to);
   }
 
   gsl_vector_free(go_to);
 
-  if(close(u->vector, u->state.subject.vector)) {
+  if(bounding_circle_collision(u->vector, unit_radius[u->type], u->state.subject.vector, 0.5)) {
     u->state.current = waiting;
     u->state.subject.vector = NULL;
     printf("switching to wait state\n");

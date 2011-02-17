@@ -4,7 +4,7 @@
 
 #include "SDL_gfxPrimitives.h"
 
-double unit_radius[][2] = {
+double display_unit_radius[][2] = {
   {1.5, 3}, {2.5, 2.5}, {2.5, 2.5}
 };
 
@@ -24,12 +24,12 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
     if(ZOOM_LEVEL == 1 || ZOOM_LEVEL == 2)
       mult *= (3 - ZOOM_LEVEL) * 2;
 
-    rad_x = unit_radius[unit->type][0] * mult;
+    rad_x = display_unit_radius[unit->type][0] * mult;
 
     // special case for infantry since they're triangles
     if(unit->type == infantry)
       mult /= 2;
-    rad_y = unit_radius[unit->type][1] * mult;
+    rad_y = display_unit_radius[unit->type][1] * mult;
   }
 
   if(x < -rad_x || y < -rad_y || x > WIDTH + rad_x || y > WIDTH + rad_y)

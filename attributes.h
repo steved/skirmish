@@ -28,7 +28,10 @@ typedef enum unit_type {
 
 // an 'associative' array for each unit type
 // that defines the radius of each unit in the x, y range
-extern double unit_radius[][2];
+// for display purposes
+extern double display_unit_radius[][2];
+// same as above but for bounding circle collisions
+extern double unit_radius[];
 
 typedef enum unit_weapon {
   none, bow, sword, spear
