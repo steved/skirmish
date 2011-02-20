@@ -31,6 +31,7 @@ player *create_human_player(const char *name, int divisions) {
   assert(human != NULL);
   human->name = name;
   human->color = 0xff0000ff;
+  human->human = true;
 
   human->num_divisions = divisions;
   human->divisions = (division **) malloc(sizeof(division *) * human->num_divisions);

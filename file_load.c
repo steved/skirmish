@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 static int read_int(FILE *);
+static char *read_string(FILE *);
 
 PLAYERS *read_file(char *name) {
   FILE *fp = fopen(name, "r");
@@ -21,22 +22,41 @@ PLAYERS *read_file(char *name) {
   players->num = read_int(fp);
   players->players = (player **) malloc(sizeof(player *) * players->num);
   assert(players != NULL);
+  bool human_player_exists = false;
 
   printf("found %d players\n", players->num);
   for(int i = 0; i < players->num; i++) {
 
     // human? and player idx
-    fgets(line, 255, fp);
+    int index = read_int(fp);
+    assert(i == index);
 
-    player *p = create_ai_player(read_int(fp));
+    bool human = read_int(fp);
+
+    // load the number of divisions and create the player
+    player *p;
+    if(human) {
+      if(!human_player_exists) {
+        human_player_exists = true;
+      } else {
+        printf("A human player already exists. WWJD?\n");
+      }
+
+      // read in the name
+      char *name = read_string(fp);
+      p = create_human_player(name, read_int(fp));
+    } else {
+      p = create_ai_player(read_int(fp));
+    }
+
     printf("player %d: found %d divisions\n", i, p->num_divisions);
 
     for(int j = 0; j < p->num_divisions; j++) {
       division *div = malloc(sizeof(division));
       assert(div != NULL);
 
-      // division num
-      fgets(line, 255, fp);
+      // read in division num
+      assert(j == read_int(fp));
 
       div->size = read_int(fp);
       printf("player %d division %d: found %d units\n", i, j, div->size);
@@ -45,14 +65,17 @@ PLAYERS *read_file(char *name) {
       assert(div->units != NULL);
 
       unit *u;
-      int x, y;
+      //int x, y;
       for(int k = 0; k < div->size; k++) {
         fgets(line, 255, fp);
         u = create_legionary_unit();
-        x = read_int(fp);
-        y = read_int(fp);
-        printf("placing unit @ (%d, %d)\n", x, y);
-        place(u, x, y);
+/*        if(!p->human) {
+          x = read_int(fp);
+          y = read_int(fp);
+          printf("placing unit @ (%d, %d)\n", x, y);
+          place(u, x, y);
+        } 
+*/
         div->units[k] = u;
       }
       p->divisions[j] = div;
@@ -89,4 +112,24 @@ static int read_int(FILE *fp) {
   }
 
   return read_in;
+}
+
+static char *read_string(FILE *fp) {
+  char line[255];
+  fgets(line, 255, fp);
+
+  char *copy = malloc(255);
+
+  size_t comment_index = strcspn(line, " #");
+
+  // if there isn't a comment, then
+  // make the last char the idx of the \0
+  int len = strlen(line);
+  if(comment_index >= len)
+    comment_index = len - 1;
+
+  strncpy(copy, line, comment_index);
+  copy[comment_index] = '\0';
+
+  return copy;
 }

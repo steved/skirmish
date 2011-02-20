@@ -3,21 +3,17 @@
 #include "game.h"
 #include "../selected.h"
 #include "../text.h"
-#include "../terrain.h"
 #include "../units.h"
 #include "../unit_state_functions.h"
 
 #include "SDL_rotozoom.h"
 
+static void update_background();
 static void update_camera_position(camera *);
 static void handle_mousedown(SDL_MouseButtonEvent, camera *, PLAYERS *);
 static void handle_keypress(int, camera *);
 
 ui_state game_state = { &game_render, &game_update, &game_handle_event, &game_prepare, &game_cleanup };
-
-int prev_zoom_level = -1;
-SDL_Surface *full_terrain = NULL;
-SDL_Surface *background = NULL;
 
 int arrows_camera_delta = 10;
 int mouse_camera_delta = 2;
@@ -28,13 +24,6 @@ void game_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float in
   int w, h;
 
   SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
-  // if the zoom level changes, free the
-  // current background surface if isn't the base and then re-shrink the surface
-  if(prev_zoom_level != ZOOM_LEVEL) {
-    if(background != full_terrain)
-      SDL_FreeSurface(background);
-    background = shrinkSurface(full_terrain, ZOOM_LEVEL, ZOOM_LEVEL);
-  }  
   SDL_BlitSurface(background, &terrain_rect, buffer, NULL);
 
   for(int i = 0; i < players->num; i++) {
@@ -78,7 +67,6 @@ void game_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float in
     update_camera_position(camera);
   }
 
-  prev_zoom_level = ZOOM_LEVEL;
 }
 
 void game_update(camera *camera, PLAYERS *players) {
@@ -113,14 +101,7 @@ void game_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
   }
 }
 
-void game_prepare() {
-  // background hasn't been generated; do it
-  if(full_terrain == NULL) {
-    generate_fractal_terrain();
-    full_terrain = print_terrain();
-    background = shrinkSurface(full_terrain, ZOOM_LEVEL, ZOOM_LEVEL);
-  }
-}
+void game_prepare() {}
 
 void game_cleanup() {
   SDL_FreeSurface(background);
@@ -178,8 +159,22 @@ static void handle_keypress(int key, camera *camera) {
       break;
     case SDLK_PAGEUP:
       zoom_in(camera);
+      update_background();
       break;
     case SDLK_PAGEDOWN:
       zoom_out(camera);
+      update_background();
   }
+}
+
+static void update_background() {
+  // if the zoom level changes, free the
+  // current background surface if isn't the base and then re-shrink the surface
+  if(background != full_terrain)
+    SDL_FreeSurface(background);
+
+  if(ZOOM_LEVEL == 1)
+    background = full_terrain;
+  else
+    background = shrinkSurface(full_terrain, ZOOM_LEVEL, ZOOM_LEVEL);
 }

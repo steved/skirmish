@@ -8,7 +8,9 @@ void game_update(camera *, PLAYERS *);
 void game_handle_event(SDL_Event, camera *, PLAYERS *);
 void game_prepare();
 void game_cleanup();
+
 extern ui_state game_state;
 extern bool paused;
+extern SDL_Surface *full_terrain, *background;
 
 #endif

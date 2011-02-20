@@ -15,8 +15,8 @@ typedef struct division {
 
 typedef struct player {
   const char *name;
+  bool human;
   uint32_t color;
-  //bool human;
 
   division **divisions;
   int num_divisions;
