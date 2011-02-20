@@ -1,3 +1,4 @@
+#include "../collision.h"
 #include "../display.h"
 #include "game.h"
 #include "setup.h"
@@ -44,7 +45,12 @@ void setup_update(camera *camera, PLAYERS *players) {
       for(int k = 0; k < div->size; k++) {
         u = div->units[k];
         if(u->state.current == moving) {
-          place_at_vector(u, u->state.subject.vector);
+          if(allowed_on_terrain(u->state.subject.vector) &&
+              !check_for_unit_near(u->state.subject.vector, camera, players, u)) {
+            place_at_vector(u, u->state.subject.vector);
+          } else {
+            gsl_vector_free(u->state.subject.vector);
+          }
           u->state.current = waiting;
         }
       }

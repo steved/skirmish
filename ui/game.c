@@ -104,7 +104,8 @@ void game_prepare() {
 
 void game_cleanup() {
   SDL_FreeSurface(title);
-  SDL_FreeSurface(background);
+  if(background != full_terrain)
+    SDL_FreeSurface(background);
   SDL_FreeSurface(full_terrain);
 }
 
