@@ -2,6 +2,7 @@
 #include "game.h"
 #include "setup.h"
 #include "../terrain.h"
+#include "../text.h"
 #include "../units.h"
 
 #include "SDL_rotozoom.h"
@@ -12,23 +13,19 @@ static void setup_players(PLAYERS *);
 
 ui_state setup_state = { &setup_render, &setup_update, &setup_handle_event, &setup_prepare, &setup_cleanup };
 SDL_Surface *full_terrain = NULL;
-SDL_Surface *background;
-
-//static int prev_zoom_level = -1;
+SDL_Surface *background, *title;
 
 void setup_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float interpolation) {
   game_render(buffer, camera, players, interpolation);
-  /*
-  SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
-  // if the zoom level changes, free the
-  // current background surface if isn't the base and then re-shrink the surface
-  if(prev_zoom_level != ZOOM_LEVEL) {
-    if(background != full_terrain)
-      SDL_FreeSurface(background);
-    background = shrinkSurface(full_terrain, ZOOM_LEVEL, ZOOM_LEVEL);
-  }
-  prev_zoom_level = ZOOM_LEVEL;
-  SDL_BlitSurface(background, &terrain_rect, buffer, NULL);*/
+
+  // display the zoom level in the bottom left
+  char *instructions = "SETUP: Press ENTER to leave";
+  int w,h;
+  TTF_SizeUTF8(font, instructions, &w, &h);
+  SDL_Surface *instr_surf = draw_text(instructions);
+  SDL_Rect instr_rect = { WIDTH - w, HEIGHT - h, w, h };
+  SDL_BlitSurface(instr_surf, NULL, buffer, &instr_rect);
+  SDL_FreeSurface(instr_surf);
 }
 
 void setup_update(camera *camera, PLAYERS *players) {
@@ -63,6 +60,7 @@ void setup_prepare() {
     background = shrinkSurface(full_terrain, ZOOM_LEVEL, ZOOM_LEVEL);
   }
 
+  title = draw_text("Skirmish");
 }
 
 void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {

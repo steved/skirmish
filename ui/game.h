@@ -11,6 +11,6 @@ void game_cleanup();
 
 extern ui_state game_state;
 extern bool paused;
-extern SDL_Surface *full_terrain, *background;
+extern SDL_Surface *full_terrain, *background, *title;
 
 #endif

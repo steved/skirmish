@@ -37,9 +37,7 @@ void game_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float in
   }
 
   // display the title in the upper left 
-  SDL_Surface *title = draw_text("Skirmish");
   SDL_BlitSurface(title, NULL, buffer, NULL);
-  SDL_FreeSurface(title);
 
   // display the zoom level in the bottom left
   char zoom[7];
@@ -101,9 +99,11 @@ void game_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
   }
 }
 
-void game_prepare() {}
+void game_prepare() {
+}
 
 void game_cleanup() {
+  SDL_FreeSurface(title);
   SDL_FreeSurface(background);
   SDL_FreeSurface(full_terrain);
 }
