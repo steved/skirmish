@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define MAX_PLAYERS 4
+
 typedef struct division {
   int size;
   unit **units;
@@ -25,6 +27,7 @@ typedef struct player {
 typedef struct players {
   int num;
   player **players;
+  bool setup; // have the players + units been set-up?
 } PLAYERS;
 
 player *create_human_player(const char *, int);

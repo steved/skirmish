@@ -67,13 +67,17 @@ bool units_selected() {
 }
 
 void move_selected_units_to(gsl_vector *vector) {
+  gsl_vector *dest;
   selected_node *node = selected_head;
   unit *u;
   while(node) {
     u = node->unit;
     // depending on the state? do something?
     // or call the current states move method?
-    change_unit_state(u, moving, vector); 
+    dest = gsl_vector_alloc(3);
+    gsl_vector_memcpy(dest, vector);
+    change_unit_state(u, moving, dest); 
     node = node->next;
   }
+  gsl_vector_free(vector);
 }

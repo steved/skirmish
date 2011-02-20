@@ -20,8 +20,11 @@ PLAYERS *read_file(char *name) {
 
   char line[255];
   players->num = read_int(fp);
+  // for now make sure the max number of players
+  assert(players->num <= MAX_PLAYERS);
   players->players = (player **) malloc(sizeof(player *) * players->num);
-  assert(players != NULL);
+  players->setup = false;
+  assert(players->players != NULL);
   bool human_player_exists = false;
 
   printf("found %d players\n", players->num);

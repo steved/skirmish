@@ -52,6 +52,6 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
 
   if(selected(unit)) {
    // this unit is selected!
-   circleColor(surface, x, y, rad_x + 5, (0xffffff00 - color) | 0x000000ff);
+   circleColor(surface, x, y, unit_radius[unit->type], (0xffffff00 - color) | 0x000000ff);
   }
 }

@@ -33,6 +33,11 @@ void place(unit *unit, int x, int y) {
   gsl_vector_set(unit->vector, 2, height_at(x, y));
 }
 
+void place_at_vector(unit *unit, gsl_vector *v) {
+  gsl_vector_memcpy(unit->vector, v);
+  gsl_vector_free(v);
+}
+
 void print_unit(unit *unit) {
   printf("type %d, cur_state %d, vector (%f, %f)\n", 
       unit->type, unit->state.current, 

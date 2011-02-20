@@ -137,9 +137,11 @@ static void handle_mousedown(SDL_MouseButtonEvent button_event, camera *camera, 
       break;
     case 4:
       zoom_in(camera);
+      update_background();
       break;
     case 5:
       zoom_out(camera);
+      update_background();
   }
 }
 
