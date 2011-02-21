@@ -20,5 +20,6 @@ gsl_vector *calculate_map_position(double, double, camera *);
 void remove_unit(unit *);
 void change_unit_state(unit *, state_description, void *);
 bool check_for_unit_near(gsl_vector *, camera *, PLAYERS *, unit *);
+bool move_unit_towards(unit *, gsl_vector *, camera *, PLAYERS *);
 
 #endif

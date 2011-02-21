@@ -1,13 +1,15 @@
 #include "collision.h"
 #include "terrain.h"
 
+#include <gsl/gsl_blas.h>
+
 bool bounding_circle_collision(gsl_vector *a, double radius_a, gsl_vector *b, double radius_b) {
   gsl_vector *temp = gsl_vector_calloc(3);
   gsl_vector_memcpy(temp, a);
   gsl_vector_sub(temp, b);
   gsl_vector_mul(temp, temp);
 
-  double sum = gsl_vector_get(temp, 0) + gsl_vector_get(temp, 1); 
+  double sum = gsl_blas_dasum(temp);
   gsl_vector_free(temp);
 
   double radius_sum_sq = radius_a + radius_b;

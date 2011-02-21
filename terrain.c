@@ -176,3 +176,7 @@ static float cap(float num) {
 float height_at(int x, int y) {
   return terrain[x][y];
 }
+
+float height_at_vector(gsl_vector *v) {
+  return height_at(gsl_vector_get(v, 0), gsl_vector_get(v, 1));
+}

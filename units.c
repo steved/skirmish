@@ -4,7 +4,10 @@
 #include "units.h"
 
 #include <assert.h>
+#include <gsl/gsl_blas.h>
 #include <gsl/gsl_vector.h>
+
+static void delta_height_scale(gsl_vector *, gsl_vector *);
 
 unit *create_empty_unit() {
   unit *empty_unit = (unit *) malloc(sizeof(unit));
@@ -61,11 +64,10 @@ void print_weapons(weapons weapons) {
 }
 
 gsl_vector *calculate_unit_display_position(unit *unit, camera *c, float interpolation) {
-  return calculate_display_position(gsl_vector_get(unit->vector, 0), gsl_vector_get(unit->vector, 1),
-      c);
-
+  gsl_vector *pos = calculate_display_position(gsl_vector_get(unit->vector, 0), gsl_vector_get(unit->vector, 1), c);
   //if(unit->state.current == moving)
-  //  gsl_vector_add_constant(pos, interpolation);
+  //  gsl_vector_scale(pos, 1 + (interpolation / 100));
+  return pos;
 }
 
 gsl_vector *calculate_display_position(double x, double y, camera *c) {
@@ -101,9 +103,6 @@ void change_unit_state(unit *u, state_description desc, void *subj) {
 // defined in attributes.h
 double unit_radius[] = {4, 3, 3};
 
-/*
- * should be bounding circle check?
- */
 bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, unit *unit_except) {
   for(int i = 0; i < players->num; i++) {
     player *pl = players->players[i];
@@ -121,4 +120,56 @@ bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, un
     }
   }
   return false;
+}
+
+// returns true if @ destination, otherwise false
+bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *players) {
+  // set the z coordinate because it gets set incorrectly when
+  // placing the unit in the beginning 
+  gsl_vector_set(subj->vector, 2, height_at(gsl_vector_get(subj->vector, 0), gsl_vector_get(subj->vector, 1)));
+
+  gsl_vector *go_to = gsl_vector_alloc(3);
+  gsl_vector_memcpy(go_to, dest);
+  gsl_vector_sub(go_to, subj->vector);
+
+  double norm = gsl_blas_dnrm2(go_to);
+  printf("(%f, %f) => ", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
+  gsl_vector_scale(go_to, 1 / norm);
+  printf("(%f, %f) => ", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
+
+  delta_height_scale(go_to, subj->vector);
+  gsl_vector_add(go_to, subj->vector);
+
+  bool unit_at = check_for_unit_near(go_to, camera, players, subj);
+  if(allowed_on_terrain(go_to) && !unit_at) {
+    // find a way around?
+    gsl_vector_memcpy(subj->vector, go_to);
+  }
+
+  printf("(%f, %f)\n", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
+  gsl_vector_free(go_to);
+
+  return bounding_circle_collision(subj->vector, unit_radius[subj->type], dest, 0.5);
+}
+
+void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
+  gsl_vector *delta_height = gsl_vector_alloc(3);
+  gsl_vector_memcpy(delta_height, new_location);
+  gsl_vector_add(delta_height, location);
+
+  double delta = height_at_vector(delta_height) - gsl_vector_get(location, 2);
+  gsl_vector_set(new_location, 2, delta);
+
+  float sign; 
+  delta *= 100;
+  if(delta < -0.1)
+    sign = 1;
+  else if(delta > 0.1)
+    sign = -1;
+  else
+    sign = 0;
+
+  // TODO scale by how high delta height is
+  gsl_vector_scale(new_location, 1 + (sign * 0.3)); 
+  gsl_vector_set(new_location, 2, height_at_vector(delta_height) - gsl_vector_get(location, 2));
 }
