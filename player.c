@@ -18,6 +18,7 @@ player *create_ai_player(int divisions) {
   assert(ai != NULL);
   ai->name = AI_NAMES[rand() % (sizeof(AI_NAMES) / sizeof(AI_NAMES[0]))];
   ai->color = rand() | 0x00ff00ff;
+  ai->human = false;
   
   ai->num_divisions = divisions;
   ai->divisions = (division **) malloc(sizeof(division *) * ai->num_divisions);
@@ -56,10 +57,33 @@ void remove_player(player *player) {
 }
 
 bool check_for_unit_at(bool modifier, int chk_x, int chk_y, camera *cam, PLAYERS *players) {
-  int eps = 3;
-
   if(!modifier)
     unselect_all();
+
+  gsl_vector *v = calculate_map_position(chk_x, chk_y, cam);
+  unit *nearest_unit = get_unit_near(v, cam, players);
+  gsl_vector_free(v);
+
+  if(nearest_unit == NULL) {
+    return false;
+  }
+
+  bool unit_selected = selected(nearest_unit);
+  if(unit_selected && modifier) {
+    unselect_unit(nearest_unit);
+  } else if(ZOOM_LEVEL == 3 || ZOOM_LEVEL == 4) {
+    select_division(nearest_unit->division);
+  } else {
+    select_unit(nearest_unit);
+  }
+
+  return true;
+}
+
+unit *get_unit_near(gsl_vector *v, camera *camera, PLAYERS *players) {
+  int eps = 3 * ZOOM_LEVEL;
+
+  gsl_vector *diff = gsl_vector_calloc(3);
 
   for(int i = 0; i < players->num; i++) {
     player *pl = players->players[i];
@@ -68,24 +92,20 @@ bool check_for_unit_at(bool modifier, int chk_x, int chk_y, camera *cam, PLAYERS
       for(int k = 0; k < div->size; k++) {
         unit *un = div->units[k];
 
-        gsl_vector *pos = calculate_unit_display_position(un, cam, 0);
-        double x = gsl_vector_get(pos, 0);
-        double y = gsl_vector_get(pos, 1);
-        gsl_vector_free(pos);
+        gsl_vector_memcpy(diff, v);
+        gsl_vector_sub(diff, un->vector);
 
-        if((x >= chk_x - eps && x <= chk_x + eps) && (y >= chk_y - eps && y <= chk_y + eps)) {
-          bool unit_selected = selected(un);
-          if(unit_selected && modifier) {
-            unselect_unit(un);
-          } else if(ZOOM_LEVEL == 3 || ZOOM_LEVEL == 4) {
-            select_division(div);
-          } else {
-            select_unit(un);
-          }
-          return true;
+        double min, max;
+        gsl_vector_minmax(diff, &min, &max);
+
+        if(min >= -eps && max <= eps) {
+          gsl_vector_free(diff);
+          return un;
         }
       }
     }
   }
-  return false;
+
+  gsl_vector_free(diff);
+  return NULL;
 }

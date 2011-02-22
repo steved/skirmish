@@ -51,7 +51,7 @@ typedef struct unit {
   state state;
   unit_type type;
   weapons weapons;
-  int division_idx;
+  struct division *division;
 } unit;
 
 #endif

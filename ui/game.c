@@ -129,12 +129,15 @@ static void update_camera_position(camera *camera) {
 
 static void handle_mousedown(SDL_MouseButtonEvent button_event, camera *camera, PLAYERS *players) {
   bool modifier = (SDL_GetModState() & KMOD_CTRL) > 0;
+  gsl_vector *dest;
   switch(button_event.button) {
     case 1:
       check_for_unit_at(modifier, button_event.x, button_event.y, camera, players);
       break;
     case 3:
-      move_selected_units_to(calculate_map_position(button_event.x, button_event.y, camera));
+      dest = calculate_map_position(button_event.x, button_event.y, camera);
+      move_selected_units_to(dest);
+      gsl_vector_free(dest);
       break;
     case 4:
       zoom_in(camera);

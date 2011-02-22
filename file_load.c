@@ -61,17 +61,14 @@ PLAYERS *read_file(char *name) {
       assert(div->units != NULL);
 
       unit *u;
+      char *unit_type;
       //int x, y;
       for(int k = 0; k < div->size; k++) {
-        free(read_string(fp));
+        unit_type = read_string(fp);
+        free(unit_type);
+
         u = create_legionary_unit();
-/*        if(!p->human) {
-          x = read_int(fp);
-          y = read_int(fp);
-          printf("placing unit @ (%d, %d)\n", x, y);
-          place(u, x, y);
-        } 
-*/
+        u->division = div;
         div->units[k] = u;
       }
       p->divisions[j] = div;

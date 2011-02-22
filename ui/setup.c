@@ -11,10 +11,14 @@
 #include <assert.h>
 
 static void setup_players(PLAYERS *);
+static void advance_unit_position(int, int *, int *, int);
 
 ui_state setup_state = { &setup_render, &setup_update, &setup_handle_event, &setup_prepare, &setup_cleanup };
 SDL_Surface *full_terrain = NULL;
 SDL_Surface *background, *title;
+
+// must have at least one human player, so can have max MAX_PLAYERS - 1 ai players
+static int quarter_map_size, total_area_per_player, ai_positions[MAX_PLAYERS - 1][2];
 
 void setup_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float interpolation) {
   game_render(buffer, camera, players, interpolation);
@@ -92,19 +96,26 @@ void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
 void setup_cleanup() {}
 
 void setup_players(PLAYERS *players) {
+  printf("setting up AI players\n");
+
   player *player;
   division *div;
   unit *u;
 
-  int quarter_map_size = HALF_MAP_SIZE / 2;
-  int total_area_per_player = HALF_MAP_SIZE * quarter_map_size;
-
   int area;
 
-  int ai_positions[][2] = {
-    //{ HALF_MAP_SIZE, quarter_map_size }, { quarter_map_size, HALF_MAP_SIZE }, { HALF_MAP_SIZE + quarter_map_size, HALF_MAP_SIZE } 
-    { quarter_map_size, quarter_map_size }, { quarter_map_size, quarter_map_size }, { HALF_MAP_SIZE + quarter_map_size, quarter_map_size } 
-  };
+  quarter_map_size = HALF_MAP_SIZE / 2;
+  total_area_per_player = HALF_MAP_SIZE * quarter_map_size;
+
+  ai_positions[0][0] = quarter_map_size;
+  ai_positions[0][1] = quarter_map_size;
+  
+  ai_positions[1][0] = quarter_map_size;
+  ai_positions[1][1] = quarter_map_size;
+  
+  ai_positions[2][0] = HALF_MAP_SIZE + quarter_map_size;
+  ai_positions[2][1] = quarter_map_size;
+
   // top = 0; left = 1; right = 2
   int pos_index = -1;
   int x, y, rad;
@@ -113,8 +124,7 @@ void setup_players(PLAYERS *players) {
     player = players->players[i];
 
     if(player->human) {
-      x = quarter_map_size;
-      y = HALF_MAP_SIZE + quarter_map_size;
+      continue;
     } else {
       x = ai_positions[++pos_index][0];
       y = ai_positions[pos_index][1];
@@ -125,27 +135,37 @@ void setup_players(PLAYERS *players) {
       div = player->divisions[j];
       for(int k = 0; k < div->size; k++) {
         u = div->units[k];
-        place(u, x, y);
         rad = unit_radius[u->type] * 2;
+        place(u, x, y);
         area += rad * rad;
 
-        if(pos_index == 0 || player->human) {
-          x += rad; 
-          if(x > HALF_MAP_SIZE + quarter_map_size) {
-            x = ai_positions[pos_index][0];
-            y += (player->human ? 1 : -1) * rad;
-          }
-        } else {
-          y += rad;
-          if(y > HALF_MAP_SIZE + quarter_map_size) {
-            y = ai_positions[pos_index][1];
-            x += (pos_index == 1 ? -1 : 1) * rad;
-          }
+        while(!allowed_on_terrain(u->vector)) {
+          advance_unit_position(pos_index, &x, &y, rad);
+          place(u, x, y);
+          area += rad * rad;
         }
+
+        advance_unit_position(pos_index, &x, &y, rad);
       }
     }
 
     assert(area <= total_area_per_player);
   }
   // place the armies
+}
+
+static void advance_unit_position(int pos_index, int *x, int *y, int rad) {
+  if(pos_index == 0) {
+    *x += rad; 
+    if(*x > HALF_MAP_SIZE + quarter_map_size) {
+      *x = ai_positions[pos_index][0];
+      *y -= rad;
+    }
+  } else {
+    *y += rad;
+    if(*y > HALF_MAP_SIZE + quarter_map_size) {
+      *y = ai_positions[pos_index][1];
+      *x += (pos_index == 1 ? -1 : 1) * rad;
+    }
+  }
 }

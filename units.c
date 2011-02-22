@@ -96,8 +96,11 @@ void remove_unit(unit *u) {
 }
 
 void change_unit_state(unit *u, state_description desc, void *subj) {
+  if(u->state.current == waiting)
+    u->state.subject.vector = gsl_vector_alloc(3);
+
   u->state.current = desc;
-  u->state.subject.vector = (gsl_vector *) subj;
+  gsl_vector_memcpy(u->state.subject.vector, subj);
 }
 
 // defined in attributes.h
