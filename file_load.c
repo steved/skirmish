@@ -18,14 +18,13 @@ PLAYERS *read_file(char *name) {
   PLAYERS *players = (PLAYERS *) malloc(sizeof(PLAYERS));
   assert(players != NULL);
 
-  char line[255];
   players->num = read_int(fp);
   // for now make sure the max number of players
   assert(players->num <= MAX_PLAYERS);
+
   players->players = (player **) malloc(sizeof(player *) * players->num);
   players->setup = false;
   assert(players->players != NULL);
-  bool human_player_exists = false;
 
   printf("found %d players\n", players->num);
   for(int i = 0; i < players->num; i++) {
@@ -39,12 +38,6 @@ PLAYERS *read_file(char *name) {
     // load the number of divisions and create the player
     player *p;
     if(human) {
-      if(!human_player_exists) {
-        human_player_exists = true;
-      } else {
-        printf("A human player already exists. WWJD?\n");
-      }
-
       // read in the name
       char *name = read_string(fp);
       p = create_human_player(name, read_int(fp));
@@ -70,7 +63,7 @@ PLAYERS *read_file(char *name) {
       unit *u;
       //int x, y;
       for(int k = 0; k < div->size; k++) {
-        fgets(line, 255, fp);
+        free(read_string(fp));
         u = create_legionary_unit();
 /*        if(!p->human) {
           x = read_int(fp);
