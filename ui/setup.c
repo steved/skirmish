@@ -1,10 +1,12 @@
-#include "../collision.h"
-#include "../display.h"
 #include "game.h"
 #include "setup.h"
-#include "../terrain.h"
-#include "../text.h"
+
+#include "../collision.h"
+#include "../display.h"
 #include "../units.h"
+
+#include "../util/terrain.h"
+#include "../util/text.h"
 
 #include "SDL_rotozoom.h"
 

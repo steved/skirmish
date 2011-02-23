@@ -1,8 +1,9 @@
 #include "collision.h"
 #include "player.h"
-#include "terrain.h"
 #include "units.h"
 #include "unit_state_functions.h"
+
+#include "util/terrain.h"
 
 #include <stdbool.h>
 

@@ -2,7 +2,36 @@
 #include "selected.h"
 #include "units.h"
 
+#include "util/terrain.h"
+
 #include "SDL_gfxPrimitives.h"
+
+gsl_vector *calculate_unit_display_position(unit *unit, camera *c, float interpolation) {
+  gsl_vector *pos = calculate_display_position(gsl_vector_get(unit->vector, 0), gsl_vector_get(unit->vector, 1), c);
+  //if(unit->state.current == moving)
+  //  gsl_vector_scale(pos, 1 + (interpolation / 100));
+  return pos;
+}
+
+gsl_vector *calculate_display_position(double x, double y, camera *c) {
+  gsl_vector *pos = gsl_vector_alloc(3);
+  gsl_vector_set(pos, 0, x);
+  gsl_vector_set(pos, 1, y);
+  gsl_vector_scale(pos, 1.0f / ZOOM_LEVEL);
+  gsl_vector_sub(pos, c->vector);
+  gsl_vector_set(pos, 2, height_at(x, y));
+  return pos;
+}
+
+gsl_vector *calculate_map_position(double x, double y, camera *c) {
+  gsl_vector *pos = gsl_vector_alloc(3);
+  gsl_vector_set(pos, 0, x);
+  gsl_vector_set(pos, 1, y);
+  gsl_vector_add(pos, c->vector);
+  gsl_vector_scale(pos, ZOOM_LEVEL);
+  gsl_vector_set(pos, 2, height_at(gsl_vector_get(pos, 0), gsl_vector_get(pos, 1)));
+  return pos;
+}
 
 double display_unit_radius[][2] = {
   {1.5, 3}, {2.5, 2.5}, {2.5, 2.5}

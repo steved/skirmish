@@ -10,7 +10,7 @@ env.ParseConfig('gsl-config --cflags')
 env.ParseConfig('gsl-config --libs')
 
 # gather a list of source files
-SOURCES = glob.glob('*.c') + glob.glob('ui/*.c')
+SOURCES = glob.glob('*.c') + glob.glob('**/*.c')
 
 # add additional compiler flags
 env.Append(CFLAGS = ['-Wall', '--std=c99', "-g"])
@@ -18,5 +18,5 @@ env.Append(CFLAGS = ['-Wall', '--std=c99', "-g"])
 env.Append(LIBS = ['SDL_gfx', 'SDL_ttf'])
 
 # build target
-# output executable will be "game"
-env.Program(target = 'main', source = SOURCES)
+# output executable will be "skirmish"
+env.Program(target = 'skirmish', source = SOURCES)

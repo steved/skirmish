@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "display.h"
-#include "terrain.h"
+
+#include "util/terrain.h"
 
 #include <assert.h>
 

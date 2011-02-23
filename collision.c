@@ -1,5 +1,6 @@
 #include "collision.h"
-#include "terrain.h"
+
+#include "util/terrain.h"
 
 #include <gsl/gsl_blas.h>
 

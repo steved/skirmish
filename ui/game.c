@@ -2,9 +2,10 @@
 #include "../display.h"
 #include "game.h"
 #include "../selected.h"
-#include "../text.h"
 #include "../units.h"
 #include "../unit_state_functions.h"
+
+#include "../util/text.h"
 
 #include "SDL_rotozoom.h"
 

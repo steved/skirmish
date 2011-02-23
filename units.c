@@ -1,7 +1,8 @@
 #include "camera.h"
 #include "collision.h"
-#include "terrain.h"
 #include "units.h"
+
+#include "util/terrain.h"
 
 #include <assert.h>
 #include <gsl/gsl_blas.h>
@@ -63,33 +64,6 @@ void print_weapons(weapons weapons) {
       weapons.secondary_weapon);
 }
 
-gsl_vector *calculate_unit_display_position(unit *unit, camera *c, float interpolation) {
-  gsl_vector *pos = calculate_display_position(gsl_vector_get(unit->vector, 0), gsl_vector_get(unit->vector, 1), c);
-  //if(unit->state.current == moving)
-  //  gsl_vector_scale(pos, 1 + (interpolation / 100));
-  return pos;
-}
-
-gsl_vector *calculate_display_position(double x, double y, camera *c) {
-  gsl_vector *pos = gsl_vector_alloc(3);
-  gsl_vector_set(pos, 0, x);
-  gsl_vector_set(pos, 1, y);
-  gsl_vector_scale(pos, 1.0f / ZOOM_LEVEL);
-  gsl_vector_sub(pos, c->vector);
-  gsl_vector_set(pos, 2, height_at(x, y));
-  return pos;
-}
-
-gsl_vector *calculate_map_position(double x, double y, camera *c) {
-  gsl_vector *pos = gsl_vector_alloc(3);
-  gsl_vector_set(pos, 0, x);
-  gsl_vector_set(pos, 1, y);
-  gsl_vector_add(pos, c->vector);
-  gsl_vector_scale(pos, ZOOM_LEVEL);
-  gsl_vector_set(pos, 2, height_at(gsl_vector_get(pos, 0), gsl_vector_get(pos, 1)));
-  return pos;
-}
-
 void remove_unit(unit *u) {
   free(u->vector);
   free(u);
@@ -136,9 +110,7 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *pl
   gsl_vector_sub(go_to, subj->vector);
 
   double norm = gsl_blas_dnrm2(go_to);
-  printf("(%f, %f) => ", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
   gsl_vector_scale(go_to, 1 / norm);
-  printf("(%f, %f) => ", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
 
   delta_height_scale(go_to, subj->vector);
   gsl_vector_add(go_to, subj->vector);
@@ -155,7 +127,7 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *pl
   return bounding_circle_collision(subj->vector, unit_radius[subj->type], dest, 0.5);
 }
 
-void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
+static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
   gsl_vector *delta_height = gsl_vector_alloc(3);
   gsl_vector_memcpy(delta_height, new_location);
   gsl_vector_add(delta_height, location);

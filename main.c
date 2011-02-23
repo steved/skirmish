@@ -1,14 +1,15 @@
 #include "camera.h"
 #include "display.h"
 #include "events.h"
-#include "file_load.h"
 #include "main.h"
-#include "text.h"
 #include "units.h"
 
 #include "ui/game.h"
 #include "ui/menu.h"
 #include "ui/ui_state.h"
+
+#include "util/file_load.h"
+#include "util/text.h"
 
 #include <assert.h>
 #include <time.h>

@@ -9,5 +9,8 @@
 #define HEIGHT 480
 
 void display_unit(SDL_Surface *, camera *, unit *, uint32_t, float);
+gsl_vector *calculate_unit_display_position(unit *, camera *, float);
+gsl_vector *calculate_display_position(double, double, camera *);
+gsl_vector *calculate_map_position(double, double, camera *);
 
 #endif
