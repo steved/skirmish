@@ -3,6 +3,8 @@
 
 #include "ui_state.h"
 
+#define LOADING "LOADING"
+
 void loading_render(SDL_Surface *, camera *, PLAYERS *, float);
 void loading_update(camera *, PLAYERS *);
 void loading_handle_event(SDL_Event, camera *, PLAYERS *);

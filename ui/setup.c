@@ -17,22 +17,15 @@ static void advance_unit_position(int, int *, int *, int);
 
 ui_state setup_state = { &setup_render, &setup_update, &setup_handle_event, &setup_prepare, &setup_cleanup };
 SDL_Surface *full_terrain = NULL;
-SDL_Surface *background, *title;
+SDL_Surface *background, *title, *instructions;
+SDL_Rect instruction_rect;
 
 // must have at least one human player, so can have max MAX_PLAYERS - 1 ai players
 static int quarter_map_size, total_area_per_player, ai_positions[MAX_PLAYERS - 1][2];
 
 void setup_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float interpolation) {
   game_render(buffer, camera, players, interpolation);
-
-  // display the zoom level in the bottom left
-  char *instructions = "SETUP: Press ENTER to leave";
-  int w,h;
-  TTF_SizeUTF8(font, instructions, &w, &h);
-  SDL_Surface *instr_surf = draw_text(instructions);
-  SDL_Rect instr_rect = { WIDTH - w, HEIGHT - h, w, h };
-  SDL_BlitSurface(instr_surf, NULL, buffer, &instr_rect);
-  SDL_FreeSurface(instr_surf);
+  SDL_BlitSurface(instructions, NULL, buffer, &instruction_rect);
 }
 
 void setup_update(camera *camera, PLAYERS *players) {
@@ -73,6 +66,16 @@ void setup_prepare() {
   }
 
   title = draw_text("Skirmish");
+
+  // display the zoom level in the bottom left
+  char *instr_text = "SETUP: Press ENTER to leave";
+  int w,h;
+  TTF_SizeUTF8(font, instr_text, &w, &h);
+  instructions = draw_text(instr_text);
+  instruction_rect.x = WIDTH - w;
+  instruction_rect.y = HEIGHT - h;
+  instruction_rect.w = w;
+  instruction_rect.h = h;
 }
 
 void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
@@ -95,7 +98,9 @@ void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
   }
 }
 
-void setup_cleanup() {}
+void setup_cleanup() {
+  SDL_FreeSurface(instructions);
+}
 
 void setup_players(PLAYERS *players) {
   printf("setting up AI players\n");
