@@ -56,7 +56,7 @@ void generate_fractal_terrain() {
         terrain[xllen][midy] = square(terrain[xlen][yllen], terrain[xllen][yllen], displacement); // bottom left + bottom right
       }
     }
-   
+
     side_length >>= 1;
     displacement /= NOISE;
   }
@@ -84,8 +84,6 @@ SDL_Surface *print_terrain() {
       uint8_t red = 0;
       uint8_t green = 0;
       uint8_t blue = 0;
-
-
 
       if(c < WATER) {
         blue = 92 + c;

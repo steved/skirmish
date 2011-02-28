@@ -121,7 +121,6 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *pl
     gsl_vector_memcpy(subj->vector, go_to);
   }
 
-  printf("(%f, %f)\n", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
   gsl_vector_free(go_to);
 
   return bounding_circle_collision(subj->vector, unit_radius[subj->type], dest, 0.5);

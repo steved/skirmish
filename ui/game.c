@@ -9,7 +9,6 @@
 
 #include "SDL_rotozoom.h"
 
-static void update_background();
 static void update_camera_position(camera *);
 static void handle_mousedown(SDL_MouseButtonEvent, camera *, PLAYERS *);
 static void handle_keypress(int, camera *);
@@ -174,7 +173,7 @@ static void handle_keypress(int key, camera *camera) {
   }
 }
 
-static void update_background() {
+void update_background() {
   // if the zoom level changes, free the
   // current background surface if isn't the base and then re-shrink the surface
   if(background != full_terrain)

@@ -5,10 +5,12 @@
 #include "../display.h"
 #include "../units.h"
 
+#include "../util/nav_mesh.h"
 #include "../util/terrain.h"
 #include "../util/text.h"
 
 #include "SDL_rotozoom.h"
+#include "SDL_gfxPrimitives.h"
 
 #include <assert.h>
 
@@ -60,10 +62,14 @@ void setup_update(camera *camera, PLAYERS *players) {
 void setup_prepare() {
   // background hasn't been generated; do it
   if(full_terrain == NULL) {
+    printf("generating terrain\n");
     generate_fractal_terrain();
     full_terrain = print_terrain();
-    background = shrinkSurface(full_terrain, ZOOM_LEVEL, ZOOM_LEVEL);
+
+    printf("generating nav_mesh\n");
+    walk_terrain();
   }
+  update_background();
 
   title = draw_text("Skirmish");
 
