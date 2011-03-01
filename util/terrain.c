@@ -98,6 +98,9 @@ SDL_Surface *print_terrain() {
         blue = c / 1.6;
       }
 
+      // reset the terrain to the pixel value from 0 -> 255
+      terrain[i][j] = c;
+
       pixelRGBA(buffer, i, j, red, green, blue, 0xff);
     }
   }

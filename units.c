@@ -43,9 +43,11 @@ void place_at_vector(unit *unit, gsl_vector *v) {
 }
 
 void print_unit(unit *unit) {
-  printf("type %d, cur_state %d, vector (%f, %f)\n", 
+  printf("type %d, cur_state %d, vector (%f, %f, %f)\n", 
       unit->type, unit->state.current, 
-      gsl_vector_get(unit->vector, 0), gsl_vector_get(unit->vector, 1));
+      gsl_vector_get(unit->vector, 0), 
+      gsl_vector_get(unit->vector, 1),
+      gsl_vector_get(unit->vector, 2));
   printf("\t");
   print_attributes(unit->attributes);
   printf("\t");

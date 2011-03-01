@@ -1,3 +1,4 @@
+#include "../collision.h"
 #include "nav_mesh.h"
 
 #include "SDL_gfxPrimitives.h"
@@ -125,39 +126,6 @@ void draw_nav_mesh(SDL_Surface *surface, bool unconnected, bool edges) {
     }
     filledCircleRGBA(surface, nodes->nodes[i]->x, nodes->nodes[i]->y, 1, 0xff, 0, 0, 0xff);
   }
-}
-
-// adapted Bresenham's line drawing algorithm
-bool hit_water(int x, int y, int x2, int y2) {
-  int dx = abs(x2 - x);
-  int dy = abs(y2 - y);
-
-  int sx = (x < x2) ? 1 : -1;
-  int sy = (y < y2) ? 1 : -1;
-  
-  int err = dx - dy;
-  int err2;
-
-  while(1) {
-    if(x == x2 && y == y2)
-      break;
-
-    if(height_at(x, y) * 255 <= WATER) {
-      return true;
-    }
-
-    err2 = err << 1;
-    if(err2 > -dy) {
-      err -= dy;
-      x += sx;
-    }
-    if(err2 < dx) {
-      err += dx;
-      y += sy;
-    }
-  }
-
-  return false;
 }
 
 bool in_water(ai_node *node) {

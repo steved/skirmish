@@ -21,6 +21,41 @@ bool bounding_circle_collision(gsl_vector *a, double radius_a, gsl_vector *b, do
 
 // is this vector allowed on this terrain
 bool allowed_on_terrain(gsl_vector *vector) {
-  float height = 255 * height_at(gsl_vector_get(vector, 0), gsl_vector_get(vector, 1));
+  float height = height_at(gsl_vector_get(vector, 0), gsl_vector_get(vector, 1));
   return height >= WATER; 
 }
+
+// adapted Bresenham's line drawing algorithm
+bool hit_water(int x, int y, int x2, int y2) {
+  int dx = abs(x2 - x);
+  int dy = abs(y2 - y);
+
+  int sx = (x < x2) ? 1 : -1;
+  int sy = (y < y2) ? 1 : -1;
+  
+  int err = dx - dy;
+  int err2;
+
+  while(1) {
+    if(x == x2 && y == y2)
+      break;
+
+    if(height_at(x, y) <= WATER) {
+      return true;
+    }
+
+    err2 = err << 1;
+    if(err2 > -dy) {
+      err -= dy;
+      x += sx;
+    }
+    if(err2 < dx) {
+      err += dx;
+      y += sy;
+    }
+  }
+
+  return false;
+}
+
+

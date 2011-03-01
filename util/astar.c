@@ -1,9 +1,10 @@
 #include "astar.h"
+#include "../collision.h"
 
 #include <math.h>
 
 ai_node **shortest_path(gsl_vector *start, gsl_vector *goal) {
-  ai_node *beginning = find_closest_node(start);
+  //ai_node *beginning = find_closest_node(start);
   return NULL;
 }
 
