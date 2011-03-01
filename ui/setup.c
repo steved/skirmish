@@ -68,6 +68,7 @@ void setup_prepare() {
 
     printf("generating nav_mesh\n");
     walk_terrain();
+    draw_nav_mesh(full_terrain, false, true); 
   }
   update_background();
 

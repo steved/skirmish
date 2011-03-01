@@ -7,12 +7,13 @@
 
 void expand_node(ai_node *);
 void connect_node(ai_node *, ai_node *);
+bool in_water(ai_node *);
 ai_node *find_or_create_node(int);
 
 static int nodes_per, node_max;
 
 void walk_terrain() {
-  nodes_per = MAP_SIZE / NODE_DISTANCE;
+  nodes_per = MAP_SIZE / NODE_DISTANCE + 1;
   node_max = nodes_per * nodes_per;
 
   nodes = (walkable_nodes *) malloc(sizeof(walkable_nodes));
@@ -21,13 +22,12 @@ void walk_terrain() {
 
   ai_node *node;
 
-  int index = 0;
-  while(index < nodes->num) {
+  for(int index = 0; index < nodes->num; index++) {
     node = find_or_create_node(index);
+    if(in_water(node))
+      continue;
     expand_node(node);
-    index++;
   }
-
 }
 
 int directions_to_check[][2] = {
@@ -42,14 +42,14 @@ void expand_node(ai_node *node) {
   for(int i = 0; i < 9; i++) {
     direction = directions_to_check[i];
 
-    if(direction[0] < 0 && node->x <= abs(direction[0]) * NODE_DISTANCE)
+    if(direction[0] < 0 && node->x <= 0)
       continue;
-    else if(direction[0] > 0 && node->x >= MAP_SIZE - direction[0] * NODE_DISTANCE)
+    else if(direction[0] > 0 && node->x >= MAP_SIZE)
       continue;
 
-    if(direction[1] < 0 && node->y <= abs(direction[1]) * NODE_DISTANCE)
+    if(direction[1] < 0 && node->y <= 0)
       continue;
-    else if(direction[1] > 0 && node->y >= MAP_SIZE - direction[1] * NODE_DISTANCE)
+    else if(direction[1] > 0 && node->y >= MAP_SIZE)
       continue;
 
     int index = node->idx + direction[0] * nodes_per + direction[1]; 
@@ -57,14 +57,17 @@ void expand_node(ai_node *node) {
       continue;
 
     expanded_node = find_or_create_node(index);
-
-    if(height_at(expanded_node->x, expanded_node->y) * 255 > WATER + 5) {
-      connect_node(node, expanded_node);
-    }
+    if(in_water(expanded_node))
+      continue;
+    connect_node(node, expanded_node);
   }
 }
 
 void connect_node(ai_node *left, ai_node *right) {
+  if(hit_water(left, right)) {
+    return;
+  }
+
   ai_edge *edge;
 
   edge = (ai_edge *) malloc(sizeof(ai_edge));
@@ -111,4 +114,44 @@ void draw_nav_mesh(SDL_Surface *surface, bool unconnected, bool edges) {
     }
     filledCircleRGBA(surface, nodes->nodes[i]->x, nodes->nodes[i]->y, 1, 0xff, 0, 0, 0xff);
   }
+}
+
+// adapted Bresenham's line drawing algorithm
+bool hit_water(ai_node *left, ai_node *right) {
+  int x = left->x;
+  int y = left->y;
+
+  int dx = abs(right->x - x);
+  int dy = abs(right->y - y);
+
+  int sx = (x < right->x) ? 1 : -1;
+  int sy = (y < right->y) ? 1 : -1;
+  
+  int err = dx - dy;
+  int err2;
+
+  while(1) {
+    if(x == right->x && y == right->y)
+      break;
+
+    if(height_at(x, y) * 255 <= WATER) {
+      return true;
+    }
+
+    err2 = err << 1;
+    if(err2 > -dy) {
+      err -= dy;
+      x += sx;
+    }
+    if(err2 < dx) {
+      err += dx;
+      y += sy;
+    }
+  }
+
+  return false;
+}
+
+bool in_water(ai_node *node) {
+  return height_at(node->x, node->y) * 255 <= WATER + NODE_WATER_CUTOFF;
 }
