@@ -97,7 +97,7 @@ ai_node *find_or_create_node(int index) {
   if(nodes->nodes[index] != NULL) {
     node = nodes->nodes[index];
   } else {
-    node = (ai_node *) malloc(sizeof(node));
+    node = (ai_node *) malloc(sizeof(ai_node));
     assert(node != NULL);
     node->x = index / nodes_per * NODE_DISTANCE;
     node->y = index % nodes_per * NODE_DISTANCE;
