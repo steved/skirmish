@@ -129,6 +129,7 @@ void game_cleanup() {
   if(background != full_terrain)
     SDL_FreeSurface(background);
   SDL_FreeSurface(full_terrain);
+  free_nav_mesh();
 }
 
 static void update_camera_position(camera *camera) {

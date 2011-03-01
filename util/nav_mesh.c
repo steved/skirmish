@@ -9,10 +9,15 @@ void expand_node(ai_node *);
 void connect_node(ai_node *, ai_node *);
 bool in_water(ai_node *);
 ai_node *find_or_create_node(int);
+walkable_nodes *nodes = NULL;
 
 static int nodes_per, node_max;
 
 void walk_terrain() {
+  // if regenerating, free the old memory
+  if(nodes != NULL)
+    free_nav_mesh();
+
   nodes_per = MAP_SIZE / NODE_DISTANCE + 1;
   node_max = nodes_per * nodes_per;
 
@@ -34,6 +39,9 @@ void expand_node(ai_node *node) {
   ai_node *expanded_node;
   for(int i = 1; i >= -1; i--) {
     for(int j = 1; j >= -1; j--) {
+      if(i == 0 && j == 0)
+        continue;
+
       if(i < 0 && node->x == 0)
         continue;
       else if(i > 0 && node->x == MAP_SIZE)
@@ -69,7 +77,7 @@ void connect_node(ai_node *left, ai_node *right) {
   edge->right = right;
 
   left->edges[left->num_edges++] = edge;
-  assert(left->num_edges <= 9);
+  assert(left->num_edges < 9);
 }
 
 ai_node *node_at(int x, int y) {
@@ -154,4 +162,22 @@ bool hit_water(int x, int y, int x2, int y2) {
 
 bool in_water(ai_node *node) {
   return height_at(node->x, node->y) * 255 <= WATER + NODE_WATER_CUTOFF;
+}
+
+void free_nav_mesh() {
+  if(nodes == NULL)
+    return;
+
+  ai_node *node;
+  for(int i = 0; i < nodes->num; i++) {
+    node = nodes->nodes[i];
+    for(int j = 0; j < node->num_edges; j++) {
+      free(node->edges[j]);
+    }
+    free(node->edges);
+    free(node);
+  }
+
+  free(nodes->nodes);
+  free(nodes);
 }

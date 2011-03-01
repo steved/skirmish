@@ -25,10 +25,11 @@ typedef struct walkable_nodes {
 #define NODE_DISTANCE 16
 #define NODE_WATER_CUTOFF 0
 
-walkable_nodes *nodes;
+extern walkable_nodes *nodes;
 void walk_terrain();
 bool hit_water(int, int, int, int);
 void draw_nav_mesh(SDL_Surface *, bool, bool);
 ai_node *node_at(int, int);
+void free_nav_mesh();
 
 #endif
