@@ -1,10 +1,53 @@
 #include "astar.h"
 #include "../collision.h"
+#include "linked_list.h"
 
 #include <math.h>
 
 ai_node **shortest_path(gsl_vector *start, gsl_vector *goal) {
-  //ai_node *beginning = find_closest_node(start);
+/*  ai_node *beginning = find_closest_node(start);
+  ai_node *end = find_closest_node(goal);
+
+  pqueue *open = pqueue_init(size);
+  ll_node *closed = closed;
+  ll_node *came_from = NULL;
+
+  beginning->g_score = 0;
+  beginning->h_score = euclidian_distance(beginning, end);
+
+  pqueue_add(open, beginning);
+
+  ai_node *current, *neighbor;
+  int tentative_g_score;
+  while(!open.empty()) {
+    current = pqueue_pop(pqueue);
+    if(current == end)
+      return came_from;
+
+    closed = ll_add(closed, current);
+    for(int i = 0; i < current->num_edges; i++) {
+      neighbor = current->edges[i]->right;
+      if(ll_include(closed, neighbor))
+        continue;
+
+      tentative_g_score = current->g_score + euclidian_distance(current, neighbor);
+
+      bool include = pqueue_include(pqueue, neighbor);
+      if(!include || tentative_g_score < neighbor->g_score) {
+        if(!include)
+          pqueue_add(pqueue, neighbor);
+
+        came_from = ll_add(came_from, neighbor);
+        neighbor->g_score = tentative_g_score;
+        neighbor->h_score = euclidian_distance(neighbor, end);
+        neighbor->f_score = neighbor->g_score + neighbor->h_score;
+      }
+    }
+  }
+
+  printf("Could not find a path from (%d, %d) to (%d, %d)\n", 
+      beginning->x, beginning->y,
+      end->x, end->y);*/
   return NULL;
 }
 

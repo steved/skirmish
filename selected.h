@@ -6,11 +6,6 @@
 
 #include <stdbool.h>
 
-typedef struct selected_node {
-  unit *unit;
-  struct selected_node *next;
-} selected_node;
-
 void select_unit(unit *);
 void select_units(unit **, int);
 void select_division(division *);

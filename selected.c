@@ -1,16 +1,14 @@
 #include "selected.h"
 #include "units.h"
 
+#include "util/linked_list.h"
+
 #include <assert.h>
 
-selected_node *selected_head = NULL;
+ll_node *selected_head = NULL;
 
 void select_unit(unit *unit) {
-  selected_node *node = malloc(sizeof(selected_node));
-  assert(node != NULL);
-  node->unit = unit;
-  node->next = selected_head;
-  selected_head = node;
+  selected_head = ll_add(selected_head, unit);
 }
 
 void select_units(unit **units, int len) {
@@ -24,42 +22,15 @@ void select_division(division *division) {
 }
 
 void unselect_all() {
-  selected_node *node = selected_head;
-  while(node) {
-    selected_node *next = node->next;
-    free(node);
-    node = next;
-  }
-  free(node);
-  selected_head = NULL;
+  selected_head = ll_clear(selected_head);
 }
 
 void unselect_unit(unit *unit) {
-  selected_node *prev = NULL;
-  selected_node *node = selected_head;
-  while(node) {
-    if(node->unit == unit) {
-      if(prev == NULL) {
-        selected_head = node->next;
-      } else {
-        prev->next = node->next;
-      }
-      free(node);
-      return;
-    }
-    prev = node;
-    node = node->next;
-  }
+  selected_head = ll_remove(selected_head, unit);
 }
 
 bool selected(unit *unit) {
-  selected_node *node = selected_head;
-  while(node) {
-    if(node->unit == unit)
-      return true;
-    node = node->next;
-  }
-  return false;
+  return ll_include(selected_head, unit);
 }
 
 bool units_selected() {
@@ -67,10 +38,10 @@ bool units_selected() {
 }
 
 void move_selected_units_to(gsl_vector *vector) {
-  selected_node *node = selected_head;
+  ll_node *node = selected_head;
   unit *u;
   while(node) {
-    u = node->unit;
+    u = (unit *) node->value;
     print_unit(u);
     // depending on the state? do something?
     // or call the current states move method?

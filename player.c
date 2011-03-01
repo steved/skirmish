@@ -55,7 +55,7 @@ void remove_player(player *player) {
   }
   free(player->divisions);
   if(player->human)
-    free(player->name);
+    free((char *) player->name);
   free(player);
 }
 
