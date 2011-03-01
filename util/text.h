@@ -5,6 +5,7 @@
 
 TTF_Font *font;
 int init_ttf();
+void close_ttf();
 SDL_Surface *draw_text(char *);
 int font_height();
 

@@ -36,7 +36,6 @@ int main(int argc, char *argv[]) {
   } 
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
   SDL_WM_GrabInput(SDL_GRAB_ON);
-  atexit(SDL_Quit);
 
   const SDL_VideoInfo *info = SDL_GetVideoInfo();
   if(!info) {
@@ -95,6 +94,8 @@ int main(int argc, char *argv[]) {
   remove_camera(camera);
 
   SDL_FreeSurface(screen);
+  close_ttf();
+  SDL_Quit();
   return 0;
 }
 

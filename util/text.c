@@ -14,6 +14,13 @@ int init_ttf() {
   return 0;
 }
 
+void close_ttf() {
+  if(font != NULL) {
+    TTF_CloseFont(font);
+    font = NULL;
+  }
+}
+
 SDL_Surface *draw_text(char *text) {
   SDL_Color color = {255, 255, 255};
   SDL_Surface *txt = TTF_RenderText_Blended(font, text, color);
