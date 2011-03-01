@@ -54,6 +54,8 @@ void remove_player(player *player) {
     free(div);
   }
   free(player->divisions);
+  if(player->human)
+    free(player->name);
   free(player);
 }
 

@@ -90,6 +90,7 @@ int main(int argc, char *argv[]) {
 
   for(int i = 0; i < players->num; i++)
     remove_player(players->players[i]);
+  free(players->players);
   free(players);
   remove_camera(camera);
 

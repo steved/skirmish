@@ -67,7 +67,7 @@ void print_weapons(weapons weapons) {
 }
 
 void remove_unit(unit *u) {
-  free(u->vector);
+  gsl_vector_free(u->vector);
   free(u);
 }
 
