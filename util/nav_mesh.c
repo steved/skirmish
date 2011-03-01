@@ -30,36 +30,29 @@ void walk_terrain() {
   }
 }
 
-int directions_to_check[][2] = {
-  {1, 1}, {1, 0}, {0, 1},
-  {-1, -1}, {-1, 0}, {0, -1},
-  {-1, 1}, {1, -1}
-};
-
 void expand_node(ai_node *node) {
   ai_node *expanded_node;
-  int *direction;
-  for(int i = 0; i < 9; i++) {
-    direction = directions_to_check[i];
+  for(int i = 1; i >= -1; i--) {
+    for(int j = 1; j >= -1; j--) {
+      if(i < 0 && node->x == 0)
+        continue;
+      else if(i > 0 && node->x == MAP_SIZE)
+        continue;
 
-    if(direction[0] < 0 && node->x <= 0)
-      continue;
-    else if(direction[0] > 0 && node->x >= MAP_SIZE)
-      continue;
+      if(j < 0 && node->y == 0)
+        continue;
+      else if(j > 0 && node->y == MAP_SIZE)
+        continue;
 
-    if(direction[1] < 0 && node->y <= 0)
-      continue;
-    else if(direction[1] > 0 && node->y >= MAP_SIZE)
-      continue;
+      int index = node->idx + i * nodes_per + j; 
+      if(index < 0 || index >= node_max)
+        continue;
 
-    int index = node->idx + direction[0] * nodes_per + direction[1]; 
-    if(index < 0 || index >= node_max)
-      continue;
-
-    expanded_node = find_or_create_node(index);
-    if(in_water(expanded_node))
-      continue;
-    connect_node(node, expanded_node);
+      expanded_node = find_or_create_node(index);
+      if(in_water(expanded_node))
+        continue;
+      connect_node(node, expanded_node);
+    }
   }
 }
 
@@ -76,7 +69,7 @@ void connect_node(ai_node *left, ai_node *right) {
   edge->right = right;
 
   left->edges[left->num_edges++] = edge;
-  assert(left->num_edges < 9);
+  assert(left->num_edges <= 9);
 }
 
 ai_node *node_at(int x, int y) {

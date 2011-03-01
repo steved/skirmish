@@ -41,13 +41,19 @@ void game_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float in
         display_unit(buffer, camera, un, pl->color, interpolation);
         /* displays the closest node
         ai_node *closest = find_closest_node(un->vector);
-        printf("closest to (%f, %f) -> (%d, %d)\n", 
-            gsl_vector_get(un->vector, 0),
-            gsl_vector_get(un->vector, 1),
-            closest->x, closest->y);
-        gsl_vector *v = calculate_display_position(closest->x, closest->y, camera);
-        filledCircleRGBA(buffer, gsl_vector_get(v, 0), gsl_vector_get(v, 1), 3, 0, 0xff, 0, 0xff);
-        gsl_vector_free(v);*/
+        if(closest == NULL) {
+          printf("couldn't find a node for (%f, %f)\n",
+              gsl_vector_get(un->vector, 0),
+              gsl_vector_get(un->vector, 1));
+        } else {
+          //printf("closest to (%f, %f) -> (%d, %d)\n", 
+          //  gsl_vector_get(un->vector, 0),
+          //  gsl_vector_get(un->vector, 1),
+          //  closest->x, closest->y);
+          gsl_vector *v = calculate_display_position(closest->x, closest->y, camera);
+          filledCircleRGBA(buffer, gsl_vector_get(v, 0), gsl_vector_get(v, 1), 3, 0, 0xff, 0, 0xff);
+          gsl_vector_free(v);
+        }*/
       }
     }
   }
