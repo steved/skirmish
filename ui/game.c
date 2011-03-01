@@ -5,8 +5,10 @@
 #include "../units.h"
 #include "../unit_state_functions.h"
 
+#include "../util/astar.h"
 #include "../util/text.h"
 
+#include "SDL_gfxPrimitives.h"
 #include "SDL_rotozoom.h"
 
 static void update_camera_position(camera *);
@@ -26,12 +28,26 @@ void game_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float in
   SDL_Rect terrain_rect = {gsl_vector_get(camera->vector, 0), gsl_vector_get(camera->vector, 1), WIDTH * ZOOM_LEVEL, HEIGHT * ZOOM_LEVEL}; 
   SDL_BlitSurface(background, &terrain_rect, buffer, NULL);
 
+  player *pl;
+  division *div;
+  unit *un;
+
   for(int i = 0; i < players->num; i++) {
-    player *player = players->players[i];
-    for(int j = 0; j < player->num_divisions; j++) {
-      division *div = player->divisions[j];
+    pl = players->players[i];
+    for(int j = 0; j < pl->num_divisions; j++) {
+      div = pl->divisions[j];
       for(int k = 0; k < div->size; k++) {
-        display_unit(buffer, camera, div->units[k], player->color, interpolation);
+        un = div->units[k];
+        display_unit(buffer, camera, un, pl->color, interpolation);
+        /* displays the closest node
+        ai_node *closest = find_closest_node(un->vector);
+        printf("closest to (%f, %f) -> (%d, %d)\n", 
+            gsl_vector_get(un->vector, 0),
+            gsl_vector_get(un->vector, 1),
+            closest->x, closest->y);
+        gsl_vector *v = calculate_display_position(closest->x, closest->y, camera);
+        filledCircleRGBA(buffer, gsl_vector_get(v, 0), gsl_vector_get(v, 1), 3, 0, 0xff, 0, 0xff);
+        gsl_vector_free(v);*/
       }
     }
   }
@@ -130,6 +146,17 @@ static void update_camera_position(camera *camera) {
 static void handle_mousedown(SDL_MouseButtonEvent button_event, camera *camera, PLAYERS *players) {
   bool modifier = (SDL_GetModState() & KMOD_CTRL) > 0;
   gsl_vector *dest;
+
+  int rel_map_size = MAP_SIZE / ZOOM_LEVEL;
+  int start_x = (WIDTH - rel_map_size) / 2;
+  int end_x = WIDTH - start_x;
+  int start_y = (HEIGHT - rel_map_size) / 2;
+  int end_y = HEIGHT - start_y;
+
+  if(button_event.x > end_x || button_event.x < start_x ||
+      button_event.y > end_y || button_event.y < start_y)
+    return;
+
   switch(button_event.button) {
     case 1:
       check_for_unit_at(modifier, button_event.x, button_event.y, camera, players);

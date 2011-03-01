@@ -68,7 +68,7 @@ void setup_prepare() {
 
     printf("generating nav_mesh\n");
     walk_terrain();
-    draw_nav_mesh(full_terrain, false, true); 
+    //draw_nav_mesh(full_terrain, false, true); 
   }
   update_background();
 
@@ -90,7 +90,7 @@ void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
     return;
 
   game_handle_event(event, camera, players);
-  
+
   if(event.type == SDL_KEYDOWN) {
     switch(event.key.keysym.sym) {
       case SDLK_RETURN:

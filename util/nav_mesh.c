@@ -64,7 +64,7 @@ void expand_node(ai_node *node) {
 }
 
 void connect_node(ai_node *left, ai_node *right) {
-  if(hit_water(left, right)) {
+  if(hit_water(left->x, left->y, right->x, right->y)) {
     return;
   }
 
@@ -77,6 +77,16 @@ void connect_node(ai_node *left, ai_node *right) {
 
   left->edges[left->num_edges++] = edge;
   assert(left->num_edges < 9);
+}
+
+ai_node *node_at(int x, int y) {
+  int index = y / NODE_DISTANCE + x / NODE_DISTANCE * nodes_per;
+  ai_node *node = nodes->nodes[index];
+  if(node == NULL) {
+    printf("couldn't find node @ (%d, %d) -> %d\n", x, y, index);
+    assert(node != NULL);
+  }
+  return node;
 }
 
 ai_node *find_or_create_node(int index) {
@@ -117,21 +127,18 @@ void draw_nav_mesh(SDL_Surface *surface, bool unconnected, bool edges) {
 }
 
 // adapted Bresenham's line drawing algorithm
-bool hit_water(ai_node *left, ai_node *right) {
-  int x = left->x;
-  int y = left->y;
+bool hit_water(int x, int y, int x2, int y2) {
+  int dx = abs(x2 - x);
+  int dy = abs(y2 - y);
 
-  int dx = abs(right->x - x);
-  int dy = abs(right->y - y);
-
-  int sx = (x < right->x) ? 1 : -1;
-  int sy = (y < right->y) ? 1 : -1;
+  int sx = (x < x2) ? 1 : -1;
+  int sy = (y < y2) ? 1 : -1;
   
   int err = dx - dy;
   int err2;
 
   while(1) {
-    if(x == right->x && y == right->y)
+    if(x == x2 && y == y2)
       break;
 
     if(height_at(x, y) * 255 <= WATER) {

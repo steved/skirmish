@@ -27,7 +27,8 @@ typedef struct walkable_nodes {
 
 walkable_nodes *nodes;
 void walk_terrain();
-bool hit_water(ai_node *, ai_node *);
+bool hit_water(int, int, int, int);
 void draw_nav_mesh(SDL_Surface *, bool, bool);
+ai_node *node_at(int, int);
 
 #endif
