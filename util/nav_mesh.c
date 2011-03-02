@@ -12,7 +12,8 @@ bool in_water(ai_node *);
 ai_node *find_or_create_node(int);
 walkable_nodes *nodes = NULL;
 
-static int nodes_per, node_max;
+static int nodes_per;
+int node_max = 0;
 
 void walk_terrain() {
   // if regenerating, free the old memory

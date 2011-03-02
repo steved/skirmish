@@ -4,7 +4,6 @@
 #include "terrain.h"
 #include <stdbool.h>
 
-struct ai_edge;
 typedef struct ai_node {
   int idx;
   int x, y;
@@ -28,6 +27,7 @@ typedef struct walkable_nodes {
 #define NODE_WATER_CUTOFF 0
 
 extern walkable_nodes *nodes;
+extern int node_max;
 void walk_terrain();
 void draw_nav_mesh(SDL_Surface *, bool, bool);
 ai_node *node_at(int, int);

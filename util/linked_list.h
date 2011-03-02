@@ -6,6 +6,7 @@
 typedef struct ll_node {
   void *value;
   struct ll_node *next;
+  struct ll_node *prev;
 } ll_node;
 
 ll_node *ll_init(void *);

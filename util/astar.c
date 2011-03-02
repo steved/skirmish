@@ -2,10 +2,12 @@
 #include "../collision.h"
 #include "priority_queue.h"
 
+#include <assert.h>
 #include <math.h>
 
 int ai_score(void *);
 float euclidian_distance(ai_node *, ai_node *);
+static ll_node *reconstruct_path(int *, ai_node *);
 
 int ai_score(void *value) {
   ai_node *node = (ai_node *) value;
@@ -18,9 +20,21 @@ float euclidian_distance(ai_node *node1, ai_node *node2) {
   return sqrt((xdiff * xdiff) + (ydiff * ydiff));
 }
 
-#define MAX_OPEN_SIZE 10
+#define MAX_OPEN_SIZE 100
+
+static int *came_from = NULL;
 
 ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
+  // make sure the nav_mesh has been created
+  assert(node_max > 0);
+
+  // allocate the came_from array if it hasnt' yet
+  if(came_from == NULL) {
+    came_from = malloc(sizeof(int) * node_max);
+    assert(came_from != NULL);
+  }
+  memset(came_from, -1, node_max);
+
   ai_node *beginning = find_closest_node(start);
   ai_node *end = find_closest_node(goal);
 
@@ -36,10 +50,10 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
 
   pqueue *open = pqueue_init(MAX_OPEN_SIZE, &ai_score);
   ll_node *closed = NULL;
-  ll_node *came_from = NULL;
 
   beginning->g_score = 0;
   beginning->h_score = euclidian_distance(beginning, end);
+  beginning->score = beginning->h_score;
 
   pqueue_add(open, beginning);
 
@@ -48,7 +62,7 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   while(!pqueue_empty(open)) {
     current = pqueue_pop(open);
     if(current == end)
-      return came_from;
+      return reconstruct_path(came_from, current);
 
     closed = ll_add(closed, current);
     for(int i = 0; i < current->num_edges; i++) {
@@ -62,8 +76,9 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
       if(!include || tentative_g_score < neighbor->g_score) {
         if(!include)
           pqueue_add(open, neighbor);
+        
+        came_from[neighbor->idx] = current->idx;
 
-        came_from = ll_add(came_from, neighbor);
         neighbor->g_score = tentative_g_score;
         neighbor->h_score = euclidian_distance(neighbor, end);
         neighbor->score = neighbor->g_score + neighbor->h_score;
@@ -75,6 +90,21 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
       beginning->x, beginning->y,
       end->x, end->y);
   return NULL;
+}
+
+static ll_node *reconstruct_path(int *came_from, ai_node *goal) {
+  ai_node *node; 
+
+  ll_node *beginning = ll_init(goal);
+  int idx = came_from[goal->idx];
+
+  while(idx != -1) {
+    node = nodes->nodes[idx];
+    beginning = ll_add(beginning, node);
+    idx = came_from[idx];
+  }
+
+  return beginning;
 }
 
 ai_node *find_closest_node(gsl_vector *vector) {

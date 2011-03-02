@@ -10,14 +10,17 @@ ll_node *ll_init(void *value) {
   ll_node *node = alloc_node();
   node->value = value;
   node->next = NULL;
+  node->prev = NULL;
 
   return node;
 }
 
 ll_node *ll_add(ll_node *head, void *value) {
   ll_node *node = ll_init(value);
-  if(head != NULL)
+  if(head != NULL) {
     node->next = head;
+    head->prev = node;
+  }
   return node;
 }
 
@@ -25,21 +28,22 @@ ll_node *ll_remove(ll_node *head, void *value) {
   if(head == NULL)
     return NULL;
 
-  ll_node *prev = NULL;
   ll_node *node = head;
 
   while(node) {
     if(node->value == value) {
-      if(prev == NULL) 
+      if(node->prev == NULL) 
         head = node->next;
-      else
-        prev->next = node->next;
+      else {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+      }
+
       
       free(node);
       return head;
     }
 
-    prev = node;
     node = node->next;
   }
 
