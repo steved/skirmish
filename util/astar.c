@@ -20,7 +20,7 @@ float euclidian_distance(ai_node *node1, ai_node *node2) {
   return sqrt((xdiff * xdiff) + (ydiff * ydiff));
 }
 
-#define MAX_OPEN_SIZE 100
+#define MAX_OPEN_SIZE 350
 
 static int *came_from = NULL;
 
@@ -54,23 +54,27 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   beginning->g_score = 0;
   beginning->h_score = euclidian_distance(beginning, end);
   beginning->score = beginning->h_score;
+  printf("beginning score: %f\n", beginning->score);
 
   pqueue_add(open, beginning);
 
   ai_node *current, *neighbor;
-  int tentative_g_score;
+  float tentative_g_score;
   while(!pqueue_empty(open)) {
-    current = pqueue_pop(open);
+    current = (ai_node *) pqueue_pop(open);
+    printf("investigating node @ (%d, %d) - %f\n", current->x, current->y, current->score); 
     if(current == end)
       return reconstruct_path(came_from, current);
 
     closed = ll_add(closed, current);
     for(int i = 0; i < current->num_edges; i++) {
       neighbor = current->edges[i]->right;
+      printf("\tinvestigating neighbor (%d, %d)\n", neighbor->x, neighbor->y);
       if(ll_include(closed, neighbor))
         continue;
 
       tentative_g_score = current->g_score + euclidian_distance(current, neighbor);
+      printf("\ttentative g_score: %f\n", tentative_g_score);
 
       bool include = pqueue_include(open, neighbor);
       if(!include || tentative_g_score < neighbor->g_score) {
@@ -82,6 +86,7 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
         neighbor->g_score = tentative_g_score;
         neighbor->h_score = euclidian_distance(neighbor, end);
         neighbor->score = neighbor->g_score + neighbor->h_score;
+        printf("\tadding neighbor - %f\n", neighbor->score);
       }
     }
   }

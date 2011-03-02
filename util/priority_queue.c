@@ -1,8 +1,9 @@
 #include "priority_queue.h"
 
 #include <assert.h>
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 pqueue *pqueue_init(int max_size, int (*score)(void *)) {
   assert(max_size > 0);
@@ -22,11 +23,12 @@ pqueue *pqueue_init(int max_size, int (*score)(void *)) {
 }
 
 void pqueue_add(pqueue *queue, void *value) {
-  if(pqueue_full(queue))
-    return;
+  if(pqueue_full(queue)) {
+    printf("The priority queue is full (%d/%d)\n", queue->size, queue->max_size);
+    assert(!pqueue_full(queue));
+  }
 
   int i;
-
   for(i = ++queue->size; 
       (queue->data[i / 2] == NULL ? -1 : queue->score(queue->data[i / 2])) > queue->score(value); 
       i /= 2) 
