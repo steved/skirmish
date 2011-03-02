@@ -1,6 +1,8 @@
 #ifndef SKIRMISH_ATTR
 #define SKIRMISH_ATTR
 
+#include "util/linked_list.h"
+
 #include <gsl/gsl_vector.h>
 
 typedef struct attributes {
@@ -20,6 +22,7 @@ typedef struct state {
     struct unit *unit;
     struct unit **units;
   } subject;
+  ll_node *astar_node;
 } state;
 
 typedef enum unit_type {

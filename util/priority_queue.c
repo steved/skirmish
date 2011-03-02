@@ -4,19 +4,15 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define parent(i) (floor(((i) - 1) / 2))
-
-static void heapify(pqueue *, int);
-static void swap(void **, int, int);
-
 pqueue *pqueue_init(int max_size, int (*score)(void *)) {
   assert(max_size > 0);
 
   pqueue *queue = malloc(sizeof(pqueue));
   assert(queue != NULL);
   
-  queue->data = calloc(max_size, sizeof(void *));
+  queue->data = calloc(max_size + 1, sizeof(void *));
   assert(queue->data != NULL);
+  queue->data[0] = NULL;
 
   queue->size = 0;
   queue->max_size = max_size;
@@ -26,13 +22,16 @@ pqueue *pqueue_init(int max_size, int (*score)(void *)) {
 }
 
 void pqueue_add(pqueue *queue, void *value) {
-  int i = ++queue->size;
+  if(pqueue_full(queue))
+    return;
 
-  int parent_idx = parent(i);
-  while(i > 0 && queue->score(queue->data[parent_idx]) < queue->score(value)) {
-    queue->data[i] = queue->data[parent_idx];
-    i = parent_idx;
-    parent_idx = parent(i);
+  int i;
+
+  for(i = ++queue->size; 
+      (queue->data[i / 2] == NULL ? -1 : queue->score(queue->data[i / 2])) > queue->score(value); 
+      i /= 2) 
+  {
+    queue->data[i] = queue->data[i / 2];
   }
   queue->data[i] = value;
 }
@@ -41,10 +40,23 @@ void *pqueue_pop(pqueue *queue) {
   if(pqueue_empty(queue))
     return NULL;
 
-  void *top = queue->data[0];
-  queue->data[0] = queue->data[queue->size--];
-  heapify(queue, 0);
+  void *top = queue->data[1];
+  void *last = queue->data[queue->size--];
 
+  int i, child;
+  for(i = 1; i * 2 <= queue->size; i = child) {
+    child = i * 2;
+    if(child != queue->size && 
+        queue->score(queue->data[child + 1]) < queue->score(queue->data[child]))
+      child++;
+
+    if(queue->score(last) > queue->score(queue->data[child]))
+      queue->data[i] = queue->data[child];
+    else
+      break;
+  }
+
+  queue->data[i] = last;
   return top;
 }
 
@@ -63,24 +75,6 @@ bool pqueue_empty(pqueue *queue) {
   return queue->size == 0;
 }
 
-static void heapify(pqueue *queue, int index) {
-  int left = 2 * index;
-  int right = left + 1;
-  int largest = index;
-
-  if(left <= queue->size && queue->score(queue->data[left]) > queue->score(queue->data[index]))
-    largest = left;
-  if(right <= queue->size && queue->score(queue->data[right]) > queue->score(queue->data[largest]))
-    largest = right;
-
-  if(largest != index)
-    swap(queue->data, index, largest);
-
-  heapify(queue, largest);
-}
-
-static void swap(void **data, int index_a, int index_b) {
-  void *temp = data[index_b];
-  data[index_b] = data[index_a];
-  data[index_a] = temp;
+bool pqueue_full(pqueue *queue) {
+  return queue->size == queue->max_size;
 }

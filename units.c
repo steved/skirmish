@@ -78,6 +78,7 @@ void change_unit_state(unit *u, state_description desc, void *subj) {
 
   u->state.current = desc;
   gsl_vector_memcpy(u->state.subject.vector, subj);
+  u->state.astar_node = shortest_path(u->vector, (gsl_vector *) subj);
 }
 
 // defined in attributes.h
@@ -104,22 +105,20 @@ bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, un
 
 // returns true if @ destination, otherwise false
 bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *players) {
-
-  ll_node *astar_return = shortest_path(subj->vector, dest);
-  ai_node *node;
-  printf("****ASTAR\n");
-  while(astar_return) {
-    node = (ai_node *) astar_return->value;
-    printf("\t(%d, %d)\n", node->x, node->y); 
-    astar_return = astar_return->next;
-  }
-
   // set the z coordinate because it gets set incorrectly when
   // placing the unit in the beginning 
   gsl_vector_set(subj->vector, 2, height_at(gsl_vector_get(subj->vector, 0), gsl_vector_get(subj->vector, 1)));
 
   gsl_vector *go_to = gsl_vector_alloc(3);
-  gsl_vector_memcpy(go_to, dest);
+
+  if(subj->state.astar_node != NULL) {
+    ai_node *node = (ai_node *) subj->state.astar_node->value;
+    gsl_vector_set(go_to, 0, node->x);
+    gsl_vector_set(go_to, 1, node->y);
+    gsl_vector_set(go_to, 2, height_at(node->x, node->y));
+  } else {
+    gsl_vector_memcpy(go_to, dest);
+  }
   gsl_vector_sub(go_to, subj->vector);
 
   double norm = gsl_blas_dnrm2(go_to);
@@ -136,7 +135,15 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *pl
 
   gsl_vector_free(go_to);
 
-  return bounding_circle_collision(subj->vector, unit_radius[subj->type], dest, 0.5);
+  bool there = bounding_circle_collision(subj->vector, unit_radius[subj->type], dest, 0.5);
+  if(there && subj->state.astar_node != NULL && subj->state.astar_node->next != NULL) {
+    ll_node *next = subj->state.astar_node->next;
+    free(subj->state.astar_node);
+    subj->state.astar_node = next;
+
+    return false;
+  }
+  return there;
 }
 
 static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
