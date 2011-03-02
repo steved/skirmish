@@ -2,6 +2,7 @@
 #include "collision.h"
 #include "units.h"
 
+#include "util/astar.h"
 #include "util/terrain.h"
 
 #include <assert.h>
@@ -103,6 +104,16 @@ bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, un
 
 // returns true if @ destination, otherwise false
 bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *players) {
+
+  ll_node *astar_return = shortest_path(subj->vector, dest);
+  ai_node *node;
+  printf("****ASTAR\n");
+  while(astar_return) {
+    node = (ai_node *) astar_return->value;
+    printf("\t(%d, %d)\n", node->x, node->y); 
+    astar_return = astar_return->next;
+  }
+
   // set the z coordinate because it gets set incorrectly when
   // placing the unit in the beginning 
   gsl_vector_set(subj->vector, 2, height_at(gsl_vector_get(subj->vector, 0), gsl_vector_get(subj->vector, 1)));

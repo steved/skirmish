@@ -29,7 +29,7 @@ void pqueue_add(pqueue *queue, void *value) {
   int i = ++queue->size;
 
   int parent_idx = parent(i);
-  while(i > 1 && queue->score(queue->data[parent_idx]) < queue->score(value)) {
+  while(i > 0 && queue->score(queue->data[parent_idx]) < queue->score(value)) {
     queue->data[i] = queue->data[parent_idx];
     i = parent_idx;
     parent_idx = parent(i);

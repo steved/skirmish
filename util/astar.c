@@ -8,7 +8,8 @@ int ai_score(void *);
 float euclidian_distance(ai_node *, ai_node *);
 
 int ai_score(void *value) {
-  return ((ai_node *) value)->score;
+  ai_node *node = (ai_node *) value;
+  return node->score;
 }
 
 float euclidian_distance(ai_node *node1, ai_node *node2) {
@@ -22,6 +23,16 @@ float euclidian_distance(ai_node *node1, ai_node *node2) {
 ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   ai_node *beginning = find_closest_node(start);
   ai_node *end = find_closest_node(goal);
+
+  if(beginning == NULL) {
+    printf("couldn't find a node near (%f, %f)\n", gsl_vector_get(start, 0), gsl_vector_get(start, 1));
+    return NULL;
+  }
+
+  if(end == NULL) {
+    printf("couldn't find a node near (%f, %f)\n", gsl_vector_get(goal, 0), gsl_vector_get(goal, 1));
+    return NULL;
+  }
 
   pqueue *open = pqueue_init(MAX_OPEN_SIZE, &ai_score);
   ll_node *closed = NULL;
