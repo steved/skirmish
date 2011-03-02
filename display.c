@@ -2,6 +2,7 @@
 #include "selected.h"
 #include "units.h"
 
+#include "util/astar.h"
 #include "util/terrain.h"
 
 #include "SDL_gfxPrimitives.h"
@@ -82,5 +83,19 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
   if(selected(unit)) {
    // this unit is selected!
    circleColor(surface, x, y, unit_radius[unit->type], (0xffffff00 - color) | 0x000000ff);
+  }
+
+  // draw the AStar nodes if they exist
+  if(unit->state.current == moving && unit->state.astar_node != NULL) {
+    ll_node *cur = unit->state.astar_node;
+    ai_node *node;
+    gsl_vector *display;
+    while(cur) {
+      node = (ai_node *) cur->value;
+      display = calculate_display_position(node->x, node->y, camera);
+      circleColor(surface, gsl_vector_get(display, 0), gsl_vector_get(display, 1), 3, 0xff0000ff);
+      free(display);
+      cur = cur->next;
+    }
   }
 }
