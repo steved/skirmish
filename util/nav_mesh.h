@@ -11,6 +11,8 @@ typedef struct ai_node {
   int num_edges;
 
   struct ai_edge **edges;
+
+  int score, g_score, h_score;
 } ai_node;
 
 typedef struct ai_edge {

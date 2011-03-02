@@ -1,6 +1,5 @@
 #include "astar.h"
 #include "../collision.h"
-#include "linked_list.h"
 #include "priority_queue.h"
 
 #include <math.h>
@@ -20,7 +19,7 @@ float euclidian_distance(ai_node *node1, ai_node *node2) {
 
 #define MAX_OPEN_SIZE 10
 
-ai_node **shortest_path(gsl_vector *start, gsl_vector *goal) {
+ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   ai_node *beginning = find_closest_node(start);
   ai_node *end = find_closest_node(goal);
 
@@ -37,7 +36,6 @@ ai_node **shortest_path(gsl_vector *start, gsl_vector *goal) {
   int tentative_g_score;
   while(!pqueue_empty(open)) {
     current = pqueue_pop(open);
-    // check NULL TODO
     if(current == end)
       return came_from;
 
@@ -57,7 +55,7 @@ ai_node **shortest_path(gsl_vector *start, gsl_vector *goal) {
         came_from = ll_add(came_from, neighbor);
         neighbor->g_score = tentative_g_score;
         neighbor->h_score = euclidian_distance(neighbor, end);
-        neighbor->f_score = neighbor->g_score + neighbor->h_score;
+        neighbor->score = neighbor->g_score + neighbor->h_score;
       }
     }
   }
