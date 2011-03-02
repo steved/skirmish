@@ -1,15 +1,31 @@
 #include "astar.h"
 #include "../collision.h"
 #include "linked_list.h"
+#include "priority_queue.h"
 
 #include <math.h>
 
+int ai_score(void *);
+float euclidian_distance(ai_node *, ai_node *);
+
+int ai_score(void *value) {
+  return ((ai_node *) value)->score;
+}
+
+float euclidian_distance(ai_node *node1, ai_node *node2) {
+  int xdiff = node1->x - node2->x;
+  int ydiff = node1->y - node2->y;
+  return sqrt((xdiff * xdiff) + (ydiff * ydiff));
+}
+
+#define MAX_OPEN_SIZE 10
+
 ai_node **shortest_path(gsl_vector *start, gsl_vector *goal) {
-/*  ai_node *beginning = find_closest_node(start);
+  ai_node *beginning = find_closest_node(start);
   ai_node *end = find_closest_node(goal);
 
-  pqueue *open = pqueue_init(size);
-  ll_node *closed = closed;
+  pqueue *open = pqueue_init(MAX_OPEN_SIZE, &ai_score);
+  ll_node *closed = NULL;
   ll_node *came_from = NULL;
 
   beginning->g_score = 0;
@@ -19,8 +35,9 @@ ai_node **shortest_path(gsl_vector *start, gsl_vector *goal) {
 
   ai_node *current, *neighbor;
   int tentative_g_score;
-  while(!open.empty()) {
-    current = pqueue_pop(pqueue);
+  while(!pqueue_empty(open)) {
+    current = pqueue_pop(open);
+    // check NULL TODO
     if(current == end)
       return came_from;
 
@@ -32,10 +49,10 @@ ai_node **shortest_path(gsl_vector *start, gsl_vector *goal) {
 
       tentative_g_score = current->g_score + euclidian_distance(current, neighbor);
 
-      bool include = pqueue_include(pqueue, neighbor);
+      bool include = pqueue_include(open, neighbor);
       if(!include || tentative_g_score < neighbor->g_score) {
         if(!include)
-          pqueue_add(pqueue, neighbor);
+          pqueue_add(open, neighbor);
 
         came_from = ll_add(came_from, neighbor);
         neighbor->g_score = tentative_g_score;
@@ -47,7 +64,7 @@ ai_node **shortest_path(gsl_vector *start, gsl_vector *goal) {
 
   printf("Could not find a path from (%d, %d) to (%d, %d)\n", 
       beginning->x, beginning->y,
-      end->x, end->y);*/
+      end->x, end->y);
   return NULL;
 }
 
