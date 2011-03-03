@@ -10,31 +10,9 @@ typedef struct attributes {
   int health, armor;
 } attributes;
 
-// to add: flanking, 
-typedef enum state_description {
-  waiting, attacking, charging, retreating, moving
-} state_description;
-
-typedef struct state {
-  state_description current;
-  union {
-    gsl_vector *vector;
-    struct unit *unit;
-    struct unit **units;
-  } subject;
-  ll_node *astar_node;
-} state;
-
 typedef enum unit_type {
   infantry, cavalry, artillery
 } unit_type;
-
-// an 'associative' array for each unit type
-// that defines the radius of each unit in the x, y range
-// for display purposes
-extern double display_unit_radius[][2];
-// same as above but for bounding circle collisions
-extern double unit_radius[];
 
 typedef enum unit_weapon {
   none, bow, sword, spear
@@ -51,9 +29,20 @@ typedef struct weapons {
 typedef struct unit {
   attributes attributes;
   gsl_vector *vector;
-  state state;
+  ll_node *state;
   unit_type type;
   weapons weapons;
+
+  double display_radius[2];
+  double collision_radius;
+
+  union {
+    ll_node *astar_node;
+    gsl_vector *vector;
+    struct unit *unit;
+    struct unit **units;
+  } state_data;
+
   struct division *division;
 } unit;
 

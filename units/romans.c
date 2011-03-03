@@ -10,6 +10,11 @@ unit *create_legionary_unit() {
   unit->attributes.health = 60; // out of 100
   unit->attributes.armor = 25; // out of 100
 
+  unit->display_radius[0] = 1.5;
+  unit->display_radius[1] = 3;
+
+  unit->collision_radius = 4;
+
   unit->weapons.primary_weapon = sword;
 
   return unit;

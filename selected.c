@@ -37,15 +37,26 @@ bool units_selected() {
   return selected_head != NULL;
 }
 
+// this should probably be moved elsewhere
+#include "util/astar.h"
+#include "units/states/move_to.h"
+#include "units/states/move_to_node.h"
+
 void move_selected_units_to(gsl_vector *vector) {
   ll_node *node = selected_head;
   unit *u;
   while(node) {
     u = (unit *) node->value;
     print_unit(u);
-    // depending on the state? do something?
-    // or call the current states move method?
-    change_unit_state(u, moving, vector); 
+
+    ll_node *path = shortest_path(u->vector, vector);
+    if(path == NULL) { // couldn't get an astar path, so just go straight-line??
+      push_unit_state(u, &move_to, vector);
+    } else {
+      printf("pushing move_to_node\n");
+      push_unit_state(u, &move_to_node, path);
+    }
+
     node = node->next;
   }
 }

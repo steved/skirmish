@@ -54,6 +54,7 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   beginning->g_score = 0;
   beginning->h_score = euclidian_distance(beginning, end);
   beginning->score = beginning->h_score;
+  beginning->came_from = NULL;
   printf("beginning score: %f\n", beginning->score);
 
   pqueue_add(open, beginning);

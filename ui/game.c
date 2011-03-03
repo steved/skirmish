@@ -3,7 +3,8 @@
 #include "game.h"
 #include "../selected.h"
 #include "../units.h"
-#include "../unit_state_functions.h"
+
+#include "../units/states/unit_state.h"
 
 #include "../util/astar.h"
 #include "../util/text.h"
@@ -98,7 +99,7 @@ void game_update(camera *camera, PLAYERS *players) {
     for(int j = 0; j < player->num_divisions; j++) {
       division *div = player->divisions[j];
       for(int k = 0; k < div->size; k++) {
-        state_functions[div->units[k]->state.current](players, camera, div->units[k]);
+        update_unit(div->units[k], camera, players);
       }
     }
   }

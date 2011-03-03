@@ -15,8 +15,8 @@ void print_unit(unit *);
 void print_attributes(attributes);
 void print_weapons(weapons);
 void remove_unit(unit *);
-void change_unit_state(unit *, state_description, void *);
 bool check_for_unit_near(gsl_vector *, camera *, PLAYERS *, unit *);
 bool move_unit_towards(unit *, gsl_vector *, camera *, PLAYERS *);
+void update_unit(unit *, camera *, PLAYERS *);
 
 #endif

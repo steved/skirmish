@@ -5,6 +5,8 @@
 #include "util/astar.h"
 #include "util/terrain.h"
 
+#include "units/states/waiting.h"
+
 #include <assert.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_vector.h>
@@ -16,7 +18,9 @@ unit *create_empty_unit() {
   assert(empty_unit != NULL);
   empty_unit->type = infantry;
 
-  empty_unit->state.current = waiting;
+  empty_unit->state = NULL;
+  push_unit_state(empty_unit, &waiting, NULL);
+
   empty_unit->vector = gsl_vector_calloc(3);
 
   weapons empty = {none, none, 0};
@@ -26,6 +30,10 @@ unit *create_empty_unit() {
     0, 0, 0, // strength, speed, stamina
     0, 0 // health, armor
   };
+
+  empty_unit->display_radius[0] = 0;
+  empty_unit->display_radius[1] = 0;
+  empty_unit->collision_radius = 0;
 
   empty_unit->attributes = attrs;
 
@@ -44,8 +52,9 @@ void place_at_vector(unit *unit, gsl_vector *v) {
 }
 
 void print_unit(unit *unit) {
-  printf("type %d, cur_state %d, vector (%f, %f, %f)\n", 
-      unit->type, unit->state.current, 
+  printf("type %d, state %s, vector (%f, %f, %f)\n", 
+      unit->type, 
+      ((state *)unit->state->value)->name, 
       gsl_vector_get(unit->vector, 0), 
       gsl_vector_get(unit->vector, 1),
       gsl_vector_get(unit->vector, 2));
@@ -72,18 +81,7 @@ void remove_unit(unit *u) {
   free(u);
 }
 
-void change_unit_state(unit *u, state_description desc, void *subj) {
-  if(u->state.current == waiting)
-    u->state.subject.vector = gsl_vector_alloc(3);
-
-  u->state.current = desc;
-  gsl_vector_memcpy(u->state.subject.vector, subj);
-  u->state.astar_node = shortest_path(u->vector, (gsl_vector *) subj);
-}
-
 // defined in attributes.h
-double unit_radius[] = {4, 3, 3};
-
 bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, unit *unit_except) {
   for(int i = 0; i < players->num; i++) {
     player *pl = players->players[i];
@@ -95,7 +93,7 @@ bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, un
         if(un == unit_except)
           continue;
 
-        if(bounding_circle_collision(location, unit_radius[unit_except->type], un->vector, unit_radius[un->type]))
+        if(bounding_circle_collision(location, unit_except->collision_radius, un->vector, un->collision_radius))
           return true;
       }
     }
@@ -105,24 +103,24 @@ bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, un
 
 // returns true if @ destination, otherwise false
 bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *players) {
+  if(bounding_circle_collision(subj->vector, subj->collision_radius, dest, 0.5))
+    return true;
+
   // set the z coordinate because it gets set incorrectly when
   // placing the unit in the beginning 
   gsl_vector_set(subj->vector, 2, height_at(gsl_vector_get(subj->vector, 0), gsl_vector_get(subj->vector, 1)));
 
-  gsl_vector *go_to = gsl_vector_alloc(3);
+  printf("from (%f, %f) to (%f, %f)\n", gsl_vector_get(subj->vector, 0), gsl_vector_get(subj->vector, 1),
+      gsl_vector_get(dest, 0), gsl_vector_get(dest, 1));
 
-  if(subj->state.astar_node != NULL) {
-    ai_node *node = (ai_node *) subj->state.astar_node->value;
-    gsl_vector_set(go_to, 0, node->x);
-    gsl_vector_set(go_to, 1, node->y);
-    gsl_vector_set(go_to, 2, height_at(node->x, node->y));
-  } else {
-    gsl_vector_memcpy(go_to, dest);
-  }
+  gsl_vector *go_to = gsl_vector_alloc(3);
+  gsl_vector_memcpy(go_to, dest);
   gsl_vector_sub(go_to, subj->vector);
 
+  printf("go_to before normalize (%f, %f)\n", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
   double norm = gsl_blas_dnrm2(go_to);
   gsl_vector_scale(go_to, 1 / norm);
+  printf("go_to after normalize (%f, %f)\n", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
 
   delta_height_scale(go_to, subj->vector);
   gsl_vector_add(go_to, subj->vector);
@@ -135,15 +133,7 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *pl
 
   gsl_vector_free(go_to);
 
-  bool there = bounding_circle_collision(subj->vector, unit_radius[subj->type], dest, 0.5);
-  if(there && subj->state.astar_node != NULL && subj->state.astar_node->next != NULL) {
-    ll_node *next = subj->state.astar_node->next;
-    free(subj->state.astar_node);
-    subj->state.astar_node = next;
-
-    return false;
-  }
-  return there;
+  return bounding_circle_collision(subj->vector, subj->collision_radius, dest, 0.5);
 }
 
 static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
@@ -151,6 +141,10 @@ static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
   gsl_vector_memcpy(delta_height, new_location);
   gsl_vector_add(delta_height, location);
 
+  printf("loc (%f, %f), new_loc (%f, %f)\n",
+      gsl_vector_get(location, 0), gsl_vector_get(location, 1),
+      gsl_vector_get(new_location, 0), gsl_vector_get(new_location, 1));
+  printf("about to get height @ vector (%f, %f)\n", gsl_vector_get(delta_height, 0), gsl_vector_get(delta_height, 1));
   double delta = height_at_vector(delta_height) - gsl_vector_get(location, 2);
   gsl_vector_set(new_location, 2, delta);
 
@@ -166,4 +160,14 @@ static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
   // TODO scale by how high delta height is
   gsl_vector_scale(new_location, 1 + (sign * 0.3)); 
   gsl_vector_set(new_location, 2, height_at_vector(delta_height) - gsl_vector_get(location, 2));
+}
+
+void update_unit(unit *u, camera *cam, PLAYERS *players) {
+  // dead unit
+  if(u->state == NULL)
+    return;
+
+  if(!((state *) u->state->value)->update(players, cam, u)) {
+    pop_unit_state(u);
+  }
 }

@@ -5,6 +5,8 @@
 #include "util/astar.h"
 #include "util/terrain.h"
 
+#include "units/states/unit_state.h"
+
 #include "SDL_gfxPrimitives.h"
 
 gsl_vector *calculate_unit_display_position(unit *unit, camera *c, float interpolation) {
@@ -54,12 +56,12 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
     if(ZOOM_LEVEL == 1 || ZOOM_LEVEL == 2)
       mult *= (3 - ZOOM_LEVEL) * 2;
 
-    rad_x = display_unit_radius[unit->type][0] * mult;
+    rad_x = unit->display_radius[0] * mult;
 
     // special case for infantry since they're triangles
     if(unit->type == infantry)
       mult /= 2;
-    rad_y = display_unit_radius[unit->type][1] * mult;
+    rad_y = unit->display_radius[1] * mult;
   }
 
   if(x < -rad_x || y < -rad_y || x > WIDTH + rad_x || y > WIDTH + rad_y)
@@ -82,12 +84,12 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
 
   if(selected(unit)) {
    // this unit is selected!
-   circleColor(surface, x, y, unit_radius[unit->type], (0xffffff00 - color) | 0x000000ff);
+   circleColor(surface, x, y, unit->collision_radius, (0xffffff00 - color) | 0x000000ff);
   }
 
   // draw the AStar nodes if they exist
-  if(unit->state.current == moving && unit->state.astar_node != NULL) {
-    ll_node *cur = unit->state.astar_node;
+  if(unit->state != NULL && strcmp(((state *) unit->state->value)->name, "move_to_node") == 0) {
+    ll_node *cur = unit->state_data.astar_node;
     ai_node *node;
     gsl_vector *display;
     while(cur) {

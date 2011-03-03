@@ -9,6 +9,8 @@
 #include "../util/terrain.h"
 #include "../util/text.h"
 
+#include "../units/states/unit_state.h"
+
 #include "SDL_rotozoom.h"
 #include "SDL_gfxPrimitives.h"
 
@@ -45,7 +47,7 @@ void setup_update(camera *camera, PLAYERS *players) {
       div = pl->divisions[j];
       for(int k = 0; k < div->size; k++) {
         u = div->units[k];
-        if(u->state.current == moving) {
+        /*if(u->state.current == moving) {
           if(allowed_on_terrain(u->state.subject.vector) &&
               !check_for_unit_near(u->state.subject.vector, camera, players, u)) {
             place_at_vector(u, u->state.subject.vector);
@@ -53,7 +55,7 @@ void setup_update(camera *camera, PLAYERS *players) {
             gsl_vector_free(u->state.subject.vector);
           }
           u->state.current = waiting;
-        }
+        }*/
       }
     }
   }
@@ -149,7 +151,7 @@ void setup_players(PLAYERS *players) {
       div = player->divisions[j];
       for(int k = 0; k < div->size; k++) {
         u = div->units[k];
-        rad = unit_radius[u->type] * 2;
+        rad = u->collision_radius * 2;
         place(u, x, y);
         area += rad * rad;
 
