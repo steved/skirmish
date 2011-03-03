@@ -7,7 +7,7 @@
 
 int ai_score(void *);
 float euclidian_distance(ai_node *, ai_node *);
-static ll_node *reconstruct_path(int *, ai_node *);
+static ll_node *reconstruct_path(ai_node **, ai_node *);
 
 int ai_score(void *value) {
   ai_node *node = (ai_node *) value;
@@ -22,7 +22,7 @@ float euclidian_distance(ai_node *node1, ai_node *node2) {
 
 #define MAX_OPEN_SIZE 350
 
-static int *came_from = NULL;
+static ai_node **came_from = NULL;
 
 ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   // make sure the nav_mesh has been created
@@ -30,10 +30,10 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
 
   // allocate the came_from array if it hasnt' yet
   if(came_from == NULL) {
-    came_from = malloc(sizeof(int) * node_max);
+    came_from = calloc(node_max, sizeof(ai_node *));
     assert(came_from != NULL);
   }
-  memset(came_from, -1, node_max);
+  memset(came_from, 0, node_max);
 
   ai_node *beginning = find_closest_node(start);
   ai_node *end = find_closest_node(goal);
@@ -48,7 +48,7 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
     return NULL;
   }
 
-  pqueue *open = pqueue_init(MAX_OPEN_SIZE, &ai_score);
+  pqueue *open = pqueue_init(node_max, &ai_score);
   ll_node *closed = NULL;
 
   beginning->g_score = 0;
@@ -63,10 +63,13 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   while(!pqueue_empty(open)) {
     current = (ai_node *) pqueue_pop(open);
     printf("investigating node @ (%d, %d) - %f\n", current->x, current->y, current->score); 
-    if(current == end)
+    if(current == end) {
+      pqueue_free(open);
       return reconstruct_path(came_from, current);
+    }
 
     closed = ll_add(closed, current);
+
     for(int i = 0; i < current->num_edges; i++) {
       neighbor = current->edges[i]->right;
       printf("\tinvestigating neighbor (%d, %d)\n", neighbor->x, neighbor->y);
@@ -81,7 +84,7 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
         if(!include)
           pqueue_add(open, neighbor);
         
-        came_from[neighbor->idx] = current->idx;
+        neighbor->came_from = current;
 
         neighbor->g_score = tentative_g_score;
         neighbor->h_score = euclidian_distance(neighbor, end);
@@ -97,16 +100,18 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   return NULL;
 }
 
-static ll_node *reconstruct_path(int *came_from, ai_node *goal) {
-  ai_node *node; 
-
+static ll_node *reconstruct_path(ai_node **came_from, ai_node *goal) {
+  ai_node *node, *ncame_from; 
   ll_node *beginning = ll_init(goal);
-  int idx = came_from[goal->idx];
+  printf("starting from %d, %d\n", goal->x, goal->y);
 
-  while(idx != -1) {
-    node = nodes->nodes[idx];
+  node = goal->came_from;
+  while(node != NULL) {
     beginning = ll_add(beginning, node);
-    idx = came_from[idx];
+
+    ncame_from = node->came_from;
+    node->came_from = NULL;
+    node = ncame_from;
   }
 
   return beginning;

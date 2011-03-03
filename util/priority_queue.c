@@ -4,6 +4,10 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
+static void swap(void **, int, int);
+static void heapify(pqueue *, int);
 
 pqueue *pqueue_init(int max_size, int (*score)(void *)) {
   assert(max_size > 0);
@@ -13,7 +17,6 @@ pqueue *pqueue_init(int max_size, int (*score)(void *)) {
   
   queue->data = calloc(max_size + 1, sizeof(void *));
   assert(queue->data != NULL);
-  queue->data[0] = NULL;
 
   queue->size = 0;
   queue->max_size = max_size;
@@ -30,10 +33,10 @@ void pqueue_add(pqueue *queue, void *value) {
 
   int i;
   for(i = ++queue->size; 
-      (queue->data[i / 2] == NULL ? -1 : queue->score(queue->data[i / 2])) > queue->score(value); 
+      i > 1 && queue->score(queue->data[i / 2]) > queue->score(value); 
       i /= 2) 
   {
-    queue->data[i] = queue->data[i / 2];
+    swap(queue->data, i, i / 2);
   }
   queue->data[i] = value;
 }
@@ -45,20 +48,8 @@ void *pqueue_pop(pqueue *queue) {
   void *top = queue->data[1];
   void *last = queue->data[queue->size--];
 
-  int i, child;
-  for(i = 1; i * 2 <= queue->size; i = child) {
-    child = i * 2;
-    if(child != queue->size && 
-        queue->score(queue->data[child + 1]) < queue->score(queue->data[child]))
-      child++;
-
-    if(queue->score(last) > queue->score(queue->data[child]))
-      queue->data[i] = queue->data[child];
-    else
-      break;
-  }
-
-  queue->data[i] = last;
+  queue->data[1] = last;
+  heapify(queue, 1);
   return top;
 }
 
@@ -71,6 +62,8 @@ bool pqueue_include(pqueue *queue,  void *value) {
 }
 
 void pqueue_clear(pqueue *queue) {
+  memset(queue->data, 0, queue->size);
+  queue->size = 0;
 }
 
 bool pqueue_empty(pqueue *queue) {
@@ -80,3 +73,63 @@ bool pqueue_empty(pqueue *queue) {
 bool pqueue_full(pqueue *queue) {
   return queue->size == queue->max_size;
 }
+
+static void swap(void **data, int index, int swap) {
+  void *temp = data[swap];
+  data[swap] = data[index];
+  data[index] = temp;
+}
+
+static void heapify(pqueue *queue, int index) {
+  int left = 2 * index;
+  int right = 2 * index + 1;
+  int largest;
+
+  if(left <= queue->size && queue->score(queue->data[left]) < queue->score(queue->data[index]))
+    largest = left;
+  else
+    largest = index;
+
+  if(right <= queue->size && queue->score(queue->data[right]) < queue->score(queue->data[largest]))
+    largest = right;
+
+  if(largest != index) {
+    swap(queue->data, index, largest);
+    heapify(queue, largest);
+  }
+}
+
+void pqueue_free(pqueue *queue) {
+  free(queue->data);
+  free(queue);
+
+  queue->data = NULL;
+  queue = NULL;
+}
+#if 0
+/* gcc -o pqueue priority_queue.c; ./pqueue */
+
+int score(void *);
+
+int main() {
+  srand(time(NULL));
+
+  pqueue *queue = pqueue_init(100, &score);
+  int *i, j;
+  for(j = 0; j < 100; j++) {
+    i = malloc(sizeof(int));
+    *i = rand() % 1000;
+    pqueue_add(queue, i);
+  }
+
+  while(!pqueue_empty(queue)) {
+    i = pqueue_pop(queue);
+    printf("%d\n", *i);
+    free(i);
+  }
+}
+
+int score(void *data) {
+  return *((int *) data);
+}
+#endif

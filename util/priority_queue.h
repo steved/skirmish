@@ -16,6 +16,7 @@ bool pqueue_include(pqueue *,  void *);
 void pqueue_clear(pqueue *);
 bool pqueue_empty(pqueue *);
 bool pqueue_full(pqueue *);
+void pqueue_free(pqueue *);
 
 
 #endif

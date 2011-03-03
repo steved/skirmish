@@ -107,6 +107,7 @@ ai_node *find_or_create_node(int index) {
     node->edges = (ai_edge **) calloc(8, sizeof(ai_edge *));
 
     node->score = node->g_score = node->h_score = 0;
+    node->came_from = NULL;
 
     assert(node->edges != NULL);
     nodes->nodes[node->idx] = node;

@@ -12,6 +12,7 @@ typedef struct ai_node {
   struct ai_edge **edges;
 
   float score, g_score, h_score;
+  struct ai_node *came_from;
 } ai_node;
 
 typedef struct ai_edge {
