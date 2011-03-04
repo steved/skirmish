@@ -50,10 +50,9 @@ void move_selected_units_to(gsl_vector *vector) {
     print_unit(u);
 
     ll_node *path = shortest_path(u->vector, vector);
-    if(path == NULL) { // couldn't get an astar path, so just go straight-line??
+    if(path == NULL) { // XXX couldn't get an astar path, so just go straight-line??
       push_unit_state(u, &move_to, vector);
     } else {
-      printf("pushing move_to_node\n");
       push_unit_state(u, &move_to_node, path);
     }
 

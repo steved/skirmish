@@ -29,6 +29,7 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   assert(node_max > 0);
 
   // allocate the came_from array if it hasnt' yet
+  // create these in nav_mesh walk_terrain?
   if(came_from == NULL) {
     came_from = calloc(node_max, sizeof(ai_node *));
     assert(came_from != NULL);
@@ -48,6 +49,10 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
     return NULL;
   }
 
+  printf("end node (%d, %d)\n", end->x, end->y);
+
+  // this should probably be allocated once
+  // and then just cleared each time and free-d at the end
   pqueue *open = pqueue_init(node_max, &ai_score);
   ll_node *closed = NULL;
 
@@ -82,15 +87,15 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
 
       bool include = pqueue_include(open, neighbor);
       if(!include || tentative_g_score < neighbor->g_score) {
-        if(!include)
-          pqueue_add(open, neighbor);
-        
         neighbor->came_from = current;
 
         neighbor->g_score = tentative_g_score;
         neighbor->h_score = euclidian_distance(neighbor, end);
         neighbor->score = neighbor->g_score + neighbor->h_score;
         printf("\tadding neighbor - %f\n", neighbor->score);
+
+        if(!include)
+          pqueue_add(open, neighbor);
       }
     }
   }
@@ -102,12 +107,14 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
 }
 
 static ll_node *reconstruct_path(ai_node **came_from, ai_node *goal) {
-  ai_node *node, *ncame_from; 
-  ll_node *beginning = ll_init(goal);
+  ai_node *ncame_from; 
+
+  ll_node *beginning = NULL;
+  ai_node *node = goal;
+
   printf("starting from %d, %d\n", goal->x, goal->y);
 
-  node = goal->came_from;
-  while(node != NULL) {
+  while(node) {
     beginning = ll_add(beginning, node);
 
     ncame_from = node->came_from;

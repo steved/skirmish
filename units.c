@@ -81,7 +81,6 @@ void remove_unit(unit *u) {
   free(u);
 }
 
-// defined in attributes.h
 bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, unit *unit_except) {
   for(int i = 0; i < players->num; i++) {
     player *pl = players->players[i];
@@ -110,17 +109,12 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *pl
   // placing the unit in the beginning 
   gsl_vector_set(subj->vector, 2, height_at(gsl_vector_get(subj->vector, 0), gsl_vector_get(subj->vector, 1)));
 
-  printf("from (%f, %f) to (%f, %f)\n", gsl_vector_get(subj->vector, 0), gsl_vector_get(subj->vector, 1),
-      gsl_vector_get(dest, 0), gsl_vector_get(dest, 1));
-
   gsl_vector *go_to = gsl_vector_alloc(3);
   gsl_vector_memcpy(go_to, dest);
   gsl_vector_sub(go_to, subj->vector);
 
-  printf("go_to before normalize (%f, %f)\n", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
   double norm = gsl_blas_dnrm2(go_to);
   gsl_vector_scale(go_to, 1 / norm);
-  printf("go_to after normalize (%f, %f)\n", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
 
   delta_height_scale(go_to, subj->vector);
   gsl_vector_add(go_to, subj->vector);
@@ -141,10 +135,6 @@ static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
   gsl_vector_memcpy(delta_height, new_location);
   gsl_vector_add(delta_height, location);
 
-  printf("loc (%f, %f), new_loc (%f, %f)\n",
-      gsl_vector_get(location, 0), gsl_vector_get(location, 1),
-      gsl_vector_get(new_location, 0), gsl_vector_get(new_location, 1));
-  printf("about to get height @ vector (%f, %f)\n", gsl_vector_get(delta_height, 0), gsl_vector_get(delta_height, 1));
   double delta = height_at_vector(delta_height) - gsl_vector_get(location, 2);
   gsl_vector_set(new_location, 2, delta);
 

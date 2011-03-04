@@ -25,21 +25,20 @@ ll_node *ll_add(ll_node *head, void *value) {
 }
 
 ll_node *ll_add_to_bottom(ll_node *head, void *value, void *extra_data) {
-  ll_node *node;
+  ll_node *node_to_add = ll_init(value);
+  node_to_add->extra_data = extra_data;
 
   if(head == NULL) {
-    node = ll_init(value);
-    node->extra_data = extra_data;
-    return node;
+    return node_to_add;
   } else {
-    node = head;
+    ll_node *node = head;
 
     while(node->next != NULL) {
       node = node->next;
     }
 
-    node->next = ll_init(value);
-    node->next->extra_data = extra_data;
+    node_to_add->prev = node;
+    node->next = node_to_add;
     return head;
   }
 }
@@ -52,13 +51,12 @@ ll_node *ll_remove(ll_node *head, void *value) {
 
   while(node) {
     if(node->value == value) {
-      if(node->prev == NULL) 
+      if(node == head) 
         head = node->next;
       else {
         node->prev->next = node->next;
         node->next->prev = node->prev;
       }
-
       
       free(node);
       return head;

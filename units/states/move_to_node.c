@@ -15,9 +15,9 @@ void move_to_node_cleanup(unit *u) {
 }
 
 bool move_to_node_update(PLAYERS *players, camera *camera, unit *u) {
+  // if there is another move state pending
+  // immediately switch to that
   if(u->state->next != NULL && u->state->next->value == &move_to_node) {
-    printf("switching to next move_to_node state\n");
-    // immediately go to that state
     return false;
   }
 
@@ -28,16 +28,13 @@ bool move_to_node_update(PLAYERS *players, camera *camera, unit *u) {
   gsl_vector_set(go_to, 1, node->y);
   gsl_vector_set(go_to, 2, height_at(node->x, node->y));
 
-  printf("moving towards (%f, %f)\n", gsl_vector_get(go_to, 0), gsl_vector_get(go_to, 1));
   bool there = move_unit_towards(u, go_to, camera, players); 
   gsl_vector_free(go_to);
 
   if(there) {
-    printf("there\n");
     ll_node *current = u->state_data.astar_node;
     if(current->next != NULL) {
-      printf("going to next node\n");
-      u->state_data.astar_node = ll_remove(u->state_data.astar_node, current);
+      u->state_data.astar_node = ll_remove(current, current->value);
       there = false;
     } else {
       push_unit_state(u, &waiting, NULL);
