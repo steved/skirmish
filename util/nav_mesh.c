@@ -1,4 +1,5 @@
 #include "../collision.h"
+
 #include "nav_mesh.h"
 
 #include "SDL_gfxPrimitives.h"
@@ -6,6 +7,7 @@
 #include <assert.h>
 
 
+int ai_score(void *);
 void expand_node(ai_node *);
 void connect_node(ai_node *, ai_node *);
 bool in_water(ai_node *);
@@ -15,6 +17,11 @@ walkable_nodes *nodes = NULL;
 static int nodes_per;
 int node_max = 0;
 
+// extern defined a* helper structures
+bool *closed_nodes = NULL;
+bool *open_nodes = NULL;
+pqueue *open_list = NULL;
+
 void walk_terrain() {
   // if regenerating, free the old memory
   if(nodes != NULL)
@@ -22,6 +29,14 @@ void walk_terrain() {
 
   nodes_per = MAP_SIZE / NODE_DISTANCE + 1;
   node_max = nodes_per * nodes_per;
+
+  closed_nodes = calloc(node_max, sizeof(bool));
+  assert(closed_nodes != NULL);
+
+  open_nodes = calloc(node_max, sizeof(bool));
+  assert(open_nodes != NULL);
+
+  open_list = pqueue_init(node_max * node_max, &ai_score);
 
   nodes = (walkable_nodes *) malloc(sizeof(walkable_nodes));
   nodes->nodes = (ai_node **) calloc(node_max, sizeof(ai_node *));
@@ -153,4 +168,20 @@ void free_nav_mesh() {
 
   free(nodes->nodes);
   free(nodes);
+
+  nodes = NULL;
+
+  free(closed_nodes);
+  closed_nodes = NULL;
+
+  free(open_nodes);
+  open_nodes = NULL;
+
+  pqueue_free(open_list);
+  open_list = NULL;
+}
+
+int ai_score(void *value) {
+  ai_node *node = (ai_node *) value;
+  return node->score;
 }

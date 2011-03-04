@@ -1,7 +1,9 @@
 #ifndef SKIRMISH_NAV_MESH
 #define SKIRMISH_NAV_MESH
 
+#include "priority_queue.h"
 #include "terrain.h"
+
 #include <stdbool.h>
 
 typedef struct ai_node {
@@ -33,5 +35,10 @@ void walk_terrain();
 void draw_nav_mesh(SDL_Surface *, bool, bool);
 ai_node *node_at(int, int);
 void free_nav_mesh();
+
+// helper structures for a*
+extern bool *closed_nodes;
+extern bool *open_nodes;
+extern pqueue *open_list;
 
 #endif

@@ -62,7 +62,7 @@ bool pqueue_include(pqueue *queue,  void *value) {
 }
 
 void pqueue_clear(pqueue *queue) {
-  memset(queue->data, 0, queue->size);
+  memset(queue->data, 0, queue->max_size + 1);
   queue->size = 0;
 }
 

@@ -5,14 +5,8 @@
 #include <assert.h>
 #include <math.h>
 
-int ai_score(void *);
 float euclidian_distance(ai_node *, ai_node *);
-static ll_node *reconstruct_path(ai_node **, ai_node *);
-
-int ai_score(void *value) {
-  ai_node *node = (ai_node *) value;
-  return node->score;
-}
+static ll_node *reconstruct_path(ai_node *);
 
 float euclidian_distance(ai_node *node1, ai_node *node2) {
   int xdiff = node1->x - node2->x;
@@ -20,21 +14,9 @@ float euclidian_distance(ai_node *node1, ai_node *node2) {
   return sqrt((xdiff * xdiff) + (ydiff * ydiff));
 }
 
-#define MAX_OPEN_SIZE 350
-
-static ai_node **came_from = NULL;
-
 ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   // make sure the nav_mesh has been created
-  assert(node_max > 0);
-
-  // allocate the came_from array if it hasnt' yet
-  // create these in nav_mesh walk_terrain?
-  if(came_from == NULL) {
-    came_from = calloc(node_max, sizeof(ai_node *));
-    assert(came_from != NULL);
-  }
-  memset(came_from, 0, node_max);
+  assert(nodes != NULL);
 
   ai_node *beginning = find_closest_node(start);
   ai_node *end = find_closest_node(goal);
@@ -49,53 +31,48 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
     return NULL;
   }
 
-  printf("end node (%d, %d)\n", end->x, end->y);
-
-  // this should probably be allocated once
-  // and then just cleared each time and free-d at the end
-  pqueue *open = pqueue_init(node_max, &ai_score);
-  ll_node *closed = NULL;
+  memset(closed_nodes, false, node_max);
+  memset(open_nodes, false, node_max);
+  pqueue_clear(open_list);
 
   beginning->g_score = 0;
   beginning->h_score = euclidian_distance(beginning, end);
   beginning->score = beginning->h_score;
   beginning->came_from = NULL;
-  printf("beginning score: %f\n", beginning->score);
 
-  pqueue_add(open, beginning);
+  pqueue_add(open_list, beginning);
+  open_nodes[beginning->idx] = true;
 
   ai_node *current, *neighbor;
   float tentative_g_score;
-  while(!pqueue_empty(open)) {
-    current = (ai_node *) pqueue_pop(open);
-    printf("investigating node @ (%d, %d) - %f\n", current->x, current->y, current->score); 
-    if(current == end) {
-      pqueue_free(open);
-      return reconstruct_path(came_from, current);
-    }
+  while(!pqueue_empty(open_list)) {
+    current = (ai_node *) pqueue_pop(open_list);
+    open_nodes[current->idx] = false;
 
-    closed = ll_add(closed, current);
+    if(current == end)
+      return reconstruct_path(current);
+
+    closed_nodes[current->idx] = true;
 
     for(int i = 0; i < current->num_edges; i++) {
       neighbor = current->edges[i]->right;
-      printf("\tinvestigating neighbor (%d, %d)\n", neighbor->x, neighbor->y);
-      if(ll_include(closed, neighbor))
+      if(closed_nodes[neighbor->idx])
         continue;
 
       tentative_g_score = current->g_score + euclidian_distance(current, neighbor);
-      printf("\ttentative g_score: %f\n", tentative_g_score);
 
-      bool include = pqueue_include(open, neighbor);
+      bool include = open_nodes[neighbor->idx];
       if(!include || tentative_g_score < neighbor->g_score) {
         neighbor->came_from = current;
 
         neighbor->g_score = tentative_g_score;
         neighbor->h_score = euclidian_distance(neighbor, end);
         neighbor->score = neighbor->g_score + neighbor->h_score;
-        printf("\tadding neighbor - %f\n", neighbor->score);
 
-        if(!include)
-          pqueue_add(open, neighbor);
+        if(!include) {
+          pqueue_add(open_list, neighbor);
+          open_nodes[neighbor->idx] = true;
+        }
       }
     }
   }
@@ -106,20 +83,18 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
   return NULL;
 }
 
-static ll_node *reconstruct_path(ai_node **came_from, ai_node *goal) {
-  ai_node *ncame_from; 
+static ll_node *reconstruct_path(ai_node *goal) {
+  ai_node *came_from; 
 
   ll_node *beginning = NULL;
   ai_node *node = goal;
 
-  printf("starting from %d, %d\n", goal->x, goal->y);
-
   while(node) {
     beginning = ll_add(beginning, node);
 
-    ncame_from = node->came_from;
+    came_from = node->came_from;
     node->came_from = NULL;
-    node = ncame_from;
+    node = came_from;
   }
 
   return beginning;
