@@ -12,6 +12,7 @@
 #include <gsl/gsl_vector.h>
 
 static void delta_height_scale(gsl_vector *, gsl_vector *);
+static int roll(int, int);
 
 unit *create_empty_unit() {
   unit *empty_unit = (unit *) malloc(sizeof(unit));
@@ -28,7 +29,8 @@ unit *create_empty_unit() {
 
   attributes attrs = {
     0, 0, 0, // strength, speed, stamina
-    0, 0 // health, armor
+    0, 0, // health, armor
+    1 // experience
   };
 
   empty_unit->display_radius[0] = 0;
@@ -81,9 +83,13 @@ void remove_unit(unit *u) {
   free(u);
 }
 
-bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, unit *unit_except) {
+unit *check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, unit *unit_except, bool only_human, bool only_enemies) {
   for(int i = 0; i < players->num; i++) {
     player *pl = players->players[i];
+
+    if((only_human && !pl->human) || (only_enemies && pl->human))
+      continue;
+
     for(int j = 0; j < pl->num_divisions; j++) {
       division *div = pl->divisions[j];
       for(int k = 0; k < div->size; k++) {
@@ -92,12 +98,12 @@ bool check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, un
         if(un == unit_except)
           continue;
 
-        if(bounding_circle_collision(location, unit_except->collision_radius, un->vector, un->collision_radius))
-          return true;
+        if(bounding_circle_collision(location, (unit_except == NULL ? un : unit_except)->collision_radius, un->vector, un->collision_radius))
+          return un;
       }
     }
   }
-  return false;
+  return NULL;
 }
 
 // returns true if @ destination, otherwise false
@@ -119,7 +125,7 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *pl
   delta_height_scale(go_to, subj->vector);
   gsl_vector_add(go_to, subj->vector);
 
-  bool unit_at = check_for_unit_near(go_to, camera, players, subj);
+  bool unit_at = check_for_unit_near(go_to, camera, players, subj, false, false) != NULL;
   if(allowed_on_terrain(go_to) && !unit_at) {
     // find a way around?
     gsl_vector_memcpy(subj->vector, go_to);
@@ -160,4 +166,36 @@ void update_unit(unit *u, camera *cam, PLAYERS *players) {
   if(!((state *) u->state->value)->update(players, cam, u)) {
     pop_unit_state(u);
   }
+}
+
+bool attack_unit(unit *attacker, unit *defender) {
+  int attack_strength = roll(attacker->attributes.strength, attacker->attributes.experience);
+  int defend_strength = roll(defender->attributes.armor, defender->attributes.experience);
+
+  int damage = attack_strength - defend_strength;
+  if(damage < 0)
+    damage = 0;
+  printf("damage to defender %d\n", damage);
+  defender->attributes.health -= damage; 
+  printf("defender has %d health left\n", defender->attributes.health);
+
+  return defender->attributes.health <= 0;
+}
+
+static int roll(int size, int number) {
+  int result = 1;
+  for(int i = 0; i < number; i++) {
+    result *= rand() % size + 1; 
+  }
+
+  return result;
+}
+
+void unit_dead(unit *un) {
+  if(un->state == NULL)
+    return;
+  state *current_state = (state *) un->state->value;
+  current_state->cleanup(un);
+
+  un->state = ll_clear(un->state);
 }

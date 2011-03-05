@@ -13,7 +13,6 @@ SDL_Surface *loading;
 SDL_Rect loading_rect;
 
 void loading_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float interpolation) {
-
   SDL_BlitSurface(loading, NULL, buffer, &loading_rect);
 }
 

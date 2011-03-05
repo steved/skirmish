@@ -41,6 +41,9 @@ double display_unit_radius[][2] = {
 };
 
 void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color, float interpolation) { 
+  if(unit->state == NULL)
+    return;
+
   gsl_vector *pos = calculate_unit_display_position(unit, camera, interpolation);
   double x = gsl_vector_get(pos, 0);
   double y = gsl_vector_get(pos, 1);
@@ -87,6 +90,7 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
    circleColor(surface, x, y, unit->collision_radius, (0xffffff00 - color) | 0x000000ff);
   }
 
+#ifdef NAV_DEBUG
   // draw the AStar nodes if they exist
   if(unit->state != NULL && strcmp(((state *) unit->state->value)->name, "move_to_node") == 0) {
     ll_node *cur = unit->state_data.astar_node;
@@ -100,4 +104,5 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
       cur = cur->next;
     }
   }
+#endif
 }

@@ -33,7 +33,6 @@ typedef struct players {
 player *create_human_player(const char *, int);
 player *create_ai_player(int);
 void remove_player(player *);
-bool check_for_unit_at(bool, int, int, camera *, PLAYERS *players);
-unit *get_unit_near(gsl_vector *, camera *, PLAYERS *);
+bool select_units_at(bool, int, int, camera *, PLAYERS *players);
 
 #endif

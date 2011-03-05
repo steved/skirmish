@@ -167,11 +167,16 @@ static void handle_mousedown(SDL_MouseButtonEvent button_event, camera *camera, 
 
   switch(button_event.button) {
     case 1:
-      check_for_unit_at(modifier, button_event.x, button_event.y, camera, players);
+      select_units_at(modifier, button_event.x, button_event.y, camera, players);
       break;
     case 3:
       dest = calculate_map_position(button_event.x, button_event.y, camera);
-      move_selected_units_to(dest);
+      unit *un = check_for_unit_near(dest, camera, players, NULL, false, true);
+      if(un != NULL) {
+        selected_units_attack(un);
+      } else {
+        move_selected_units_to(dest);
+      }
       gsl_vector_free(dest);
       break;
     case 4:

@@ -8,7 +8,7 @@ unit *create_legionary_unit() {
   unit->attributes.strength = 10; // out of unlimited
   unit->attributes.stamina = 50; // out of 100
   unit->attributes.health = 60; // out of 100
-  unit->attributes.armor = 25; // out of 100
+  unit->attributes.armor = 5; // out of unlimited 
 
   unit->display_radius[0] = 1.5;
   unit->display_radius[1] = 3;

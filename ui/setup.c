@@ -49,7 +49,7 @@ void setup_update(camera *camera, PLAYERS *players) {
         u = div->units[k];
         /*if(u->state.current == moving) {
           if(allowed_on_terrain(u->state.subject.vector) &&
-              !check_for_unit_near(u->state.subject.vector, camera, players, u)) {
+              check_for_unit_near(u->state.subject.vector, camera, players, u, false) == NULL) {
             place_at_vector(u, u->state.subject.vector);
           } else {
             gsl_vector_free(u->state.subject.vector);
@@ -70,7 +70,9 @@ void setup_prepare() {
 
     printf("generating nav_mesh\n");
     walk_terrain();
+#ifdef NAV_DEBUG
     draw_nav_mesh(full_terrain, false, true); 
+#endif
   }
   update_background();
 
@@ -134,16 +136,19 @@ void setup_players(PLAYERS *players) {
 
   // top = 0; left = 1; right = 2
   int pos_index = -1;
-  int x, y, rad;
+  int x, y, rad, pos;
 
   for(int i = 0; i < players->num; i++) {
     player = players->players[i];
 
     if(player->human) {
-      continue;
+      pos = -1;
+      x = quarter_map_size;
+      y = HALF_MAP_SIZE + quarter_map_size;
     } else {
-      x = ai_positions[++pos_index][0];
-      y = ai_positions[pos_index][1];
+      pos = ++pos_index;
+      x = ai_positions[pos][0];
+      y = ai_positions[pos][1];
     }
     area = 0;
 
@@ -156,22 +161,21 @@ void setup_players(PLAYERS *players) {
         area += rad * rad;
 
         while(!allowed_on_terrain(u->vector)) {
-          advance_unit_position(pos_index, &x, &y, rad);
+          advance_unit_position(pos, &x, &y, rad);
           place(u, x, y);
           area += rad * rad;
         }
 
-        advance_unit_position(pos_index, &x, &y, rad);
+        advance_unit_position(pos, &x, &y, rad);
       }
     }
 
     assert(area <= total_area_per_player);
   }
-  // place the armies
 }
 
 static void advance_unit_position(int pos_index, int *x, int *y, int rad) {
-  if(pos_index == 0) {
+  if(pos_index <= 0) {
     *x += rad; 
     if(*x > HALF_MAP_SIZE + quarter_map_size) {
       *x = ai_positions[pos_index][0];

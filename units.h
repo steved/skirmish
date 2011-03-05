@@ -15,8 +15,10 @@ void print_unit(unit *);
 void print_attributes(attributes);
 void print_weapons(weapons);
 void remove_unit(unit *);
-bool check_for_unit_near(gsl_vector *, camera *, PLAYERS *, unit *);
+unit *check_for_unit_near(gsl_vector *, camera *, PLAYERS *, unit *, bool, bool);
 bool move_unit_towards(unit *, gsl_vector *, camera *, PLAYERS *);
 void update_unit(unit *, camera *, PLAYERS *);
+bool attack_unit(unit *, unit *);
+void unit_dead(unit *);
 
 #endif

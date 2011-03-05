@@ -39,6 +39,7 @@ bool units_selected() {
 
 // this should probably be moved elsewhere
 #include "util/astar.h"
+#include "units/states/attack.h"
 #include "units/states/move_to.h"
 #include "units/states/move_to_node.h"
 
@@ -47,7 +48,6 @@ void move_selected_units_to(gsl_vector *vector) {
   unit *u;
   while(node) {
     u = (unit *) node->value;
-    print_unit(u);
 
     ll_node *path = shortest_path(u->vector, vector);
     if(path == NULL) { // XXX couldn't get an astar path, so just go straight-line??
@@ -55,6 +55,17 @@ void move_selected_units_to(gsl_vector *vector) {
     } else {
       push_unit_state(u, &move_to_node, path);
     }
+
+    node = node->next;
+  }
+}
+
+void selected_units_attack(unit *un) {
+  ll_node *node = selected_head;
+  unit *selected;
+  while(node) {
+    selected = (unit *) node->value;
+    push_unit_state(selected, &attack, un);
 
     node = node->next;
   }

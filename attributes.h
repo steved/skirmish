@@ -8,6 +8,7 @@
 typedef struct attributes {
   int strength, speed, stamina;
   int health, armor;
+  int experience;
 } attributes;
 
 typedef enum unit_type {
@@ -26,6 +27,8 @@ typedef struct weapons {
   int primary_weapon_left;
 } weapons;
 
+
+
 typedef struct unit {
   attributes attributes;
   gsl_vector *vector;
@@ -41,6 +44,10 @@ typedef struct unit {
     gsl_vector *vector;
     struct unit *unit;
     struct unit **units;
+    struct attack_state_data {
+      ll_node *astar_node;
+      struct unit *unit;
+    } attacking;
   } state_data;
 
   struct division *division;
