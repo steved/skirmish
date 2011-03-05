@@ -4,6 +4,8 @@
 #include "selected.h"
 #include "units.h"
 
+#include "util/random.h"
+
 #include <assert.h>
 
 static const char *AI_NAMES[] = {
@@ -17,8 +19,8 @@ static const char *AI_NAMES[] = {
 player *create_ai_player(int divisions) {
   player *ai = (player *) malloc(sizeof(player));
   assert(ai != NULL);
-  ai->name = AI_NAMES[rand() % (sizeof(AI_NAMES) / sizeof(AI_NAMES[0]))];
-  ai->color = rand() | 0x00ff00ff;
+  ai->name = AI_NAMES[random_int_max((sizeof(AI_NAMES) / sizeof(AI_NAMES[0])))];
+  ai->color = random_int() | 0x00ff00ff;
   ai->human = false;
   
   ai->num_divisions = divisions;
@@ -64,7 +66,7 @@ bool select_units_at(bool modifier, int chk_x, int chk_y, camera *cam, PLAYERS *
     unselect_all();
 
   gsl_vector *v = calculate_map_position(chk_x, chk_y, cam);
-  unit *nearest_unit = check_for_unit_near(v, cam, players, NULL, true, false);
+  unit *nearest_unit = check_for_unit_near(v, players, NULL, true, false);
   gsl_vector_free(v);
 
   if(nearest_unit == NULL) {

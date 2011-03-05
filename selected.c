@@ -1,5 +1,9 @@
+#include "collision.h"
 #include "selected.h"
 #include "units.h"
+
+#include "ui/setup.h"
+#include "ui/ui_state.h"
 
 #include "util/linked_list.h"
 
@@ -43,17 +47,24 @@ bool units_selected() {
 #include "units/states/move_to.h"
 #include "units/states/move_to_node.h"
 
-void move_selected_units_to(gsl_vector *vector) {
+void move_selected_units_to(gsl_vector *vector, PLAYERS *players) {
   ll_node *node = selected_head;
   unit *u;
   while(node) {
     u = (unit *) node->value;
 
-    ll_node *path = shortest_path(u->vector, vector);
-    if(path == NULL) { // XXX couldn't get an astar path, so just go straight-line??
-      push_unit_state(u, &move_to, vector);
+    if(current_state == &setup_state) {
+      if(allowed_on_terrain(vector) &&
+          check_for_unit_near(vector, players, u, false, false) == NULL) {
+        place_at_vector(u, vector);
+      }
     } else {
-      push_unit_state(u, &move_to_node, path);
+      ll_node *path = shortest_path(u->vector, vector);
+      if(path == NULL) { // XXX couldn't get an astar path, so just go straight-line??
+        push_unit_state(u, &move_to, vector);
+      } else {
+        push_unit_state(u, &move_to_node, path);
+      }
     }
 
     node = node->next;

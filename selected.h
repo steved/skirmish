@@ -13,7 +13,7 @@ void unselect_all();
 void unselect_unit(unit *);
 bool selected(unit *);
 
-void move_selected_units_to(gsl_vector *);
+void move_selected_units_to(gsl_vector *, PLAYERS *players);
 void selected_units_attack(unit *);
 
 #endif

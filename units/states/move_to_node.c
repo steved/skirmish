@@ -28,7 +28,7 @@ bool move_to_node_update(PLAYERS *players, camera *camera, unit *u) {
   gsl_vector_set(go_to, 1, node->y);
   gsl_vector_set(go_to, 2, height_at(node->x, node->y));
 
-  bool there = move_unit_towards(u, go_to, camera, players); 
+  bool there = move_unit_towards(u, go_to, players); 
   gsl_vector_free(go_to);
 
   if(there) {

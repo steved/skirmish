@@ -9,10 +9,10 @@
 #include "ui/ui_state.h"
 
 #include "util/file_load.h"
+#include "util/random.h"
 #include "util/text.h"
 
 #include <assert.h>
-#include <time.h>
 
 #define TICKS_PER_SECOND 25
 #define MAX_FRAME_SKIP 5
@@ -20,8 +20,9 @@ const float SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 bool game_running = true;
 
 int main(int argc, char *argv[]) {
+  allocate_rng();
+
   current_state_mutex = SDL_CreateMutex();
-  srand(time(NULL));
 
   PLAYERS *players;
   printf("loading file %s\n", "test.army");
@@ -92,6 +93,8 @@ int main(int argc, char *argv[]) {
   free(players->players);
   free(players);
   remove_camera(camera);
+
+  free_rng();
 
   SDL_FreeSurface(screen);
   close_ttf();

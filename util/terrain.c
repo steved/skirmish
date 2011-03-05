@@ -1,3 +1,4 @@
+#include "random.h"
 #include "terrain.h"
 
 #include "SDL_gfxPrimitives.h"
@@ -8,13 +9,7 @@ static float diamond(float, float, float, float, float);
 static float square(float, float, float);
 static float cap(float);
 static void blur();
-static float random_float();
 static float displace(float);
-
-// random float from 0.0 to 1.0
-static float random_float() {
-  return (rand() / (float) RAND_MAX);
-}
 
 static float displace(float num) {
   float random = random_float() * num - (num / 2);
@@ -29,7 +24,7 @@ void generate_fractal_terrain() {
   terrain[0][MAP_SIZE] = random_float();
   terrain[MAP_SIZE][MAP_SIZE] = random_float();
 
-  int side_length = MAP_SIZE >> 1;
+  int side_length = MAP_SIZE / 2;
 
   terrain[side_length][side_length] = diamond(terrain[0][0], terrain[MAP_SIZE][0],
       terrain[0][MAP_SIZE], terrain[MAP_SIZE][MAP_SIZE], 1);
@@ -57,7 +52,7 @@ void generate_fractal_terrain() {
       }
     }
 
-    side_length >>= 1;
+    side_length /= 2;
     displacement /= NOISE;
   }
 
@@ -116,41 +111,20 @@ static void blur() {
       float accum = 0;
       int weights = 0;
 
-      if(j > 0) {
-        accum += terrain[i][j - 1];
-        weights++;
+      for(int k = -1; k <= 1; k++) {
+        for(int l = -1; l <= 1; l++) {
+          if((k == 0 && l == 0) ||
+              (k == -1 && i == 0) ||
+              (l == -1 && j == 0) ||
+              (k == 1 && i == MAP_SIZE) ||
+              (l == 1 && l == MAP_SIZE)) {
+            continue;
+          }
 
-        if(i > 0) {
-          accum += terrain[i - 1][j - 1];
-          weights++;
-        }
-        if(i < MAP_SIZE) {
-          accum += terrain[i + 1][j - 1];
+          accum += terrain[i + k][j + l];
           weights++;
         }
       }
-      if(i > 0) {
-        accum += terrain[i - 1][j];
-        weights++;
-      }
-      if(j < MAP_SIZE) {
-        accum += terrain[i][j + 1];
-        weights++;
-
-        if(i > 0) {
-          accum += terrain[i - 1][j + 1];
-          weights++;
-        }
-        if(i < MAP_SIZE) {
-          accum += terrain[i + 1][j + 1];
-          weights++;
-        }
-      }
-      if(i < MAP_SIZE) { 
-        accum += terrain[i + 1][j];
-        weights++;
-      }
-
       terrain[i][j] = accum / weights;
     }
   }

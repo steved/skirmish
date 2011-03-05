@@ -123,6 +123,11 @@ void game_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
 }
 
 void game_prepare() {
+  printf("generating nav_mesh\n");
+  walk_terrain();
+#ifdef NAV_DEBUG
+  draw_nav_mesh(full_terrain, false, true); 
+#endif
 }
 
 void game_cleanup() {
@@ -171,11 +176,11 @@ static void handle_mousedown(SDL_MouseButtonEvent button_event, camera *camera, 
       break;
     case 3:
       dest = calculate_map_position(button_event.x, button_event.y, camera);
-      unit *un = check_for_unit_near(dest, camera, players, NULL, false, true);
+      unit *un = check_for_unit_near(dest, players, NULL, false, true);
       if(un != NULL) {
         selected_units_attack(un);
       } else {
-        move_selected_units_to(dest);
+        move_selected_units_to(dest, players);
       }
       gsl_vector_free(dest);
       break;

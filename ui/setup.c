@@ -16,6 +16,7 @@
 
 #include <assert.h>
 
+static void regenerate_terrain();
 static void setup_players(PLAYERS *);
 static void advance_unit_position(int, int *, int *, int);
 
@@ -37,44 +38,11 @@ void setup_update(camera *camera, PLAYERS *players) {
     setup_players(players);
     players->setup = true;
   }
-
-  player *pl;
-  division *div;
-  unit *u;
-  for(int i = 0; i < players->num; i++) {
-    pl = players->players[i];
-    for(int j = 0; j < pl->num_divisions; j++) {
-      div = pl->divisions[j];
-      for(int k = 0; k < div->size; k++) {
-        u = div->units[k];
-        /*if(u->state.current == moving) {
-          if(allowed_on_terrain(u->state.subject.vector) &&
-              check_for_unit_near(u->state.subject.vector, camera, players, u, false) == NULL) {
-            place_at_vector(u, u->state.subject.vector);
-          } else {
-            gsl_vector_free(u->state.subject.vector);
-          }
-          u->state.current = waiting;
-        }*/
-      }
-    }
-  }
 }
 
 void setup_prepare() {
   // background hasn't been generated; do it
-  if(full_terrain == NULL) {
-    printf("generating terrain\n");
-    generate_fractal_terrain();
-    full_terrain = print_terrain();
-
-    printf("generating nav_mesh\n");
-    walk_terrain();
-#ifdef NAV_DEBUG
-    draw_nav_mesh(full_terrain, false, true); 
-#endif
-  }
-  update_background();
+  regenerate_terrain();
 
   title = draw_text("Skirmish");
 
@@ -100,8 +68,9 @@ void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
       case SDLK_RETURN:
         change_state(&game_state);
         break;
-      case SDLK_0:
-        printf("%s\n", players->players[0]->name);
+      case SDLK_r:
+        players->setup = false;
+        change_state(&setup_state);
         break;
       default:
         break;
@@ -188,4 +157,20 @@ static void advance_unit_position(int pos_index, int *x, int *y, int rad) {
       *x += (pos_index == 1 ? -1 : 1) * rad;
     }
   }
+}
+
+static void regenerate_terrain() {
+  if(full_terrain != NULL) {
+    if(background != full_terrain)
+      SDL_FreeSurface(background);
+    SDL_FreeSurface(full_terrain);
+
+    full_terrain = NULL;
+    background = NULL;
+  }
+
+  printf("generating terrain\n");
+  generate_fractal_terrain();
+  full_terrain = print_terrain();
+  update_background();
 }

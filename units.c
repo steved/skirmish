@@ -3,6 +3,7 @@
 #include "units.h"
 
 #include "util/astar.h"
+#include "util/random.h"
 #include "util/terrain.h"
 
 #include "units/states/waiting.h"
@@ -50,7 +51,6 @@ void place(unit *unit, int x, int y) {
 
 void place_at_vector(unit *unit, gsl_vector *v) {
   gsl_vector_memcpy(unit->vector, v);
-  gsl_vector_free(v);
 }
 
 void print_unit(unit *unit) {
@@ -83,7 +83,7 @@ void remove_unit(unit *u) {
   free(u);
 }
 
-unit *check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, unit *unit_except, bool only_human, bool only_enemies) {
+unit *check_for_unit_near(gsl_vector *location, PLAYERS *players, unit *unit_except, bool only_human, bool only_enemies) {
   for(int i = 0; i < players->num; i++) {
     player *pl = players->players[i];
 
@@ -95,7 +95,7 @@ unit *check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, u
       for(int k = 0; k < div->size; k++) {
         unit *un = div->units[k];
 
-        if(un == unit_except)
+        if(un == unit_except || un->state == NULL)
           continue;
 
         if(bounding_circle_collision(location, (unit_except == NULL ? un : unit_except)->collision_radius, un->vector, un->collision_radius))
@@ -107,7 +107,7 @@ unit *check_for_unit_near(gsl_vector *location, camera *cam, PLAYERS *players, u
 }
 
 // returns true if @ destination, otherwise false
-bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *players) {
+bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
   if(bounding_circle_collision(subj->vector, subj->collision_radius, dest, 0.5))
     return true;
 
@@ -125,7 +125,7 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, camera *camera, PLAYERS *pl
   delta_height_scale(go_to, subj->vector);
   gsl_vector_add(go_to, subj->vector);
 
-  bool unit_at = check_for_unit_near(go_to, camera, players, subj, false, false) != NULL;
+  bool unit_at = check_for_unit_near(go_to, players, subj, false, false) != NULL;
   if(allowed_on_terrain(go_to) && !unit_at) {
     // find a way around?
     gsl_vector_memcpy(subj->vector, go_to);
@@ -185,7 +185,7 @@ bool attack_unit(unit *attacker, unit *defender) {
 static int roll(int size, int number) {
   int result = 1;
   for(int i = 0; i < number; i++) {
-    result *= rand() % size + 1; 
+    result *= random_int_max(size) + 1; 
   }
 
   return result;

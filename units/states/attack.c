@@ -29,6 +29,7 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
     printf("close enough to attack\n");
     bool dead = attack_unit(u, defender);
     if(dead) {
+      printf("killed him\n");
       unit_dead(defender);
       push_unit_state(u, &waiting, NULL);
       return false;
@@ -41,7 +42,7 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
     gsl_vector_set(go_to, 1, node->y);
     gsl_vector_set(go_to, 2, height_at(node->x, node->y));
 
-    move_unit_towards(u, go_to, cam, players); 
+    move_unit_towards(u, go_to, players); 
     gsl_vector_free(go_to);
 
     if(current->next != NULL) {

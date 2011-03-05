@@ -14,5 +14,5 @@ void move_to_cleanup(unit *u) {
 }
 
 bool move_to_update(PLAYERS *players, camera *camera, unit *u) {
-  return !move_unit_towards(u, u->state_data.vector, camera, players);
+  return !move_unit_towards(u, u->state_data.vector, players);
 }
