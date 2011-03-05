@@ -36,10 +36,6 @@ gsl_vector *calculate_map_position(double x, double y, camera *c) {
   return pos;
 }
 
-double display_unit_radius[][2] = {
-  {1.5, 3}, {2.5, 2.5}, {2.5, 2.5}
-};
-
 void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color, float interpolation) { 
   if(unit->state == NULL)
     return;
