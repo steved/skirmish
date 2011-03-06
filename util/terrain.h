@@ -8,7 +8,7 @@
 #define HALF_MAP_SIZE 1024
 #define NOISE 1.5f
 
-#define WATER 15
+#define WATER 0 
 #define FOREST 140
 #define MOUNTAINS 150
 

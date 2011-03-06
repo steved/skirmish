@@ -127,6 +127,7 @@ void game_prepare() {
   walk_terrain();
 #ifdef NAV_DEBUG
   draw_nav_mesh(full_terrain, false, true); 
+  update_background();
 #endif
 }
 

@@ -199,3 +199,8 @@ void unit_dead(unit *un) {
 
   un->state = ll_clear(un->state);
 }
+
+// TODO
+int unit_range(unit *un) {
+  return un->collision_radius + 5;
+}

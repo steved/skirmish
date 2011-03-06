@@ -1,5 +1,6 @@
 #include "collision.h"
 
+#include "util/nav_mesh.h"
 #include "util/terrain.h"
 
 #include <gsl/gsl_blas.h>
@@ -40,7 +41,7 @@ bool hit_water(int x, int y, int x2, int y2) {
     if(x == x2 && y == y2)
       break;
 
-    if(height_at(x, y) <= WATER) {
+    if(height_at(x, y) < WATER + NODE_WATER_CUTOFF) {
       return true;
     }
 

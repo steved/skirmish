@@ -22,14 +22,11 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
   unit *defender = u->state_data.attacking.unit;
   ll_node *current = u->state_data.attacking.astar_node;
 
-  // if(in_range)
-  if(bounding_circle_collision(u->vector, u->collision_radius + 5, 
+  if(bounding_circle_collision(u->vector, unit_range(u), 
         defender->vector, defender->collision_radius)) {
     u->state_data.attacking.astar_node = ll_clear(u->state_data.attacking.astar_node);
-    printf("close enough to attack\n");
     bool dead = attack_unit(u, defender);
     if(dead) {
-      printf("killed him\n");
       unit_dead(defender);
       push_unit_state(u, &waiting, NULL);
       return false;

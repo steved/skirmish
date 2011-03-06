@@ -149,7 +149,7 @@ void draw_nav_mesh(SDL_Surface *surface, bool unconnected, bool edges) {
 }
 
 bool in_water(ai_node *node) {
-  return height_at(node->x, node->y) * 255 <= WATER + NODE_WATER_CUTOFF;
+  return height_at(node->x, node->y) < WATER + NODE_WATER_CUTOFF;
 }
 
 void free_nav_mesh() {

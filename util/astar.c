@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <math.h>
 
+#define HEIGHT_DIFF_MULT 5
+
 float euclidian_distance(ai_node *, ai_node *);
 static ll_node *reconstruct_path(ai_node *);
 
@@ -59,7 +61,8 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
       if(closed_nodes[neighbor->idx])
         continue;
 
-      tentative_g_score = current->g_score + euclidian_distance(current, neighbor);
+      tentative_g_score = current->g_score + euclidian_distance(current, neighbor) + 
+        (height_at(neighbor->x, neighbor->y) - height_at(current->x, current->y)) * HEIGHT_DIFF_MULT;
 
       bool include = open_nodes[neighbor->idx];
       if(!include || tentative_g_score < neighbor->g_score) {

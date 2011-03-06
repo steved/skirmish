@@ -27,7 +27,15 @@ typedef struct weapons {
   int primary_weapon_left;
 } weapons;
 
+struct attack_state_data {
+  ll_node *astar_node;
+  struct unit *unit;
+};
 
+struct follow_state_data {
+  ll_node *neighbors;
+  struct unit *leader;
+};
 
 typedef struct unit {
   attributes attributes;
@@ -44,10 +52,8 @@ typedef struct unit {
     gsl_vector *vector;
     struct unit *unit;
     struct unit **units;
-    struct attack_state_data {
-      ll_node *astar_node;
-      struct unit *unit;
-    } attacking;
+    struct follow_state_data following;
+    struct attack_state_data attacking;
   } state_data;
 
   struct division *division;

@@ -33,6 +33,6 @@ void loading_prepare() {
 }
 
 void loading_cleanup() {
-  SDL_WM_GrabInput(SDL_GRAB_ON);
+//  SDL_WM_GrabInput(SDL_GRAB_ON);
   SDL_FreeSurface(loading);
 }

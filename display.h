@@ -8,6 +8,10 @@
 #define WIDTH 640
 #define HEIGHT 480
 
+#ifndef NAV_DEBUG
+#define NAV_DEBUG
+#endif
+
 void display_unit(SDL_Surface *, camera *, unit *, uint32_t, float);
 gsl_vector *calculate_unit_display_position(unit *, camera *, float);
 gsl_vector *calculate_display_position(double, double, camera *);
