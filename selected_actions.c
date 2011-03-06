@@ -20,18 +20,18 @@ void move_selected_units_to(gsl_vector *vector, PLAYERS *players) {
   ll_node *node = selected_head;
   unit *u;
 
-  int mid_x = 0, mid_y = 0, num = 0;
-  while(node) {
-    u = (unit *) node->value;
-    mid_x += gsl_vector_get(u->vector, 0);
-    mid_y += gsl_vector_get(u->vector, 1);
-    num++;
-    node = node->next;
-  }
-  mid_x /= num;
-  mid_y /= num;
-
   if(current_state == &setup_state) {
+    int mid_x = 0, mid_y = 0, num = 0;
+    while(node) {
+      u = (unit *) node->value;
+      mid_x += gsl_vector_get(u->vector, 0);
+      mid_y += gsl_vector_get(u->vector, 1);
+      num++;
+      node = node->next;
+    }
+    mid_x /= num;
+    mid_y /= num;
+
     node = selected_head;
 
     int offset_x, offset_y;

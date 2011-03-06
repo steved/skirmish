@@ -33,8 +33,9 @@ struct attack_state_data {
 };
 
 struct follow_state_data {
-  ll_node *neighbors;
+  //ll_node *neighbors;
   struct unit *leader;
+  gsl_vector *offset;
 };
 
 typedef struct unit {

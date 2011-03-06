@@ -125,11 +125,11 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
   delta_height_scale(go_to, subj->vector);
   gsl_vector_add(go_to, subj->vector);
 
-  bool unit_at = check_for_unit_near(go_to, players, subj, false, false) != NULL;
-  if(allowed_on_terrain(go_to) && !unit_at) {
+  //bool unit_at = check_for_unit_near(go_to, players, subj, false, true) != NULL;
+  //if(allowed_on_terrain(go_to) && !unit_at) {
     // find a way around?
     gsl_vector_memcpy(subj->vector, go_to);
-  }
+  //}
 
   gsl_vector_free(go_to);
 
