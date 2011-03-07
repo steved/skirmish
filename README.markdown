@@ -48,4 +48,6 @@ P - Pause
 
 Left mouse click - (Un)Select unit / division
 
-Right mouse click - Move selected unit(s)
+Right mouse click - (setup/game) Move selected unit(s) and (game) attack unit
+
+(setup) R - regenerate map
