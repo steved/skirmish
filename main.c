@@ -25,8 +25,14 @@ int main(int argc, char *argv[]) {
   current_state_mutex = SDL_CreateMutex();
 
   PLAYERS *players;
-  printf("loading file %s\n", "test.army");
-  players = read_file("test.army");
+  char *filename;
+  if(argc > 1) {
+    filename = argv[1];
+  } else {
+    filename = "test.army";
+  }
+  printf("loading file %s\n", filename);
+  players = read_file(filename);
 
   printf("creating camera\n");
   camera *camera = create_camera();
