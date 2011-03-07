@@ -1,6 +1,6 @@
+#include "units.h"
 #include "camera.h"
 #include "collision.h"
-#include "units.h"
 
 #include "util/astar.h"
 #include "util/random.h"

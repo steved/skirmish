@@ -1,5 +1,5 @@
-#include "random.h"
-#include "terrain.h"
+#include "util/terrain.h"
+#include "util/random.h"
 
 #include "SDL_gfxPrimitives.h"
 #include <assert.h>

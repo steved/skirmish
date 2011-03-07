@@ -1,8 +1,7 @@
-#include "linked_list.h"
+#include "util/linked_list.h"
 
 #include <assert.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 static ll_node *alloc_node();
 

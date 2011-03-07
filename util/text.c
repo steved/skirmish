@@ -1,4 +1,4 @@
-#include "text.h"
+#include "util/text.h"
 
 int init_ttf() {
   if(TTF_Init() == -1) {

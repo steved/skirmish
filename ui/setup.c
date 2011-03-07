@@ -1,15 +1,15 @@
-#include "game.h"
-#include "setup.h"
+#include "ui/setup.h"
+#include "ui/game.h"
 
-#include "../collision.h"
-#include "../display.h"
-#include "../units.h"
+#include "collision.h"
+#include "display.h"
+#include "units.h"
 
-#include "../util/nav_mesh.h"
-#include "../util/terrain.h"
-#include "../util/text.h"
+#include "util/nav_mesh.h"
+#include "util/terrain.h"
+#include "util/text.h"
 
-#include "../units/states/unit_state.h"
+#include "units/states/unit_state.h"
 
 #include "SDL_rotozoom.h"
 #include "SDL_gfxPrimitives.h"

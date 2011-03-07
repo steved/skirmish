@@ -1,9 +1,9 @@
-#include "follow.h"
-#include "move_to.h"
-#include "move_to_node.h"
-#include "waiting.h"
+#include "units/states/follow.h"
+#include "units/states/move_to.h"
+#include "units/states/move_to_node.h"
+#include "units/states/waiting.h"
 
-#include "../../units.h"
+#include "units.h"
 
 state follow = { "follow", &follow_prepare, &follow_update, &follow_cleanup };
 

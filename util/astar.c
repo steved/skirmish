@@ -1,6 +1,7 @@
-#include "astar.h"
-#include "../collision.h"
-#include "priority_queue.h"
+#include "util/astar.h"
+#include "util/priority_queue.h"
+
+#include "collision.h"
 
 #include <assert.h>
 #include <math.h>

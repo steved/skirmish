@@ -1,7 +1,7 @@
+#include "main.h"
 #include "camera.h"
 #include "display.h"
 #include "events.h"
-#include "main.h"
 #include "units.h"
 
 #include "ui/game.h"

@@ -1,6 +1,6 @@
+#include "selected_actions.h"
 #include "collision.h"
 #include "selected.h"
-#include "selected_actions.h"
 #include "units.h"
 
 #include "ui/setup.h"

@@ -1,4 +1,4 @@
-#include "random.h"
+#include "util/random.h"
 
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>

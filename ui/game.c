@@ -1,13 +1,14 @@
-#include "../camera.h"
-#include "../display.h"
-#include "game.h"
-#include "../selected_actions.h"
-#include "../units.h"
+#include "ui/game.h"
 
-#include "../units/states/unit_state.h"
+#include "camera.h"
+#include "display.h"
+#include "selected_actions.h"
+#include "units.h"
 
-#include "../util/astar.h"
-#include "../util/text.h"
+#include "units/states/unit_state.h"
+
+#include "util/astar.h"
+#include "util/text.h"
 
 #include "SDL_gfxPrimitives.h"
 #include "SDL_rotozoom.h"

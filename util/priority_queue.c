@@ -1,9 +1,8 @@
-#include "priority_queue.h"
+#include "util/priority_queue.h"
 
 #include <assert.h>
-#include <math.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 static void swap(void **, int, int);

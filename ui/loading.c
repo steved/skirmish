@@ -1,7 +1,6 @@
-#include "../display.h"
-#include "loading.h"
-
-#include "../util/text.h"
+#include "ui/loading.h"
+#include "display.h"
+#include "util/text.h"
 
 // this is a special state that is only set between states
 // after a call to change_state, prepare() is called, and

@@ -1,4 +1,4 @@
-#include "waiting.h"
+#include "units/states/waiting.h"
 
 state waiting = { "waiting", &waiting_prepare, &waiting_update, &waiting_cleanup };
 

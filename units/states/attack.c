@@ -1,10 +1,10 @@
-#include "attack.h"
-#include "waiting.h"
+#include "units/states/attack.h"
+#include "units/states/waiting.h"
 
-#include "../../collision.h"
-#include "../../units.h"
+#include "collision.h"
+#include "units.h"
 
-#include "../../util/astar.h"
+#include "util/astar.h"
 
 state attack = { "attack", &attack_prepare, &attack_update, &attack_cleanup };
 

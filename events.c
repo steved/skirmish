@@ -1,5 +1,5 @@
-#include "display.h"
 #include "events.h"
+#include "display.h"
 #include "ui/loading.h"
 
 #include "SDL_events.h"

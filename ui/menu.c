@@ -1,5 +1,5 @@
-#include "setup.h"
-#include "menu.h"
+#include "ui/menu.h"
+#include "ui/setup.h"
 
 ui_state menu_state = { &menu_render, &menu_update, &menu_handle_event, &menu_prepare, &menu_cleanup };
 

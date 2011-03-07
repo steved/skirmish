@@ -1,5 +1,5 @@
-#include "loading.h"
-#include "ui_state.h"
+#include "ui/ui_state.h"
+#include "ui/loading.h"
 
 #include "SDL_thread.h"
 #include <assert.h>

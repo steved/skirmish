@@ -11,13 +11,16 @@ bool bounding_circle_collision(gsl_vector *a, double radius_a, gsl_vector *b, do
   gsl_vector_sub(temp, b);
   gsl_vector_mul(temp, temp);
 
+  // z vector seems to be causing trouble
+  gsl_vector_set(temp, 2, 0); 
+
   double sum = gsl_blas_dasum(temp);
   gsl_vector_free(temp);
 
   double radius_sum_sq = radius_a + radius_b;
   radius_sum_sq *= radius_sum_sq;
 
-  return radius_sum_sq > sum;
+  return radius_sum_sq >= sum;
 }
 
 // is this vector allowed on this terrain

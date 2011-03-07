@@ -1,11 +1,9 @@
-#include "../collision.h"
-
-#include "nav_mesh.h"
+#include "util/nav_mesh.h"
+#include "collision.h"
 
 #include "SDL_gfxPrimitives.h"
 
 #include <assert.h>
-
 
 int ai_score(void *);
 void expand_node(ai_node *);

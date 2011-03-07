@@ -13,9 +13,14 @@ env.ParseConfig('gsl-config --libs')
 SOURCES = glob.glob('*.c') + glob.glob('**/*.c') + glob.glob('**/**/*.c')
 
 # add additional compiler flags
-env.Append(CFLAGS = ['-Wall', '--std=c99', "-g"])
+env.Append(CFLAGS = ['-Wall', '-Werror', '--std=c99', '-g'])
 # add additional libraries to link against
 env.Append(LIBS = ['SDL_gfx', 'SDL_ttf'])
+# add this directory to include path
+env.Append(CPPPATH = '#')
+
+# enable this to see nav_mesh + a* paths
+# env.Append(CPPDEFINES='NAV_DEBUG')
 
 # build target
 # output executable will be "skirmish"

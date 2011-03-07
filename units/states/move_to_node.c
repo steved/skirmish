@@ -1,8 +1,8 @@
-#include "move_to_node.h"
-#include "waiting.h"
+#include "units/states/move_to_node.h"
+#include "units/states/waiting.h"
 
-#include "../../units.h"
-#include "../../util/astar.h"
+#include "units.h"
+#include "util/astar.h"
 
 state move_to_node = { "move_to_node", &move_to_node_prepare, &move_to_node_update, &move_to_node_cleanup };
 
