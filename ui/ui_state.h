@@ -17,5 +17,6 @@ typedef struct ui_state {
 extern ui_state *current_state;
 void change_state(ui_state *next_state);
 SDL_mutex *current_state_mutex;
+SDL_Thread *prepare_state_thread;
 
 #endif

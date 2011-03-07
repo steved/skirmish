@@ -18,7 +18,7 @@ void change_state(ui_state *next_state) {
 
   // spawn a thread to prepare the next state
   // and then set the current_state to it
-  SDL_CreateThread(prepare_state, next_state);
+  prepare_state_thread = SDL_CreateThread(prepare_state, next_state);
 }
 
 int prepare_state(void *data) {

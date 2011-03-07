@@ -5,7 +5,6 @@
 #include "SDL_events.h"
 
 SDL_Event event;
-extern bool game_running;
 
 static void handle_keypress(int, camera *);
 

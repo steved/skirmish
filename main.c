@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
     exit(1);
   } 
   SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+  SDL_WM_SetCaption("Skirmish", "");
   SDL_WM_GrabInput(SDL_GRAB_ON);
 
   const SDL_VideoInfo *info = SDL_GetVideoInfo();
@@ -92,6 +93,10 @@ int main(int argc, char *argv[]) {
     SDL_FreeSurface(buffer);
   }
 
+  printf("quitting...\n");
+
+  SDL_KillThread(prepare_state_thread);
+  SDL_DestroyMutex(current_state_mutex);
   current_state->cleanup();
 
   for(int i = 0; i < players->num; i++)
