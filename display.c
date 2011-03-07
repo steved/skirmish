@@ -37,7 +37,7 @@ gsl_vector *calculate_map_position(double x, double y, camera *c) {
 }
 
 void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t color, float interpolation) { 
-  if(unit->state == NULL)
+  if(is_unit_dead(unit))
     return;
 
   gsl_vector *pos = calculate_unit_display_position(unit, camera, interpolation);

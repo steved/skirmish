@@ -69,6 +69,7 @@ void move_selected_units_to(gsl_vector *vector, PLAYERS *players) {
 
 // TODO: if theres more than one selected, check
 // around attacked unit to find others
+// TODO: charge?
 void selected_units_attack(unit *un) {
   // should be a better way to do this; delay a* search in
   // attack.c until update is called?

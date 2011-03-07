@@ -95,7 +95,7 @@ unit *check_for_unit_near(gsl_vector *location, PLAYERS *players, unit *unit_exc
       for(int k = 0; k < div->size; k++) {
         unit *un = div->units[k];
 
-        if(un == unit_except || un->state == NULL)
+        if(un == unit_except || is_unit_dead(un))
           continue;
 
         if(bounding_circle_collision(location, (unit_except == NULL ? un : unit_except)->collision_radius, un->vector, un->collision_radius))
@@ -159,8 +159,7 @@ static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
 }
 
 void update_unit(unit *u, camera *cam, PLAYERS *players) {
-  // dead unit
-  if(u->state == NULL)
+  if(is_unit_dead(u))
     return;
 
   if(!((state *) u->state->value)->update(players, cam, u)) {
@@ -192,12 +191,16 @@ static int roll(int size, int number) {
 }
 
 void unit_dead(unit *un) {
-  if(un->state == NULL)
+  if(is_unit_dead(un))
     return;
   state *current_state = (state *) un->state->value;
   current_state->cleanup(un);
 
   un->state = ll_clear(un->state);
+}
+
+bool is_unit_dead(unit *un) {
+  return un->state == NULL;
 }
 
 // TODO
