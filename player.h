@@ -4,7 +4,6 @@
 #include "attributes.h"
 #include "camera.h"
 
-#include "SDL_events.h"
 #include <stdint.h>
 #include <stdbool.h>
 

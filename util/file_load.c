@@ -5,6 +5,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 static int read_int(FILE *);
 static char *read_string(FILE *);

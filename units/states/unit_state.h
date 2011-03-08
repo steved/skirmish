@@ -1,9 +1,9 @@
 #ifndef SKIRMISH_UNIT_STATE
 #define SKIRMISH_UNIT_STATE
 
-#include "../../attributes.h"
-#include "../../camera.h"
-#include "../../player.h"
+#include "attributes.h"
+#include "camera.h"
+#include "player.h"
 
 #include <stdbool.h>
 

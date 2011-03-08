@@ -1,9 +1,10 @@
 #ifndef SKIRMISH_UI_STATE
 #define SKIRMISH_UI_STATE
 
-#include "../camera.h"
-#include "../player.h"
+#include "camera.h"
+#include "player.h"
 
+#include "SDL_events.h"
 #include "SDL_thread.h"
 
 typedef struct ui_state {
