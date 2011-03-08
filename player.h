@@ -10,15 +10,26 @@
 
 #define MAX_PLAYERS 4
 
+typedef struct division_structure {
+  // enum of how it's layed out AKA (infantry, cavalry, artillery) or (cavalry, artiller, infantry), etc.
+  // which is then sorted when loaded
+
+  int num_per_row; // how many units per row
+  int row_padding; // how much padding between each row
+} structure;
+
 typedef struct division {
   int size;
   unit **units;
+  structure structure;
 } division;
 
 typedef struct player {
   const char *name;
   bool human;
   uint32_t color;
+  // how much padding around each division both x + y
+  int column_padding; 
 
   division **divisions;
   int num_divisions;

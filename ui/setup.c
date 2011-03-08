@@ -105,7 +105,7 @@ void setup_players(PLAYERS *players) {
 
   // top = 0; left = 1; right = 2
   int pos_index = -1;
-  int x, y, rad, pos;
+  int x, y, rad, pos, mult;
 
   for(int i = 0; i < players->num; i++) {
     player = players->players[i];
@@ -114,28 +114,74 @@ void setup_players(PLAYERS *players) {
       pos = -1;
       x = quarter_map_size;
       y = HALF_MAP_SIZE + quarter_map_size;
+      mult = 1;
     } else {
       pos = ++pos_index;
       x = ai_positions[pos][0];
       y = ai_positions[pos][1];
+      mult = (pos == 2) ? 1 : -1;
     }
     area = 0;
 
+    int div_x = x, div_y = y;
+    int unit_x = x, unit_y = y;
+    int max_depth = 0;
+
     for(int j = 0; j < player->num_divisions; j++) {
       div = player->divisions[j];
+
+      if(pos == 0 || player->human) {
+        // check to see if div_x is > the allotted width
+        // TODO maybe set allotted width in player
+        if(div_x > x + quarter_map_size) {
+          div_x = x;
+          div_y = max_depth + player->column_padding;
+          max_depth = 0;
+        }
+        unit_y = div_y;
+      } else {
+        // check to see if div_y is > the allotted height
+        if(div_y > y + quarter_map_size) {
+          div_y = y;
+          div_x = max_depth + player->column_padding; 
+          max_depth = 0;
+        }
+        unit_x = div_x;
+      }
+
       for(int k = 0; k < div->size; k++) {
+        if(k % div->structure.num_per_row == 0) {
+          if(pos == 0 || player->human) {
+            unit_x = div_x;
+            unit_y += div->structure.row_padding * mult;
+          } else {
+            unit_x += div->structure.row_padding * mult;
+            unit_y = div_y;
+          }
+        }
+
         u = div->units[k];
         rad = u->collision_radius * 2;
-        place(u, x, y);
+        place(u, unit_x, unit_y);
         area += rad * rad;
 
         while(!allowed_on_terrain(u->vector)) {
           advance_unit_position(pos, &x, &y, rad);
-          place(u, x, y);
+          place(u, unit_x, unit_y);
           area += rad * rad;
         }
 
-        advance_unit_position(pos, &x, &y, rad);
+        advance_unit_position(pos, &unit_x, &unit_y, rad);
+      }
+
+      if(pos == 0 || player->human) {
+        if(unit_y > max_depth)
+          max_depth = unit_y;
+        div_x = unit_x + player->column_padding; 
+      } else {
+        if(unit_x > max_depth)
+          max_depth = unit_x;
+        div_y = unit_y + player->column_padding;
       }
     }
 

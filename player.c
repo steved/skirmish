@@ -22,6 +22,8 @@ player *create_ai_player(int divisions) {
   ai->name = AI_NAMES[random_int_max((sizeof(AI_NAMES) / sizeof(AI_NAMES[0])))];
   ai->color = random_int() | 0x00ff00ff;
   ai->human = false;
+  // XXX
+  ai->column_padding = 5;
   
   ai->num_divisions = divisions;
   ai->divisions = (division **) malloc(sizeof(division *) * ai->num_divisions);
@@ -36,10 +38,13 @@ player *create_human_player(const char *name, int divisions) {
   human->name = name;
   human->color = 0xff0000ff;
   human->human = true;
+  // XXX
+  human->column_padding = 5;
 
   human->num_divisions = divisions;
   human->divisions = (division **) malloc(sizeof(division *) * human->num_divisions);
   assert(human->divisions != NULL);
+
 
   return human;
 }

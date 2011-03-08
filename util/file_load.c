@@ -50,6 +50,10 @@ PLAYERS *read_file(char *name) {
 
     for(int j = 0; j < p->num_divisions; j++) {
       division *div = malloc(sizeof(division));
+      
+      // TODO standardize either in file loaded or elsewhere
+      div->structure.num_per_row = 5;
+      div->structure.row_padding = 10;
       assert(div != NULL);
 
       // read in division num
