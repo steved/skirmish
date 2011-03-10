@@ -48,7 +48,7 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
   } else {
     printf("recalculating\n");
     u->state_data.attacking.astar_node = ll_clear(current);
-    u->state_data.attacking.astar_node = shortest_path(players, u->vector, defender->vector);
+    u->state_data.attacking.astar_node = shortest_path(players, u, defender->vector);
   }
 
   return true;

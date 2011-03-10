@@ -41,21 +41,53 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
   gsl_vector_sub(next_pos, un->state_data.following.offset);
 
   if(leader->state->value == &move_to_node || leader->state->value == &move_to) {
-    unit *neighbor;
-    ll_node *node = un->state_data.following.neighbors;
+    double norm;
+    /*gsl_vector *dest = gsl_vector_calloc(3);
+    if(leader->state->value == &move_to_node)
+      gsl_vector_memcpy(dest, leader->state_data.move_to_node.vector);
+    else
+      gsl_vector_memcpy(dest, leader->state_data.vector);
+    norm = gsl_blas_dnrm2(dest);
+    gsl_vector_scale(dest, 1 / norm);
+    gsl_vector_add(next_pos, dest);
+    gsl_vector_free(dest);*/
+
+    //unit *neighbor;
+    //ll_node *node = un->state_data.following.neighbors;
     gsl_vector *separation = gsl_vector_calloc(3);
 
+    /*
     while(node) {
       gsl_vector_memcpy(separation, un->vector);
       neighbor = (unit *) node->value;
       if(neighbor != un) {
         gsl_vector_sub(separation, neighbor->vector);
-        gsl_vector_add_constant(separation, -neighbor->collision_radius);
+        gsl_vector_scale(separation, neighbor->collision_radius / 2);
         double norm = gsl_blas_dnrm2(separation);
         gsl_vector_scale(separation, 1 / norm);
         gsl_vector_add(next_pos, separation);
       }
       node = node->next;
+    }*/
+
+    for(int p = 0; p < players->num; p++) {
+      player *pl = players->players[p];
+      for(int d = 0; d < pl->num_divisions; d++) {
+        division *div = pl->divisions[d];
+        for(int u = 0; u < div->size; u++) {
+          unit *unit_to_check = div->units[u];
+          gsl_vector_memcpy(separation, un->vector);
+          //if(!ll_include(un->state_data.following.neighbors, unit_to_check)) {
+          if(unit_to_check != un) {
+            gsl_vector_sub(separation, unit_to_check->vector);
+            gsl_vector_scale(separation, unit_to_check->collision_radius);
+            norm = gsl_blas_dnrm2(separation);
+            gsl_vector_scale(separation, 1 / norm);
+            gsl_vector_scale(separation, 1 / norm);
+            gsl_vector_add(next_pos, separation);
+          }
+        }
+      }
     }
     gsl_vector_free(separation);
   }

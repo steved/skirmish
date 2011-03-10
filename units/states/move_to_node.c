@@ -25,7 +25,7 @@ bool move_to_node_update(PLAYERS *players, camera *camera, unit *u) {
   }
 
   if(u->state_data.move_to_node.astar_node == NULL) {
-    u->state_data.move_to_node.astar_node = shortest_path(players, u->vector, u->state_data.move_to_node.vector);
+    u->state_data.move_to_node.astar_node = shortest_path(players, u, u->state_data.move_to_node.vector);
     if(u->state_data.move_to_node.astar_node == NULL) {
       gsl_vector *move_to_vector = gsl_vector_calloc(3);
       gsl_vector_memcpy(move_to_vector, u->state_data.move_to_node.vector); 
