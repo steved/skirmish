@@ -48,22 +48,38 @@ void move_selected_units_to(gsl_vector *vector, PLAYERS *players) {
       node = node->next;
     }
   } else { // game state
+    /*
+    int shortest_distance = -1, distance;
+    ll_node *closest;
     while(node) {
       u = (unit *) node->value;
 
-      if(node == selected_head) {
-        ll_node *path = shortest_path(u->vector, vector);
-        if(path == NULL) { // XXX couldn't get an astar path, so just go straight-line??
-          push_unit_state(u, &move_to, vector);
-        } else {
-          push_unit_state(u, &move_to_node, path);
-        }
+      distance = vector_euclidian_distance(u->vector, vector);
+      if(shortest_distance < 0 || distance < shortest_distance) {
+        shortest_distance = distance;
+        closest = node;
+      }
+      node = node->next;
+    }
+
+    node = selected_head;*/
+
+    ll_node *selected_copy = ll_copy(selected_head);
+    ll_node *node = selected_copy;
+
+    while(node) {
+      u = (unit *) node->value;
+      if(node == selected_copy) { //closest) {
+        gsl_vector *move_to_node_vector = gsl_vector_calloc(3);
+        gsl_vector_memcpy(move_to_node_vector, vector);
+        push_unit_state(u, &move_to_node, move_to_node_vector);
       } else {
-        push_unit_state(u, &follow, selected_head);
+        push_unit_state(u, &follow, selected_copy);
       }
 
       node = node->next;
     }
+
   }
 }
 

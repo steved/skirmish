@@ -10,7 +10,7 @@ state attack = { "attack", &attack_prepare, &attack_update, &attack_cleanup };
 
 void attack_prepare(unit *u, void *data) {
   u->state_data.attacking.unit = (unit *) data;
-  u->state_data.attacking.astar_node = shortest_path(u->vector, u->state_data.attacking.unit->vector);
+  u->state_data.attacking.astar_node = NULL;
 }
 
 void attack_cleanup(unit *u) {
@@ -48,7 +48,7 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
   } else {
     printf("recalculating\n");
     u->state_data.attacking.astar_node = ll_clear(current);
-    u->state_data.attacking.astar_node = shortest_path(u->vector, defender->vector);
+    u->state_data.attacking.astar_node = shortest_path(players, u->vector, defender->vector);
   }
 
   return true;

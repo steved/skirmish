@@ -10,6 +10,7 @@
 
 float euclidian_distance(ai_node *, ai_node *);
 static ll_node *reconstruct_path(ai_node *);
+static bool occupied[MAP_SIZE][MAP_SIZE];
 
 float euclidian_distance(ai_node *node1, ai_node *node2) {
   int xdiff = node1->x - node2->x;
@@ -17,9 +18,28 @@ float euclidian_distance(ai_node *node1, ai_node *node2) {
   return sqrt((xdiff * xdiff) + (ydiff * ydiff));
 }
 
-ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
+ll_node *shortest_path(PLAYERS *players, gsl_vector *start, gsl_vector *goal) {
   // make sure the nav_mesh has been created
   assert(nodes != NULL);
+
+  memset(occupied, false, MAP_SIZE * MAP_SIZE);
+  int start_x, start_y;
+  start_x = (int) round(gsl_vector_get(start, 0));
+  start_y = (int) round(gsl_vector_get(start, 1));
+  for(int p = 0; p < players->num; p++) {
+    player *pl = players->players[p];
+    for(int d = 0; d < pl->num_divisions; d++) {
+      division *div = pl->divisions[d];
+      for(int u = 0; u < div->size; u++) {
+        unit *un = div->units[u];
+        int x, y;
+        x = (int) round(gsl_vector_get(un->vector, 0));
+        y = (int) round(gsl_vector_get(un->vector, 1));
+        if(x != start_x && x != start_y)
+          occupied[x][y] = true;
+      }
+    }
+  }
 
   ai_node *beginning = find_closest_node(start);
   ai_node *end = find_closest_node(goal);
@@ -59,7 +79,7 @@ ll_node *shortest_path(gsl_vector *start, gsl_vector *goal) {
 
     for(int i = 0; i < current->num_edges; i++) {
       neighbor = current->edges[i]->right;
-      if(closed_nodes[neighbor->idx])
+      if(closed_nodes[neighbor->idx])// || hit_unit(occupied, current->x, current->y, neighbor->x, neighbor->y))
         continue;
 
       tentative_g_score = current->g_score + euclidian_distance(current, neighbor) + 
@@ -140,6 +160,10 @@ ai_node *find_closest_node(gsl_vector *vector) {
         chk_node = node_at(x_to_chk, y_to_chk);
 
         if(chk_node->num_edges > 0 && !hit_water(x, y, chk_node->x, chk_node->y)) {
+          /*if(hit_unit(occupied, x, y, chk_node->x, chk_node->y)) {
+            printf("hit unit between %d, %d and %d, %d\n", x, y, chk_node->x, chk_node->y);
+            continue;
+          }*/
           xdiff = chk_node->x - x;
           ydiff = chk_node->y - y;
           distance_to = sqrt(xdiff*xdiff + ydiff*ydiff);

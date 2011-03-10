@@ -89,7 +89,9 @@ void display_unit(SDL_Surface *surface, camera *camera, unit *unit, uint32_t col
 #ifdef NAV_DEBUG
   // draw the AStar nodes if they exist
   if(unit->state != NULL && strcmp(((state *) unit->state->value)->name, "move_to_node") == 0) {
-    ll_node *cur = unit->state_data.astar_node;
+    ll_node *cur = unit->state_data.move_to_node.astar_node;
+    if(cur == NULL)
+      return;
     ai_node *node;
     gsl_vector *display;
     while(cur) {

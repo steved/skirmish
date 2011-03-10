@@ -33,9 +33,14 @@ struct attack_state_data {
 };
 
 struct follow_state_data {
-  //ll_node *neighbors;
+  ll_node *neighbors;
   struct unit *leader;
   gsl_vector *offset;
+};
+
+struct move_to_node_data {
+  ll_node *astar_node;
+  gsl_vector *vector; 
 };
 
 typedef struct unit {
@@ -55,6 +60,7 @@ typedef struct unit {
     struct unit **units;
     struct follow_state_data following;
     struct attack_state_data attacking;
+    struct move_to_node_data move_to_node;
   } state_data;
 
   struct division *division;

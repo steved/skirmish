@@ -9,6 +9,7 @@
 #include "units/states/waiting.h"
 
 #include <assert.h>
+#include <math.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_vector.h>
 
@@ -108,8 +109,8 @@ unit *check_for_unit_near(gsl_vector *location, PLAYERS *players, unit *unit_exc
 
 // returns true if @ destination, otherwise false
 bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
-  if(bounding_circle_collision(subj->vector, subj->collision_radius, dest, 0.5))
-    return true;
+//  if(bounding_circle_collision(subj->vector, subj->collision_radius, dest, 0.001))
+//    return true;
 
   // set the z coordinate because it gets set incorrectly when
   // placing the unit in the beginning 
@@ -120,20 +121,27 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
   gsl_vector_sub(go_to, subj->vector);
 
   double norm = gsl_blas_dnrm2(go_to);
+  if(norm == 0)
+    return true;
+
   gsl_vector_scale(go_to, 1 / norm);
 
   delta_height_scale(go_to, subj->vector);
   gsl_vector_add(go_to, subj->vector);
 
-  //bool unit_at = check_for_unit_near(go_to, players, subj, false, true) != NULL;
-  //if(allowed_on_terrain(go_to) && !unit_at) {
-    // find a way around?
+  //bool unit_at = check_for_unit_near(go_to, players, subj, false, false) != NULL;
+  //if(!unit_at) {
+    // XXX find a way around?
     gsl_vector_memcpy(subj->vector, go_to);
   //}
 
+
+  gsl_vector_memcpy(go_to, dest);
+  gsl_vector_sub(go_to, subj->vector);
+  bool there = ((int) round(gsl_vector_get(go_to, 0))) == 0 && ((int) round(gsl_vector_get(go_to, 1))) == 0;
   gsl_vector_free(go_to);
 
-  return bounding_circle_collision(subj->vector, subj->collision_radius, dest, 0.5);
+  return there;
 }
 
 static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {

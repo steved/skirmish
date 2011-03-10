@@ -99,3 +99,22 @@ bool ll_include(ll_node *head, void *value) {
   }
   return false;
 }
+
+
+ll_node *ll_copy(ll_node *head) {
+  ll_node *copy_head = ll_init(head->value);
+  ll_node *prev, *node, *copy;
+
+  node = head->next;
+  prev = copy_head;
+  while(node) {
+    copy = ll_init(node->value);
+    prev->next = copy;
+    copy->prev = prev;
+
+    prev = copy;
+    node = node->next;
+  }
+
+  return copy_head;
+}
