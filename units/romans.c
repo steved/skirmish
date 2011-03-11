@@ -15,6 +15,8 @@ unit *create_legionary_unit() {
 
   unit->collision_radius = 4;
 
+  unit->max_speed = 1;
+
   unit->weapons.primary_weapon = sword;
 
   return unit;

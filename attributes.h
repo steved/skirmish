@@ -50,7 +50,7 @@ struct move_to_node_data {
 typedef struct unit {
   attributes attributes;
 
-  gsl_vector *position, *heading, *side;
+  gsl_vector *position, *heading, *side, *velocity;
   double max_speed;
 
   ll_node *state;

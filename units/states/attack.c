@@ -4,6 +4,9 @@
 #include "collision.h"
 #include "units.h"
 
+#include "units/attack.h"
+#include "units/move.h"
+
 #include "util/astar.h"
 
 state attack = { "attack", &attack_prepare, &attack_update, &attack_cleanup };
