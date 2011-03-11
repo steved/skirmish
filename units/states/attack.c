@@ -22,8 +22,8 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
   unit *defender = u->state_data.attacking.unit;
   ll_node *current = u->state_data.attacking.astar_node;
 
-  if(bounding_circle_collision(u->vector, unit_range(u), 
-        defender->vector, defender->collision_radius)) {
+  if(bounding_circle_collision(u->position, unit_range(u), 
+        defender->position, defender->collision_radius)) {
     u->state_data.attacking.astar_node = ll_clear(u->state_data.attacking.astar_node);
     bool dead = attack_unit(u, defender);
     if(dead) {
@@ -48,7 +48,7 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
   } else {
     printf("recalculating\n");
     u->state_data.attacking.astar_node = ll_clear(current);
-    u->state_data.attacking.astar_node = shortest_path(players, u, defender->vector);
+    u->state_data.attacking.astar_node = shortest_path(players, u, defender->position);
   }
 
   return true;

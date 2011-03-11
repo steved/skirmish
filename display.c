@@ -10,7 +10,7 @@
 #include "SDL_gfxPrimitives.h"
 
 gsl_vector *calculate_unit_display_position(unit *unit, camera *c, float interpolation) {
-  gsl_vector *pos = calculate_display_position(gsl_vector_get(unit->vector, 0), gsl_vector_get(unit->vector, 1), c);
+  gsl_vector *pos = calculate_display_position(x(unit->position), y(unit->position), c);
   //if(unit->state.current == moving)
   //  gsl_vector_scale(pos, 1 + (interpolation / 100));
   return pos;

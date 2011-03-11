@@ -165,7 +165,7 @@ void setup_players(PLAYERS *players) {
         place(u, unit_x, unit_y);
         area += rad * rad;
 
-        while(!allowed_on_terrain(u->vector)) {
+        while(!allowed_on_terrain(u->position)) {
           advance_unit_position(pos, &x, &y, rad);
           place(u, unit_x, unit_y);
           area += rad * rad;

@@ -5,6 +5,10 @@
 
 #include <gsl/gsl_vector.h>
 
+#define x(v) gsl_vector_get(v, 0)
+#define y(v) gsl_vector_get(v, 1)
+#define z(v) gsl_vector_get(v, 2)
+
 typedef struct attributes {
   int strength, speed, stamina;
   int health, armor;
@@ -45,7 +49,10 @@ struct move_to_node_data {
 
 typedef struct unit {
   attributes attributes;
-  gsl_vector *vector;
+
+  gsl_vector *position, *heading, *side;
+  double max_speed;
+
   ll_node *state;
   unit_type type;
   weapons weapons;

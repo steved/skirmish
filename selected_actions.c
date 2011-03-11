@@ -24,8 +24,8 @@ void move_selected_units_to(gsl_vector *vector, PLAYERS *players) {
     int mid_x = 0, mid_y = 0, num = 0;
     while(node) {
       u = (unit *) node->value;
-      mid_x += gsl_vector_get(u->vector, 0);
-      mid_y += gsl_vector_get(u->vector, 1);
+      mid_x += x(u->position);
+      mid_y += y(u->position);
       num++;
       node = node->next;
     }
@@ -37,8 +37,8 @@ void move_selected_units_to(gsl_vector *vector, PLAYERS *players) {
     int offset_x, offset_y;
     while(node) {
       u = (unit *) node->value;
-      offset_x = gsl_vector_get(u->vector, 0) - mid_x;
-      offset_y = gsl_vector_get(u->vector, 1) - mid_y;
+      offset_x = x(u->position) - mid_x;
+      offset_y = y(u->position) - mid_y;
 
       if(allowed_on_terrain(vector) &&
             check_for_unit_near(vector, players, u, false, true) == NULL) {

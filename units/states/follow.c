@@ -15,8 +15,8 @@ void follow_prepare(unit *un, void *data) {
 
   unit *leader = (unit *) head->value;
   gsl_vector *offset = gsl_vector_calloc(3);
-  gsl_vector_memcpy(offset, leader->vector);
-  gsl_vector_sub(offset, un->vector);
+  gsl_vector_memcpy(offset, leader->position);
+  gsl_vector_sub(offset, un->position);
 
   un->state_data.following.leader = leader;
   un->state_data.following.offset = offset;
@@ -37,7 +37,7 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
   unit *leader = un->state_data.following.leader;
 
   gsl_vector *next_pos = gsl_vector_calloc(3);
-  gsl_vector_memcpy(next_pos, leader->vector);
+  gsl_vector_memcpy(next_pos, leader->position);
   gsl_vector_sub(next_pos, un->state_data.following.offset);
 
   if(leader->state->value == &move_to_node || leader->state->value == &move_to) {
@@ -76,10 +76,10 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
         division *div = pl->divisions[d];
         for(int u = 0; u < div->size; u++) {
           unit *unit_to_check = div->units[u];
-          gsl_vector_memcpy(separation, un->vector);
+          gsl_vector_memcpy(separation, un->position);
           //if(!ll_include(un->state_data.following.neighbors, unit_to_check)) {
           if(unit_to_check != un) {
-            gsl_vector_sub(separation, unit_to_check->vector);
+            gsl_vector_sub(separation, unit_to_check->position);
             gsl_vector_scale(separation, unit_to_check->collision_radius);
             norm = gsl_blas_dnrm2(separation);
             gsl_vector_scale(separation, 1 / norm);

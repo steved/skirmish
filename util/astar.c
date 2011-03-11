@@ -33,8 +33,8 @@ ll_node *shortest_path(PLAYERS *players, unit *un, gsl_vector *goal) {
           continue;
 
         int x, y;
-        x = (int) round(gsl_vector_get(unit_to_check->vector, 0));
-        y = (int) round(gsl_vector_get(unit_to_check->vector, 1));
+        x = (int) round(x(unit_to_check->position));
+        y = (int) round(y(unit_to_check->position));
 
         for(int i = x - unit_to_check->collision_radius; i <= x + unit_to_check->collision_radius; i++) {
           for(int j = y - unit_to_check->collision_radius; j <= y + unit_to_check->collision_radius; j++) { 
@@ -45,16 +45,16 @@ ll_node *shortest_path(PLAYERS *players, unit *un, gsl_vector *goal) {
     }
   }
 
-  ai_node *beginning = find_closest_node(un->vector);
+  ai_node *beginning = find_closest_node(un->position);
   ai_node *end = find_closest_node(goal);
 
   if(beginning == NULL) {
-    printf("couldn't find a node near (%f, %f)\n", gsl_vector_get(un->vector, 0), gsl_vector_get(un->vector, 1));
+    printf("couldn't find a node near (%f, %f)\n", x(un->position), y(un->position));
     return NULL;
   }
 
   if(end == NULL) {
-    printf("couldn't find a node near (%f, %f)\n", gsl_vector_get(goal, 0), gsl_vector_get(goal, 1));
+    printf("couldn't find a node near (%f, %f)\n", x(goal), y(goal));
     return NULL;
   }
 
@@ -134,8 +134,8 @@ ai_node *find_closest_node(gsl_vector *vector) {
   int x_to_chk, y_to_chk, xdiff, ydiff;
   int distance = NODE_DISTANCE;
 
-  x = gsl_vector_get(vector, 0);
-  y = gsl_vector_get(vector, 1);
+  x = x(vector);
+  y = y(vector);
 
   float closest_distance = -1, distance_to;
 

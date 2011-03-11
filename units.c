@@ -24,7 +24,9 @@ unit *create_empty_unit() {
   empty_unit->state = NULL;
   push_unit_state(empty_unit, &waiting, NULL);
 
-  empty_unit->vector = gsl_vector_calloc(3);
+  empty_unit->position = gsl_vector_calloc(3);
+  empty_unit->heading = gsl_vector_calloc(3);
+  empty_unit->side = gsl_vector_calloc(3);
 
   weapons empty = {none, none, 0};
   empty_unit->weapons = empty; 
@@ -45,22 +47,22 @@ unit *create_empty_unit() {
 }
 
 void place(unit *unit, int x, int y) {
-  gsl_vector_set(unit->vector, 0, x);
-  gsl_vector_set(unit->vector, 1, y);
-  gsl_vector_set(unit->vector, 2, height_at(x, y));
+  gsl_vector_set(unit->position, 0, x);
+  gsl_vector_set(unit->position, 1, y);
+  gsl_vector_set(unit->position, 2, height_at(x, y));
 }
 
 void place_at_vector(unit *unit, gsl_vector *v) {
-  gsl_vector_memcpy(unit->vector, v);
+  gsl_vector_memcpy(unit->position, v);
 }
 
 void print_unit(unit *unit) {
   printf("type %d, state %s, vector (%f, %f, %f)\n", 
       unit->type, 
       ((state *)unit->state->value)->name, 
-      gsl_vector_get(unit->vector, 0), 
-      gsl_vector_get(unit->vector, 1),
-      gsl_vector_get(unit->vector, 2));
+      x(unit->position), 
+      y(unit->position),
+      z(unit->position));
   printf("\t");
   print_attributes(unit->attributes);
   printf("\t");
@@ -80,7 +82,10 @@ void print_weapons(weapons weapons) {
 }
 
 void remove_unit(unit *u) {
-  gsl_vector_free(u->vector);
+  gsl_vector_free(u->position);
+  gsl_vector_free(u->heading);
+  gsl_vector_free(u->side);
+  ll_clear(u->state);
   free(u);
 }
 
@@ -99,7 +104,7 @@ unit *check_for_unit_near(gsl_vector *location, PLAYERS *players, unit *unit_exc
         if(un == unit_except || is_unit_dead(un))
           continue;
 
-        if(bounding_circle_collision(location, (unit_except == NULL ? un : unit_except)->collision_radius, un->vector, un->collision_radius))
+        if(bounding_circle_collision(location, (unit_except == NULL ? un : unit_except)->collision_radius, un->position, un->collision_radius))
           return un;
       }
     }
@@ -109,16 +114,13 @@ unit *check_for_unit_near(gsl_vector *location, PLAYERS *players, unit *unit_exc
 
 // returns true if @ destination, otherwise false
 bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
-//  if(bounding_circle_collision(subj->vector, subj->collision_radius, dest, 0.001))
-//    return true;
-
   // set the z coordinate because it gets set incorrectly when
   // placing the unit in the beginning 
-  gsl_vector_set(subj->vector, 2, height_at(gsl_vector_get(subj->vector, 0), gsl_vector_get(subj->vector, 1)));
+  gsl_vector_set(subj->position, 2, height_at(x(subj->position), y(subj->position)));
 
   gsl_vector *go_to = gsl_vector_alloc(3);
   gsl_vector_memcpy(go_to, dest);
-  gsl_vector_sub(go_to, subj->vector);
+  gsl_vector_sub(go_to, subj->position);
 
   double norm = gsl_blas_dnrm2(go_to);
   if(norm == 0)
@@ -126,19 +128,19 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
 
   gsl_vector_scale(go_to, 1 / norm);
 
-  delta_height_scale(go_to, subj->vector);
-  gsl_vector_add(go_to, subj->vector);
+  delta_height_scale(go_to, subj->position);
+  gsl_vector_add(go_to, subj->position);
 
   //bool unit_at = check_for_unit_near(go_to, players, subj, false, false) != NULL;
   //if(!unit_at) {
     // XXX find a way around?
-    gsl_vector_memcpy(subj->vector, go_to);
+    gsl_vector_memcpy(subj->position, go_to);
   //}
 
 
   gsl_vector_memcpy(go_to, dest);
-  gsl_vector_sub(go_to, subj->vector);
-  bool there = ((int) round(gsl_vector_get(go_to, 0))) == 0 && ((int) round(gsl_vector_get(go_to, 1))) == 0;
+  gsl_vector_sub(go_to, subj->position);
+  bool there = ((int) round(x(go_to))) == 0 && ((int) round(y(go_to))) == 0;
   gsl_vector_free(go_to);
 
   return there;
