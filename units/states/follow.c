@@ -38,11 +38,15 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
 
   gsl_vector *next_pos = gsl_vector_calloc(3);
   gsl_vector_memcpy(next_pos, leader->position);
+  gsl_vector_add(next_pos, leader->velocity);
   gsl_vector_sub(next_pos, un->state_data.following.offset);
+
+  bool there = move_unit_towards(un, next_pos, players);
+  gsl_vector_free(next_pos);
 
   if(leader->state->value == &move_to_node || leader->state->value == &move_to) {
     double norm;
-    /*gsl_vector *dest = gsl_vector_calloc(3);
+    gsl_vector *dest = gsl_vector_calloc(3);
     if(leader->state->value == &move_to_node)
       gsl_vector_memcpy(dest, leader->state_data.move_to_node.vector);
     else
@@ -50,27 +54,41 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
     norm = gsl_blas_dnrm2(dest);
     gsl_vector_scale(dest, 1 / norm);
     gsl_vector_add(next_pos, dest);
-    gsl_vector_free(dest);*/
+    gsl_vector_free(dest);
 
-    //unit *neighbor;
-    //ll_node *node = un->state_data.following.neighbors;
+    unit *neighbor;
+    ll_node *node = un->state_data.following.neighbors;
     gsl_vector *separation = gsl_vector_calloc(3);
 
-    /*
+    double radius;
     while(node) {
-      gsl_vector_memcpy(separation, un->vector);
+      gsl_vector_memcpy(separation, un->position);
       neighbor = (unit *) node->value;
-      if(neighbor != un) {
-        gsl_vector_sub(separation, neighbor->vector);
-        gsl_vector_scale(separation, neighbor->collision_radius / 2);
-        double norm = gsl_blas_dnrm2(separation);
+      gsl_vector_sub(separation, neighbor->position);
+      radius = neighbor->collision_radius + un->collision_radius;
+      if(neighbor != un && abs(lround(x(separation))) <= radius && abs(lround(y(separation))) <= radius) {
+        gsl_vector_sub(separation, neighbor->velocity);
+        gsl_vector_scale(separation, neighbor->collision_radius + un->collision_radius);
+        norm = gsl_blas_dnrm2(separation);
         gsl_vector_scale(separation, 1 / norm);
-        gsl_vector_add(next_pos, separation);
+        gsl_vector_add(un->velocity, separation);
       }
       node = node->next;
-    }*/
+    }
 
-    for(int p = 0; p < players->num; p++) {
+    gsl_vector_memcpy(separation, un->position);
+    gsl_vector_sub(separation, leader->position);
+    radius = leader->collision_radius + un->collision_radius;
+    if(abs(lround(x(separation))) <= radius && abs(lround(y(separation))) <= radius) {
+      gsl_vector_sub(separation, leader->velocity);
+      gsl_vector_scale(separation, leader->collision_radius + un->collision_radius);
+      norm = gsl_blas_dnrm2(separation);
+      gsl_vector_scale(separation, 1 / norm);
+      gsl_vector_add(un->velocity, separation);
+    }
+
+    
+    /*for(int p = 0; p < players->num; p++) {
       player *pl = players->players[p];
       for(int d = 0; d < pl->num_divisions; d++) {
         division *div = pl->divisions[d];
@@ -88,12 +106,10 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
           }
         }
       }
-    }
+    }*/
     gsl_vector_free(separation);
   }
 
-  bool there = move_unit_towards(un, next_pos, players);
-  gsl_vector_free(next_pos);
 
   return leader->state->value == &move_to_node || leader->state->value == &move_to || !there;
 }
