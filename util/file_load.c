@@ -68,14 +68,23 @@ PLAYERS *read_file(char *name) {
 
       unit *u;
       char *unit_type;
-      //int x, y;
+      ll_node *node;
       for(int k = 0; k < div->size; k++) {
         unit_type = read_string(fp);
-        free(unit_type);
+        node = unit_types;
+        while(node) {
+          if(strcmp(unit_type, node->value) == 0) {
+            // fuck yeah function pointer casting
+            u = ((unit *(*)()) node->extra_data)();
+            break;
+          }
+          node = node->next;
+        }
 
-        u = create_legionary_unit();
         u->division = div;
         div->units[k] = u;
+
+        free(unit_type);
       }
       p->divisions[j] = div;
     }

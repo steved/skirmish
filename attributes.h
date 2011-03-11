@@ -28,7 +28,10 @@ typedef enum unit_weapon {
 typedef struct weapons {
   enum unit_weapon primary_weapon;
   enum unit_weapon secondary_weapon;
+
+  bool primary_weapon_ranged;
   int primary_weapon_left;
+  int timer;
 } weapons;
 
 struct attack_state_data {
@@ -51,7 +54,6 @@ typedef struct unit {
   attributes attributes;
 
   gsl_vector *position, *heading, *side, *velocity;
-  double max_speed;
 
   ll_node *state;
   unit_type type;

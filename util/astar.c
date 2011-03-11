@@ -83,7 +83,7 @@ ll_node *shortest_path(PLAYERS *players, unit *un, gsl_vector *goal) {
 
     for(int i = 0; i < current->num_edges; i++) {
       neighbor = current->edges[i]->right;
-      if(closed_nodes[neighbor->idx] || hit_unit(occupied, current->x, current->y, neighbor->x, neighbor->y))
+      if(closed_nodes[neighbor->idx]) // || hit_unit(occupied, current->x, current->y, neighbor->x, neighbor->y))
         continue;
 
       tentative_g_score = current->g_score + euclidian_distance(current, neighbor) + 
@@ -164,10 +164,10 @@ ai_node *find_closest_node(gsl_vector *vector) {
         chk_node = node_at(x_to_chk, y_to_chk);
 
         if(chk_node->num_edges > 0 && !hit_water(x, y, chk_node->x, chk_node->y)) {
-          if(hit_unit(occupied, x, y, chk_node->x, chk_node->y)) {
-            printf("hit unit between %d, %d and %d, %d\n", x, y, chk_node->x, chk_node->y);
-            continue;
-          }
+          //if(hit_unit(occupied, x, y, chk_node->x, chk_node->y)) {
+          //  printf("hit unit between %d, %d and %d, %d\n", x, y, chk_node->x, chk_node->y);
+          //  continue;
+          //}
           xdiff = chk_node->x - x;
           ydiff = chk_node->y - y;
           distance_to = sqrt(xdiff*xdiff + ydiff*ydiff);

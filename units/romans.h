@@ -3,6 +3,7 @@
 
 #include "attributes.h"
 
-unit *create_legionary_unit();
+unit *create_legionary();
+unit *create_legionary_archer();
 
 #endif

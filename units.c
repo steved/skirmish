@@ -26,7 +26,7 @@ unit *create_empty_unit() {
   empty_unit->heading = gsl_vector_calloc(3);
   empty_unit->side = gsl_vector_calloc(3);
 
-  weapons empty = {none, none, 0};
+  weapons empty = {none, none, false, 0, 0};
   empty_unit->weapons = empty; 
 
   attributes attrs = {
@@ -52,31 +52,6 @@ void place(unit *unit, int x, int y) {
 
 void place_at_vector(unit *unit, gsl_vector *v) {
   gsl_vector_memcpy(unit->position, v);
-}
-
-void print_unit(unit *unit) {
-  printf("type %d, state %s, vector (%f, %f, %f)\n", 
-      unit->type, 
-      ((state *)unit->state->value)->name, 
-      x(unit->position), 
-      y(unit->position),
-      z(unit->position));
-  printf("\t");
-  print_attributes(unit->attributes);
-  printf("\t");
-  print_weapons(unit->weapons);
-}
-
-void print_attributes(attributes attributes) {
-  printf("strength %d, speed %d, stamina %d, health %d, armor %d\n",
-      attributes.strength, attributes.speed, attributes.stamina,
-      attributes.health, attributes.armor);
-}
-
-void print_weapons(weapons weapons) {
-  printf("primary weapon %d, left %d. secondary weapon %d\n",
-      weapons.primary_weapon, weapons.primary_weapon_left,
-      weapons.secondary_weapon);
 }
 
 void remove_unit(unit *u) {
@@ -130,7 +105,7 @@ void update_unit(unit *u, camera *cam, PLAYERS *players) {
 
     gsl_vector_memcpy(u->heading, u->velocity);
 
-    gsl_vector_scale(u->velocity, u->max_speed);
+    gsl_vector_scale(u->velocity, u->attributes.speed);
     gsl_vector_add(u->position, u->velocity);
 
     gsl_vector_set(u->side, 0, -y(u->heading));
@@ -148,6 +123,6 @@ void unit_dead(unit *un) {
 }
 
 bool is_unit_dead(unit *un) {
-  return un->state == NULL;
+  return un->state == NULL || un->attributes.health <= 0;
 }
 

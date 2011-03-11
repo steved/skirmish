@@ -12,14 +12,20 @@
 #include "util/random.h"
 #include "util/text.h"
 
+#include "units/romans.h"
+
 #include <assert.h>
 
 #define TICKS_PER_SECOND 25
 #define MAX_FRAME_SKIP 5
 const float SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 bool game_running = true;
+ll_node *unit_types = NULL;
 
 int main(int argc, char *argv[]) {
+  unit_types = ll_add_to_bottom(unit_types, "legionary", &create_legionary);
+  unit_types = ll_add_to_bottom(unit_types, "legionary_archer", &create_legionary_archer);
+
   allocate_rng();
 
   current_state_mutex = SDL_CreateMutex();

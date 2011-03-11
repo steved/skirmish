@@ -11,9 +11,6 @@
 unit *create_empty_unit();
 void place(unit *, int, int);
 void place_at_vector(unit *, gsl_vector *);
-void print_unit(unit *);
-void print_attributes(attributes);
-void print_weapons(weapons);
 void remove_unit(unit *);
 unit *check_for_unit_near(gsl_vector *, PLAYERS *, unit *, bool, bool);
 void update_unit(unit *, camera *, PLAYERS *);

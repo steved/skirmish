@@ -3,6 +3,9 @@
 
 #include "player.h"
 
+#include "util/linked_list.h"
+
 PLAYERS *read_file(char *name);
+extern ll_node *unit_types;
 
 #endif

@@ -52,6 +52,9 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
     printf("recalculating\n");
     u->state_data.attacking.astar_node = ll_clear(current);
     u->state_data.attacking.astar_node = shortest_path(players, u, defender->position);
+    if(u->state_data.attacking.astar_node == NULL) {
+      // couldn't find route
+    }
   }
 
   return true;
