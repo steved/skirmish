@@ -17,7 +17,7 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
   gsl_vector_sub(go_to, subj->position);
 
   // check if we're already there
-  bool there = ((int) round(x(go_to))) == 0 && ((int) round(y(go_to))) == 0;
+  bool there = abs(lround(x(go_to))) < subj->attributes.speed && abs(lround(y(go_to))) < subj->attributes.speed;
   if(there) {
     gsl_vector_free(go_to);
     return true;
@@ -38,7 +38,7 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
   // re-check if we're there yet
   gsl_vector_memcpy(go_to, dest);
   gsl_vector_sub(go_to, subj->position);
-  there = ((int) round(x(go_to))) == 0 && ((int) round(y(go_to))) == 0;
+  there = abs(lround(x(go_to))) < subj->attributes.speed && abs(lround(y(go_to))) < subj->attributes.speed;
 
   gsl_vector_free(go_to);
 

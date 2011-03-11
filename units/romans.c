@@ -47,3 +47,24 @@ unit *create_legionary_archer() {
 
   return unit;
 }
+
+unit *create_legionary_cavalry() {
+  unit *unit = create_empty_unit();
+  unit->type = artillery;
+
+  unit->attributes.speed = 3; // out of 10
+  unit->attributes.strength = 10; // out of unlimited
+  unit->attributes.stamina = 90; // out of 100
+  unit->attributes.health = 50; // out of 100
+  unit->attributes.armor = 25; // out of unlimited 
+
+  unit->display_radius[0] = 1;
+  unit->display_radius[1] = 3;
+
+  unit->collision_radius = 6;
+
+  unit->weapons.primary_weapon = spear;
+  unit->weapons.primary_weapon_ranged = false;
+
+  return unit;
+}

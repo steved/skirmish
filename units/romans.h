@@ -5,5 +5,6 @@
 
 unit *create_legionary();
 unit *create_legionary_archer();
+unit *create_legionary_cavalry();
 
 #endif

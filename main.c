@@ -25,6 +25,7 @@ ll_node *unit_types = NULL;
 int main(int argc, char *argv[]) {
   unit_types = ll_add_to_bottom(unit_types, "legionary", &create_legionary);
   unit_types = ll_add_to_bottom(unit_types, "legionary_archer", &create_legionary_archer);
+  unit_types = ll_add_to_bottom(unit_types, "legionary_cavalry", &create_legionary_cavalry);
 
   allocate_rng();
 
