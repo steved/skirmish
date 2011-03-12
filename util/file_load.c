@@ -82,6 +82,7 @@ PLAYERS *read_file(char *name) {
         }
 
         u->division = div;
+        u->player = p;
         div->units[k] = u;
 
         free(unit_type);

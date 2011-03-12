@@ -28,6 +28,7 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
   if(bounding_circle_collision(u->position, unit_range(u), 
         defender->position, defender->collision_radius)) {
     u->state_data.attacking.astar_node = ll_clear(u->state_data.attacking.astar_node);
+    
     bool dead = attack_unit(u, defender);
     if(dead) {
       unit_dead(defender);

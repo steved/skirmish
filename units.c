@@ -86,8 +86,6 @@ unit *check_for_unit_near(gsl_vector *location, PLAYERS *players, unit *unit_exc
   return NULL;
 }
 
-// returns true if @ destination, otherwise false
-
 void update_unit(unit *u, camera *cam, PLAYERS *players) {
   if(is_unit_dead(u))
     return;
@@ -114,8 +112,9 @@ void update_unit(unit *u, camera *cam, PLAYERS *players) {
 }
 
 void unit_dead(unit *un) {
-  if(is_unit_dead(un))
+  if(!is_unit_dead(un))
     return;
+
   state *current_state = (state *) un->state->value;
   current_state->cleanup(un);
 

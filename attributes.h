@@ -73,6 +73,7 @@ typedef struct unit {
   } state_data;
 
   struct division *division;
+  struct player *player;
 } unit;
 
 #endif
