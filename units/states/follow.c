@@ -46,15 +46,6 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
 
   if(leader->state->value == &move_to_node || leader->state->value == &move_to) {
     double norm;
-    gsl_vector *dest = gsl_vector_calloc(3);
-    if(leader->state->value == &move_to_node)
-      gsl_vector_memcpy(dest, leader->state_data.move_to_node.vector);
-    else
-      gsl_vector_memcpy(dest, leader->state_data.vector);
-    norm = gsl_blas_dnrm2(dest);
-    gsl_vector_scale(dest, 1 / norm);
-    gsl_vector_add(next_pos, dest);
-    gsl_vector_free(dest);
 
     unit *neighbor;
     ll_node *node = un->state_data.following.neighbors;
