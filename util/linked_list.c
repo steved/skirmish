@@ -54,7 +54,8 @@ ll_node *ll_remove(ll_node *head, void *value) {
         head = node->next;
       else {
         node->prev->next = node->next;
-        node->next->prev = node->prev;
+        if(node->next)
+          node->next->prev = node->prev;
       }
       
       free(node);
