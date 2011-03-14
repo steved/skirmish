@@ -44,9 +44,9 @@ Download the [GnuWin32 GSL][] binaries and developer files and place them approp
 Download and install the [SDL][] mingw32 archive.
 
 Compile the [SDL_gfx][] library by downloading the source, moving Makefile.mingw to Makefile and changing the $prefix variable inside.
-Install the *.dll, *.a, and *.h files appropriately under the MingW32 directory.
+Install the .dll, .a, and .h files under the MingW32 directory.
 
-Download the [SDL_ttf][] VC development zip, rename *.lib to *.a and place them in the MingW32 directory.
+Download the [SDL_ttf][] VC development zip, rename .lib to .a and place them in the MingW32 directory.
 
 Build
 =====
