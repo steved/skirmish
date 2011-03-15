@@ -1,4 +1,5 @@
 #include "units/states/move_to.h"
+#include "units/states/util.h"
 #include "units/states/waiting.h"
 
 #include "units/move.h"
@@ -17,5 +18,11 @@ void move_to_cleanup(unit *u) {
 }
 
 bool move_to_update(PLAYERS *players, camera *camera, unit *u) {
+  // if there is another move state pending
+  // immediately switch to that
+  if(is_movement_state(u->state->next)) {
+    return false;
+  }
+
   return !move_unit_towards(u, u->state_data.vector, players);
 }

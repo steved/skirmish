@@ -1,5 +1,6 @@
 #include "units/states/move_to_node.h"
 #include "units/states/move_to.h"
+#include "units/states/util.h"
 #include "units/states/waiting.h"
 
 #include "units/move.h"
@@ -21,7 +22,7 @@ void move_to_node_cleanup(unit *u) {
 bool move_to_node_update(PLAYERS *players, camera *camera, unit *u) {
   // if there is another move state pending
   // immediately switch to that
-  if(u->state->next != NULL && u->state->next->value == &move_to_node) {
+  if(is_movement_state(u->state->next)) {
     return false;
   }
 

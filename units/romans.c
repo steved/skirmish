@@ -28,7 +28,7 @@ unit *create_legionary_archer() {
   unit *unit = create_empty_unit();
   unit->type = artillery;
 
-  unit->attributes.speed = 1.1; // out of 10
+  unit->attributes.speed = 1.5; // out of 10
   unit->attributes.strength = 5; // out of unlimited
   unit->attributes.stamina = 50; // out of 100
   unit->attributes.health = 45; // out of 100

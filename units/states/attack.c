@@ -1,4 +1,5 @@
 #include "units/states/attack.h"
+#include "units/states/util.h"
 #include "units/states/waiting.h"
 
 #include "collision.h"
@@ -22,6 +23,12 @@ void attack_cleanup(unit *u) {
 }
 
 bool attack_update(PLAYERS *players, camera *cam, unit *u) {
+  // if there is another move state pending
+  // immediately switch to that
+  if(is_movement_state(u->state->next)) {
+    return false;
+  }
+ 
   unit *defender = u->state_data.attacking.unit;
   ll_node *current = u->state_data.attacking.astar_node;
 
@@ -31,7 +38,6 @@ bool attack_update(PLAYERS *players, camera *cam, unit *u) {
     
     bool dead = attack_unit(u, defender);
     if(dead) {
-      unit_dead(defender);
       push_unit_state(u, &waiting, NULL);
       return false;
     }

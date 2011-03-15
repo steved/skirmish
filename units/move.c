@@ -5,7 +5,7 @@
 #include <gsl/gsl_blas.h>
 #include <math.h>
 
-static void delta_height_scale(gsl_vector *, gsl_vector *);
+//static void delta_height_scale(gsl_vector *, gsl_vector *);
 
 bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
   // set the z coordinate because it gets set incorrectly when
@@ -26,7 +26,7 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
   double norm = gsl_blas_dnrm2(go_to);
   gsl_vector_scale(go_to, 1 / norm);
 
-  delta_height_scale(go_to, subj->position);
+  //delta_height_scale(go_to, subj->position);
   gsl_vector_add(subj->velocity, go_to);
 
   //bool unit_at = check_for_unit_near(go_to, players, subj, false, false) != NULL;
@@ -45,6 +45,7 @@ bool move_unit_towards(unit *subj, gsl_vector *dest, PLAYERS *players) {
   return there;
 }
 
+/*
 static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
   gsl_vector *delta_height = gsl_vector_alloc(3);
   gsl_vector_memcpy(delta_height, new_location);
@@ -65,4 +66,4 @@ static void delta_height_scale(gsl_vector *new_location, gsl_vector *location) {
   // TODO scale by how high delta height is
   gsl_vector_scale(new_location, 1 + (sign * 0.3)); 
   gsl_vector_set(new_location, 2, height_at_vector(delta_height) - gsl_vector_get(location, 2));
-}
+}*/

@@ -20,7 +20,7 @@ void follow_prepare(unit *un, void *data) {
 
   un->state_data.following.leader = leader;
   un->state_data.following.offset = offset;
-  un->state_data.following.neighbors = head->next;
+  un->state_data.following.neighbors = head;
   
   push_unit_state(un, &waiting, NULL);
 }
@@ -39,14 +39,18 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
   gsl_vector *next_pos = gsl_vector_calloc(3);
   gsl_vector_memcpy(next_pos, leader->position);
   gsl_vector_add(next_pos, leader->velocity);
-  gsl_vector_sub(next_pos, un->state_data.following.offset);
+  if(leader->state->value != &move_to_node && leader->state->value != &move_to)
+    gsl_vector_sub(next_pos, un->state_data.following.offset);
 
   bool there = move_unit_towards(un, next_pos, players);
   gsl_vector_free(next_pos);
 
   if(leader->state->value == &move_to_node || leader->state->value == &move_to) {
-    double norm;
+    // truncate to the leader's velocity
+    gsl_vector_set(un->velocity, 0, x(un->velocity) * fabs(x(leader->velocity)));
+    gsl_vector_set(un->velocity, 1, y(un->velocity) * fabs(y(leader->velocity)));
 
+    double norm;
     unit *neighbor;
     ll_node *node = un->state_data.following.neighbors;
     gsl_vector *separation = gsl_vector_calloc(3);
@@ -59,25 +63,13 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
       radius = neighbor->collision_radius + un->collision_radius;
       if(neighbor != un && abs(lround(x(separation))) <= radius && abs(lround(y(separation))) <= radius) {
         gsl_vector_sub(separation, neighbor->velocity);
-        gsl_vector_scale(separation, neighbor->collision_radius + un->collision_radius);
+        gsl_vector_scale(separation, radius);
         norm = gsl_blas_dnrm2(separation);
         gsl_vector_scale(separation, 1 / norm);
         gsl_vector_add(un->velocity, separation);
       }
       node = node->next;
     }
-
-    gsl_vector_memcpy(separation, un->position);
-    gsl_vector_sub(separation, leader->position);
-    radius = leader->collision_radius + un->collision_radius;
-    if(abs(lround(x(separation))) <= radius && abs(lround(y(separation))) <= radius) {
-      gsl_vector_sub(separation, leader->velocity);
-      gsl_vector_scale(separation, leader->collision_radius + un->collision_radius);
-      norm = gsl_blas_dnrm2(separation);
-      gsl_vector_scale(separation, 1 / norm);
-      gsl_vector_add(un->velocity, separation);
-    }
-
     
     /*for(int p = 0; p < players->num; p++) {
       player *pl = players->players[p];

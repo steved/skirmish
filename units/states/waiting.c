@@ -2,6 +2,7 @@
 #include "units/states/attack.h"
 
 #include "collision.h"
+#include "units.h"
 #include "units/attack.h"
 
 
@@ -26,7 +27,7 @@ bool waiting_update(PLAYERS *players, camera *camera, unit *u) {
 
       for(int i = 0; i < div->size; i++) {
         to_attack = div->units[i];
-        if(bounding_circle_collision(u->position, unit_range(u),
+        if(!is_unit_dead(to_attack) && bounding_circle_collision(u->position, unit_range(u),
               to_attack->position, to_attack->collision_radius))
           goto found_unit_to_attack;
 

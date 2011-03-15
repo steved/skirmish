@@ -87,8 +87,11 @@ unit *check_for_unit_near(gsl_vector *location, PLAYERS *players, unit *unit_exc
 }
 
 void update_unit(unit *u, camera *cam, PLAYERS *players) {
-  if(is_unit_dead(u))
+  if(is_unit_dead(u)) {
+    if(u->state != NULL)
+      unit_dead(u);
     return;
+  }
 
   // set the velocity to 0
   gsl_vector_scale(u->velocity, 0);
@@ -112,7 +115,7 @@ void update_unit(unit *u, camera *cam, PLAYERS *players) {
 }
 
 void unit_dead(unit *un) {
-  if(!is_unit_dead(un))
+  if(!is_unit_dead(un) || un->state == NULL)
     return;
 
   state *current_state = (state *) un->state->value;
@@ -122,6 +125,6 @@ void unit_dead(unit *un) {
 }
 
 bool is_unit_dead(unit *un) {
-  return un->state == NULL || un->attributes.health <= 0;
+  return un->attributes.health <= 0;
 }
 
