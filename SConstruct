@@ -29,11 +29,20 @@ if os.name != "nt":
   env.ParseConfig('sdl-config --libs')
   env.ParseConfig('gsl-config --cflags')
   env.ParseConfig('gsl-config --libs')
-  env.Append(LIBS = ['SDL_gfx', 'SDL_ttf'])
-  #env.ParseConfig('pkg-config SDL_ttf --cflags')
-  #env.ParseConfig('pkg-config SDL_ttf --libs')
-  #env.ParseConfig('pkg-config SDL_gfx --cflags')
-  #env.ParseConfig('pkg-config SDL_gfx --libs')
+
+  sdl_exists = commands.getstatusoutput('pkg-config --exists SDL_gfx')[0]
+  if sdl_exists == 0:
+    env.ParseConfig('pkg-config SDL_gfx --cflags')
+    env.ParseConfig('pkg-config SDL_gfx --libs')
+  else:
+    env.Append(LIBS = 'SDL_gfx')
+
+  sdl_exists = commands.getstatusoutput('pkg-config --exists SDL_ttf')[0]
+  if sdl_exists == 0:
+    env.ParseConfig('pkg-config SDL_ttf --cflags')
+    env.ParseConfig('pkg-config SDL_ttf --libs')
+  else:
+    env.Append(LIBS = 'SDL_ttf')
 else:
 # these settings are for mingw32 and my specific system,
 # at the very least CPPPATH will need to be changed
