@@ -61,7 +61,6 @@ void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
   if(paused)
     return;
 
-
   game_handle_event(event, camera, players);
 
   if(event.type == SDL_KEYDOWN) {

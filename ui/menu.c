@@ -16,12 +16,14 @@ void menu_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float in
 void menu_update(camera *camera, PLAYERS *players) {
   if(ruby_enabled)
     rb_interface_update();
-  //change_state(&setup_state);
 }
 
 void menu_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
   if(ruby_enabled)
     rb_interface_event(event);
+
+  if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
+    change_state(&setup_state);
 }
 
 void menu_prepare() {
