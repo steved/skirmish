@@ -30,6 +30,10 @@ class Menu < StateInterface
     @overlay.to_ptr.address
   end
 
+  def event(event)
+    puts event.inspect
+  end
+
   def cleanup
   end
 end

@@ -111,14 +111,30 @@ void rb_interface_render(SDL_Surface *buffer) {
 }
 
 static VALUE event(VALUE args) {
-  return Qnil;
+  return rb_funcall(current_state_interface, rb_intern("event"), 1, args);
 }
 
 void rb_interface_event(SDL_Event ev) {
   if(current_state_interface == Qnil)
     return;
 
-  event(Qnil);
+  VALUE pointer_to_event = ULL2NUM((unsigned long long) &ev);
+
+  // Get the required classes -
+  // FFI::Pointer and SDL::Event
+  int error;
+  VALUE c_ffi = rb_protect(get_class, rb_intern("FFI"), &error);
+  VALUE c_pointer = rb_const_get(c_ffi, rb_intern("Pointer"));
+
+  VALUE m_SDL = rb_protect(get_class, rb_intern("SDL"), &error);
+  VALUE c_event = rb_const_get(m_SDL, rb_intern("Event"));
+
+  // Initialize a new FFI::Pointer and pass it to SDL::Event.new
+  // Call SDL::Event#unwrap which returns the specific Event class and pass it to the state
+  VALUE o_pointer = rb_funcall(c_pointer, rb_intern("new"), 1, pointer_to_event);
+  VALUE o_event = rb_funcall(c_event, rb_intern("new"), 1, o_pointer);
+  VALUE o_unwrapped = rb_funcall(o_event, rb_intern("unwrap"), 0, NULL);
+  event(o_unwrapped);
 }
 
 void rb_interface_update() {
