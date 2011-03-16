@@ -11,6 +11,12 @@
 
 #include "units/states/unit_state.h"
 
+#ifdef HAVE_RUBY
+#include "interface/rb_interface.h"
+
+#include <ruby.h>
+#endif
+
 #include "SDL_rotozoom.h"
 #include "SDL_gfxPrimitives.h"
 
@@ -30,6 +36,11 @@ static int quarter_map_size, total_area_per_player, ai_positions[MAX_PLAYERS - 1
 
 void setup_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float interpolation) {
   game_render(buffer, camera, players, interpolation);
+  
+#ifdef HAVE_RUBY
+  rb_interface_render(buffer);
+#endif
+
   SDL_BlitSurface(instructions, NULL, buffer, &instruction_rect);
 }
 
@@ -38,9 +49,20 @@ void setup_update(camera *camera, PLAYERS *players) {
     setup_players(players);
     players->setup = true;
   }
+
+#ifdef HAVE_RUBY
+  rb_gc();
+#endif
 }
 
 void setup_prepare() {
+#ifdef HAVE_RUBY
+    //char *file =  "/home/steve/src/skirmish/interface/interface.rb";
+  //rb_protect(RUBY_METHOD_FUNC(rb_require), (VALUE)file, NULL);
+  rb_interface_load();
+  rb_interface_init("setup");
+#endif
+
   // background hasn't been generated; do it
   regenerate_terrain();
 
@@ -61,6 +83,10 @@ void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
   if(paused)
     return;
 
+#ifdef HAVE_RUBY
+  rb_interface_event(event);
+#endif
+
   game_handle_event(event, camera, players);
 
   if(event.type == SDL_KEYDOWN) {
@@ -80,6 +106,10 @@ void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
 
 void setup_cleanup() {
   SDL_FreeSurface(instructions);
+
+#ifdef HAVE_RUBY
+  rb_interface_remove();
+#endif
 }
 
 void setup_players(PLAYERS *players) {

@@ -14,6 +14,11 @@
 
 #include "units/romans.h"
 
+#ifdef HAVE_RUBY
+#include <ruby.h>
+#include "interface/rb_interface.h"
+#endif
+
 #include <assert.h>
 
 #define TICKS_PER_SECOND 25
@@ -28,6 +33,15 @@ int main(int argc, char *argv[]) {
   unit_types = ll_add_to_bottom(unit_types, "legionary_cavalry", &create_legionary_cavalry);
 
   allocate_rng();
+
+#ifdef HAVE_RUBY
+  ruby_init();
+  ruby_script("skirmish");
+
+  // initialize the load path and add the current working directory to it
+  ruby_init_loadpath();
+  rb_eval_string("$: << Dir.getwd");
+#endif
 
   current_state_mutex = SDL_CreateMutex();
 
@@ -64,6 +78,12 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Unable to set video mode: %s\n", SDL_GetError());
     exit(1);
   }
+
+#ifdef HAVE_RUBY
+  rb_define_global_const("WIDTH", INT2NUM(WIDTH));
+  rb_define_global_const("HEIGHT", INT2NUM(HEIGHT));
+  rb_define_global_const("BPP", INT2NUM(bpp));
+#endif
 
   if(init_ttf() == -1) {
     fprintf(stderr, "Unable to set TTF.\n");
@@ -117,6 +137,12 @@ int main(int argc, char *argv[]) {
   SDL_FreeSurface(screen);
   close_ttf();
   SDL_Quit();
+
+
+#ifdef HAVE_RUBY
+  ruby_finalize();
+#endif
+
   return 0;
 }
 
