@@ -11,6 +11,9 @@ extern VALUE rb_cObject;
 
 #ifdef RUBY_1_9
 extern void ruby_error_print();
+#define BACKTRACE ruby_error_print()
+#elif RUBY_1_8
+#define BACKTRACE rb_backtrace()
 #endif
 
 extern bool ruby_enabled;
@@ -24,9 +27,7 @@ void rb_interface_load() {
   rb_protect(require, 0, &error);
   if(error) {
     printf("There was an error while loading the ruby interface, disabling.\n");
-#ifdef RUBY_1_9
-    ruby_error_print();
-#endif
+    BACKTRACE;
     ruby_enabled = false;
   }
 }
@@ -45,9 +46,7 @@ void rb_interface_init(char *state) {
 
   if(error || TYPE(class) != T_CLASS) {
     printf("Error getting class %s\n", state);
-#ifdef RUBY_1_9
-    ruby_error_print();
-#endif
+    BACKTRACE;
     return;
   }
 
@@ -56,10 +55,7 @@ void rb_interface_init(char *state) {
   if(error) {
     instance = Qnil;
     printf("Error initializing %s\n", state);
-    rb_backtrace();
-#ifdef RUBY_1_9
-    ruby_error_print();
-#endif
+    BACKTRACE;
     return;
   }
 
@@ -81,9 +77,7 @@ void rb_interface_cleanup() {
 
   if(error) {
     printf("Error cleaning up\n");
-#ifdef RUBY_1_9
-    ruby_error_print();
-#endif
+    BACKTRACE;
   }
 }
 
@@ -99,9 +93,7 @@ void rb_interface_render(SDL_Surface *buffer) {
   VALUE surface = rb_protect(render, Qnil, &error);
   if(error) {
     printf("Error rendering\n");
-#ifdef RUBY_1_9
-    ruby_error_print();
-#endif
+    BACKTRACE;
   } else {
     // convert the address provided from Ruby into a SDL_Surface pointer
     SDL_Surface *interface = (SDL_Surface *) NUM2ULL(surface);
@@ -134,7 +126,13 @@ void rb_interface_event(SDL_Event ev) {
   VALUE o_pointer = rb_funcall(c_pointer, rb_intern("new"), 1, pointer_to_event);
   VALUE o_event = rb_funcall(c_event, rb_intern("new"), 1, o_pointer);
   VALUE o_unwrapped = rb_funcall(o_event, rb_intern("unwrap"), 0, NULL);
-  event(o_unwrapped);
+  
+  rb_protect(event, o_unwrapped, &error);
+
+  if(error) {
+    printf("There was an error with event handling\n");
+    BACKTRACE;
+  }
 }
 
 void rb_interface_update() {
