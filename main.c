@@ -88,6 +88,11 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
+  if(init_ttf() < 0) {
+    fprintf(stderr, "unable to init SDL_ttf: %s\n", SDL_GetError());
+    exit(1);
+  }
+
 #ifdef HAVE_RUBY
   rb_define_global_const("WIDTH", INT2NUM(WIDTH));
   rb_define_global_const("HEIGHT", INT2NUM(HEIGHT));
@@ -95,11 +100,6 @@ int main(int argc, char *argv[]) {
 
   rb_interface_load();
 #endif
-
-  if(init_ttf() == -1) {
-    fprintf(stderr, "Unable to set TTF.\n");
-    exit(1);
-  }
 
   change_state(&menu_state);
 
@@ -146,7 +146,6 @@ int main(int argc, char *argv[]) {
   free_rng();
 
   SDL_FreeSurface(screen);
-  close_ttf();
   SDL_Quit();
 
 

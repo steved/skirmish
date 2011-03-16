@@ -13,8 +13,6 @@
 
 #ifdef HAVE_RUBY
 #include "interface/rb_interface.h"
-
-#include <ruby.h>
 #endif
 
 #include "SDL_rotozoom.h"
@@ -51,28 +49,17 @@ void setup_update(camera *camera, PLAYERS *players) {
   }
 
 #ifdef HAVE_RUBY
-  rb_gc();
+  rb_interface_update();
 #endif
 }
 
 void setup_prepare() {
-  // this may have to be moved since Ruby doesn't like threads
-  rb_interface_init("setup");
+#ifdef HAVE_RUBY
+  rb_interface_init("Setup");
+#endif
 
   // background hasn't been generated; do it
   regenerate_terrain();
-
-  title = draw_text("Skirmish");
-
-  // display the zoom level in the bottom left
-  char *instr_text = "SETUP: Press ENTER to leave";
-  int w,h;
-  TTF_SizeUTF8(font, instr_text, &w, &h);
-  instructions = draw_text(instr_text);
-  instruction_rect.x = WIDTH - w;
-  instruction_rect.y = HEIGHT - h;
-  instruction_rect.w = w;
-  instruction_rect.h = h;
 }
 
 void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
@@ -104,7 +91,7 @@ void setup_cleanup() {
   SDL_FreeSurface(instructions);
 
 #ifdef HAVE_RUBY
-  rb_interface_remove();
+  rb_interface_cleanup();
 #endif
 }
 
