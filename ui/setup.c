@@ -56,12 +56,8 @@ void setup_update(camera *camera, PLAYERS *players) {
 }
 
 void setup_prepare() {
-#ifdef HAVE_RUBY
-    //char *file =  "/home/steve/src/skirmish/interface/interface.rb";
-  //rb_protect(RUBY_METHOD_FUNC(rb_require), (VALUE)file, NULL);
-  rb_interface_load();
+  // this may have to be moved since Ruby doesn't like threads
   rb_interface_init("setup");
-#endif
 
   // background hasn't been generated; do it
   regenerate_terrain();

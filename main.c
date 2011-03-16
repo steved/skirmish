@@ -27,6 +27,8 @@ const float SKIP_TICKS = 1000 / TICKS_PER_SECOND;
 bool game_running = true;
 ll_node *unit_types = NULL;
 
+RUBY_GLOBAL_SETUP;
+
 int main(int argc, char *argv[]) {
   unit_types = ll_add_to_bottom(unit_types, "legionary", &create_legionary);
   unit_types = ll_add_to_bottom(unit_types, "legionary_archer", &create_legionary_archer);
@@ -36,10 +38,17 @@ int main(int argc, char *argv[]) {
 
 #ifdef HAVE_RUBY
   ruby_init();
+
+  int dummy_argc = 2;
+  char *dummy_argv[] = {"skirmish", "-e0"};
+  ruby_process_options(dummy_argc, dummy_argv);
+  
   ruby_script("skirmish");
 
   // initialize the load path and add the current working directory to it
-  ruby_init_loadpath();
+  // this is 1.8 only apparently
+  //ruby_init_loadpath();
+  
   rb_eval_string("$: << Dir.getwd");
 #endif
 
@@ -83,6 +92,8 @@ int main(int argc, char *argv[]) {
   rb_define_global_const("WIDTH", INT2NUM(WIDTH));
   rb_define_global_const("HEIGHT", INT2NUM(HEIGHT));
   rb_define_global_const("BPP", INT2NUM(bpp));
+
+  rb_interface_load();
 #endif
 
   if(init_ttf() == -1) {
