@@ -3,7 +3,7 @@ import os
 import commands
 
 def get_ruby_config(key):
-  return commands.getoutput('ruby -e "puts Config::CONFIG[\'%s\']"' % key)
+  return commands.getoutput('ruby -rrbconfig -e "puts Config::CONFIG[\'%s\']"' % key)
 
 # create build environment
 env = Environment()
@@ -16,6 +16,7 @@ if have_ruby == 0:
   else:
     env.Append(CPPPATH = [hdr_dir, "%s/%s" % (hdr_dir, get_ruby_config('arch'))])
 
+  env.Append(LIBPATH = get_ruby_config('libdir'))
   env.Append(LIBS = get_ruby_config('LIBRUBYARG_SHARED'))
   env.Append(CPPDEFINES = 'HAVE_RUBY')
 else:
@@ -28,10 +29,11 @@ if os.name != "nt":
   env.ParseConfig('sdl-config --libs')
   env.ParseConfig('gsl-config --cflags')
   env.ParseConfig('gsl-config --libs')
-  env.ParseConfig('pkg-config SDL_ttf --cflags')
-  env.ParseConfig('pkg-config SDL_ttf --libs')
-  env.ParseConfig('pkg-config SDL_gfx --cflags')
-  env.ParseConfig('pkg-config SDL_gfx --libs')
+  env.Append(LIBS = ['SDL_gfx', 'SDL_ttf'])
+  #env.ParseConfig('pkg-config SDL_ttf --cflags')
+  #env.ParseConfig('pkg-config SDL_ttf --libs')
+  #env.ParseConfig('pkg-config SDL_gfx --cflags')
+  #env.ParseConfig('pkg-config SDL_gfx --libs')
 else:
 # these settings are for mingw32 and my specific system,
 # at the very least CPPPATH will need to be changed
@@ -51,4 +53,4 @@ env.Append(CPPPATH = '#')
 
 # build target
 # output executable will be "skirmish"
-env.Program(target = 'skirmish', source = SOURCES, LIBPATH = ['/usr/local/lib', '/usr/lib'])
+env.Program(target = 'skirmish', source = SOURCES)
