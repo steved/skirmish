@@ -7,5 +7,6 @@
 SDL_Surface *screen;
 bool paused = false;
 void toggle_pause();
+bool ruby_enabled = false;
 
 #endif

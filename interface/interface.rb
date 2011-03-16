@@ -3,7 +3,7 @@ Gem.activate('ruby-sdl-ffi')
 require 'ruby-sdl-ffi'
 
 class StateInterface
-  def initialize(*args)
+  def initialize
   end
 
   def render
@@ -16,8 +16,8 @@ class StateInterface
   end
 end
 
-class Setup < StateInterface
-  def initialize(*args)
+class Menu < StateInterface
+  def initialize
     # Create a surface with a transparent black colorkey
     @overlay = SDL.CreateRGBSurface(SDL::SRCALPHA, WIDTH, HEIGHT, BPP, 0, 0, 0, 0)
     SDL.SetColorKey(@overlay, SDL::SRCCOLORKEY | SDL::RLEACCEL, 0xffffff)

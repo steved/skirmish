@@ -13,12 +13,14 @@ if have_ruby == 0:
   hdr_dir = get_ruby_config('rubyhdrdir')
   if hdr_dir == 'nil': # 1.8
     env.Append(CPPPATH = get_ruby_config('archdir'))
+    env.Append(CPPDEFINES = ['RUBY_1_8'])
   else:
     env.Append(CPPPATH = [hdr_dir, "%s/%s" % (hdr_dir, get_ruby_config('arch'))])
+    env.Append(CPPDEFINES = ['RUBY_1_9'])
 
   env.Append(LIBPATH = get_ruby_config('libdir'))
   env.Append(LIBS = get_ruby_config('LIBRUBYARG_SHARED'))
-  env.Append(CPPDEFINES = 'HAVE_RUBY')
+  env.Append(CPPDEFINES = ['HAVE_RUBY'])
 else:
   print "Ruby is not installed, some features will not be enabled."
 
@@ -58,7 +60,7 @@ env.Append(CFLAGS = ['-Wall', '-Werror', '--std=c99', '-g'])
 env.Append(CPPPATH = '#')
 
 # enable this to see nav_mesh + a* paths
-# env.Append(CPPDEFINES='NAV_DEBUG')
+# env.Append(CPPDEFINES = ['NAV_DEBUG'])
 
 # build target
 # output executable will be "skirmish"

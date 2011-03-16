@@ -11,10 +11,6 @@
 
 #include "units/states/unit_state.h"
 
-#ifdef HAVE_RUBY
-#include "interface/rb_interface.h"
-#endif
-
 #include "SDL_rotozoom.h"
 #include "SDL_gfxPrimitives.h"
 
@@ -34,11 +30,6 @@ static int quarter_map_size, total_area_per_player, ai_positions[MAX_PLAYERS - 1
 
 void setup_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float interpolation) {
   game_render(buffer, camera, players, interpolation);
-  
-#ifdef HAVE_RUBY
-  rb_interface_render(buffer);
-#endif
-
   SDL_BlitSurface(instructions, NULL, buffer, &instruction_rect);
 }
 
@@ -47,16 +38,20 @@ void setup_update(camera *camera, PLAYERS *players) {
     setup_players(players);
     players->setup = true;
   }
-
-#ifdef HAVE_RUBY
-  rb_interface_update();
-#endif
 }
 
 void setup_prepare() {
-#ifdef HAVE_RUBY
-  rb_interface_init("Setup");
-#endif
+  title = draw_text("Skirmish");
+
+  // display the zoom level in the bottom left
+  char *instr_text = "SETUP: Press ENTER to leave";
+  int w,h;
+  TTF_SizeUTF8(font, instr_text, &w, &h);
+  instructions = draw_text(instr_text);
+  instruction_rect.x = WIDTH - w;
+  instruction_rect.y = HEIGHT - h;
+  instruction_rect.w = w;
+  instruction_rect.h = h;
 
   // background hasn't been generated; do it
   regenerate_terrain();
@@ -66,9 +61,6 @@ void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
   if(paused)
     return;
 
-#ifdef HAVE_RUBY
-  rb_interface_event(event);
-#endif
 
   game_handle_event(event, camera, players);
 
@@ -89,10 +81,6 @@ void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
 
 void setup_cleanup() {
   SDL_FreeSurface(instructions);
-
-#ifdef HAVE_RUBY
-  rb_interface_cleanup();
-#endif
 }
 
 void setup_players(PLAYERS *players) {

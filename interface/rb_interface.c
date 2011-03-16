@@ -3,14 +3,17 @@
 
 #include <assert.h>
 #include <ruby.h>
+#include <stdbool.h>
 
 static VALUE current_state_interface = Qnil;
 
 extern VALUE rb_cObject;
 
-static VALUE require(VALUE);
-static VALUE render(VALUE);
+#ifdef RUBY_1_9
 extern void ruby_error_print();
+#endif
+
+extern bool ruby_enabled;
 
 static VALUE require(VALUE args) {
   return rb_require("interface/interface");
@@ -21,8 +24,10 @@ void rb_interface_load() {
   rb_protect(require, 0, &error);
   if(error) {
     printf("There was an error while loading the ruby interface, disabling.\n");
+#ifdef RUBY_1_9
     ruby_error_print();
-#undef HAVE_RUBY
+#endif
+    ruby_enabled = false;
   }
 }
 
@@ -38,20 +43,27 @@ void rb_interface_init(char *state) {
   int error;
   VALUE class = rb_protect(get_class, rb_intern(state), &error);
 
-  if(error) {
+  if(error || TYPE(class) != T_CLASS) {
     printf("Error getting class %s\n", state);
+#ifdef RUBY_1_9
     ruby_error_print();
+#endif
     return;
   }
 
   VALUE instance = rb_protect(init, class, &error);
 
   if(error) {
+    instance = Qnil;
     printf("Error initializing %s\n", state);
+    rb_backtrace();
+#ifdef RUBY_1_9
     ruby_error_print();
+#endif
     return;
   }
 
+  // set a class variable under object so that it gets GC-ed only when the state changes
   current_state_interface = rb_iv_set(rb_cObject, "current_state_interface", instance);
 }
 
@@ -60,13 +72,18 @@ static VALUE cleanup(VALUE args) {
 }
 
 void rb_interface_cleanup() {
+  if(current_state_interface == Qnil)
+    return;
+
   int error;
 
   rb_protect(cleanup, Qnil, &error);
 
   if(error) {
     printf("Error cleaning up\n");
+#ifdef RUBY_1_9
     ruby_error_print();
+#endif
   }
 }
 
@@ -75,18 +92,21 @@ static VALUE render(VALUE args) {
 };
 
 void rb_interface_render(SDL_Surface *buffer) {
+  if(current_state_interface == Qnil)
+    return;
+
   int error;
   VALUE surface = rb_protect(render, Qnil, &error);
   if(error) {
     printf("Error rendering\n");
+#ifdef RUBY_1_9
     ruby_error_print();
-  } else if(FIXNUM_P(surface) && !NIL_P(surface)) {
+#endif
+  } else {
     // convert the address provided from Ruby into a SDL_Surface pointer
-    SDL_Surface *interface = (SDL_Surface *) NUM2ULONG(surface);
+    SDL_Surface *interface = (SDL_Surface *) NUM2ULL(surface);
     //SDL_DisplayFormatAlpha(interface);
     SDL_BlitSurface(interface, NULL, buffer, NULL);
-  } else {
-    printf("Render either didn't return a fixnum or was nil. WRONG\n");
   }
 }
 
@@ -95,6 +115,9 @@ static VALUE event(VALUE args) {
 }
 
 void rb_interface_event(SDL_Event ev) {
+  if(current_state_interface == Qnil)
+    return;
+
   event(Qnil);
 }
 
