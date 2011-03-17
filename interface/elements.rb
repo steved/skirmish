@@ -1,14 +1,14 @@
 class Box
   def initialize(x, y, w, h, filled = false, color = SDL::Color.new([0xff, 0, 0, 0xff]))
-    @filled = filled
+    @position = SDL::Rect.new([x, y, w, h])
     @color = color
-    @rect = SDL::Rect.new([x, y, w, h])
+    @filled = filled
     @method = SDL::Gfx.method(filled ? :boxRGBA : :rectangleRGBA)
   end
 
   def draw_to(surface)
-    @method.call(surface, @rect.x, @rect.y,
-                 @rect.x + @rect.w, @rect.y + @rect.h, 
+    @method.call(surface, @position.x, @position.y,
+                 @position.x + @position.w, @position.y + @position.h, 
                  @color.r, @color.g, @color.b, 0xff)
   end
 end
