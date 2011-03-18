@@ -1,4 +1,5 @@
 #include "ui/game.h"
+#include "ui/paused.h"
 
 #include "camera.h"
 #include "display.h"
@@ -73,18 +74,7 @@ void game_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float in
   SDL_FreeSurface(zoom_surf);
 
   if(paused) {
-    TTF_SizeUTF8(font, "PAUSED", &w, &h);
-    SDL_Surface *paused_surf = draw_text("PAUSED");
-    SDL_Rect paused_rect = { (WIDTH / 2) - (w / 2), (HEIGHT / 2) - (h / 2), w, h };
-
-    SDL_Surface *overlay = SDL_CreateRGBSurface(SDL_SRCALPHA, WIDTH, HEIGHT, buffer->format->BitsPerPixel, 0, 0, 0, 0);
-    SDL_FillRect(overlay, NULL, SDL_MapRGB(buffer->format, 0, 0, 0));
-    SDL_SetAlpha(overlay, SDL_SRCALPHA, 128);
-
-    SDL_BlitSurface(overlay, NULL, buffer, NULL);
-    SDL_BlitSurface(paused_surf, NULL, buffer, &paused_rect);
-    SDL_FreeSurface(overlay);
-    SDL_FreeSurface(paused_surf);
+    paused_state.render(buffer, camera, players, interpolation);
   } else {
     update_camera_position(camera);
   }
@@ -92,8 +82,10 @@ void game_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float in
 }
 
 void game_update(camera *camera, PLAYERS *players) {
-  if(paused)
+  if(paused) {
+    paused_state.update(camera, players);
     return;
+  }
 
   for(int i = 0; i < players->num; i++) {
     player *player = players->players[i];
@@ -107,8 +99,10 @@ void game_update(camera *camera, PLAYERS *players) {
 }
 
 void game_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
-  if(paused)
+  if(paused) {
+    paused_state.handle_event(event, camera, players);
     return;
+  }
 
   switch(event.type) {
     case SDL_MOUSEBUTTONDOWN:
@@ -130,6 +124,8 @@ void game_prepare() {
   draw_nav_mesh(full_terrain, false, true); 
   update_background();
 #endif
+  
+  paused_state.prepare();
 }
 
 void game_cleanup() {
@@ -138,6 +134,8 @@ void game_cleanup() {
     SDL_FreeSurface(background);
   SDL_FreeSurface(full_terrain);
   free_nav_mesh();
+
+  paused_state.cleanup();
 }
 
 static void update_camera_position(camera *camera) {
