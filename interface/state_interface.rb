@@ -1,22 +1,15 @@
 require 'interface/elements'
 
 class StateInterface
-  def initialize
-    # Create a surface with a transparent black colorkey
-    @overlay = SDL.CreateRGBSurface(SDL::SRCALPHA, WIDTH, HEIGHT, BPP, 0, 0, 0, 0)
-    SDL.SetColorKey(@overlay, SDL::SRCCOLORKEY | SDL::RLEACCEL, 0xffffff)
-
+  def initialize(font)
     @elements = []
+    @font = font
   end
 
-  def render
-    SDL.FillRect(@overlay, nil, 0xffffff)
-
+  def render(surface)
     @elements.each do |element|
-      element.draw_to(@overlay)
+      element.draw_to(surface)
     end
-
-    @overlay.to_ptr.address
   end
 
   def event(event)

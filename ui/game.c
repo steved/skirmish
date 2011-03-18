@@ -124,8 +124,6 @@ void game_prepare() {
   draw_nav_mesh(full_terrain, false, true); 
   update_background();
 #endif
-  
-  paused_state.prepare();
 }
 
 void game_cleanup() {

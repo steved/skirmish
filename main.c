@@ -102,7 +102,6 @@ int main(int argc, char *argv[]) {
     rb_define_global_const("BPP", INT2NUM(bpp));
 
     rb_interface_load();
-    rb_interface_init("Menu");
   }
 
   change_state(&menu_state);

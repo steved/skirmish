@@ -1,8 +1,12 @@
 require 'interface/state_interface'
 
-class Menu < StateInterface
+class Paused < StateInterface
   def initialize(font)
     super(font)
+
+    # TODO fix format
+    @overlay = SDL.CreateRGBSurface(SDL::SRCALPHA, WIDTH, HEIGHT, BPP, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000)
+    SDL::Gfx.boxRGBA(@overlay, 0, 0, WIDTH, HEIGHT, 0, 0, 0, 200)
 
     @elements << CenteredBox.new(WIDTH / 2, HEIGHT / 2, WIDTH / 2, HEIGHT / 2, true, SDL::Color.new([0xff, 0xff, 0xff, 0]), 40)
     @elements << CenteredBox.new(WIDTH / 2, HEIGHT / 2, WIDTH / 2, HEIGHT / 2, false, SDL::Color.new([0xff, 0, 0, 0]))
@@ -15,14 +19,12 @@ class Menu < StateInterface
       @menu_items = []
       add_menu_item("Start Game") do
       end
-      add_menu_item("Hello")
-      add_menu_item("Hello")
-      add_menu_item("Hello")
-      add_menu_item("Hello")
     end
   end
 
   def render(surface)
+    SDL.BlitSurface(@overlay, nil, surface, nil)
+
     super(surface)
 
     @menu_items.each do |menu_item|

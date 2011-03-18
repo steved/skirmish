@@ -1,5 +1,6 @@
 #include "ui/setup.h"
 #include "ui/game.h"
+#include "ui/paused.h"
 
 #include "collision.h"
 #include "display.h"
@@ -55,6 +56,8 @@ void setup_prepare() {
 
   // background hasn't been generated; do it
   regenerate_terrain();
+
+  paused_state.prepare();
 }
 
 void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {

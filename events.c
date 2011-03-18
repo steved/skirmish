@@ -27,7 +27,6 @@ void poll_for_events(camera *camera, PLAYERS *players, ui_state *current_state) 
 }
 
 static void handle_keypress(int key, camera *camera) {
-  printf("Keypress: %d\n", key);
   switch(key) {
     case SDLK_p:
       toggle_pause();
