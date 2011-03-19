@@ -18,6 +18,9 @@ static void update_camera_position(camera *);
 static void handle_mousedown(SDL_MouseButtonEvent, camera *, PLAYERS *);
 static void handle_keypress(int, camera *);
 
+extern void toggle_pause();
+extern bool paused;
+
 ui_state game_state = { &game_render, &game_update, &game_handle_event, &game_prepare, &game_cleanup };
 
 int arrows_camera_delta = 10;
@@ -170,6 +173,8 @@ static void handle_mousedown(SDL_MouseButtonEvent button_event, camera *camera, 
 
   switch(button_event.button) {
     case 1:
+      if(paused)
+        toggle_pause();
       select_units_at(modifier, button_event.x, button_event.y, camera, players);
       break;
     case 3:
@@ -213,6 +218,9 @@ static void handle_keypress(int key, camera *camera) {
     case SDLK_PAGEDOWN:
       zoom_out(camera);
       update_background();
+      break;
+    case SDLK_p:
+      toggle_pause();
   }
 }
 

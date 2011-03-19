@@ -32,6 +32,9 @@ static int quarter_map_size, total_area_per_player, ai_positions[MAX_PLAYERS - 1
 void setup_render(SDL_Surface *buffer, camera *camera, PLAYERS *players, float interpolation) {
   game_render(buffer, camera, players, interpolation);
   SDL_BlitSurface(instructions, NULL, buffer, &instruction_rect);
+
+  if(paused)
+    paused_state.render(buffer, camera, players, interpolation);
 }
 
 void setup_update(camera *camera, PLAYERS *players) {
@@ -39,6 +42,9 @@ void setup_update(camera *camera, PLAYERS *players) {
     setup_players(players);
     players->setup = true;
   }
+
+  if(paused)
+    paused_state.update(camera, players);
 }
 
 void setup_prepare() {
@@ -61,8 +67,10 @@ void setup_prepare() {
 }
 
 void setup_handle_event(SDL_Event event, camera *camera, PLAYERS *players) {
-  if(paused)
+  if(paused) {
+    paused_state.handle_event(event, camera, players);
     return;
+  }
 
   game_handle_event(event, camera, players);
 

@@ -14,11 +14,6 @@ void poll_for_events(camera *camera, PLAYERS *players, ui_state *current_state) 
       case SDL_KEYDOWN:
         handle_keypress(event.key.keysym.sym, camera);
         break;
-      case SDL_MOUSEBUTTONDOWN:
-        if(event.button.button == 1 && paused)
-          toggle_pause();
-
-        break;
       case SDL_QUIT:
         game_running = false;
     }
@@ -27,11 +22,6 @@ void poll_for_events(camera *camera, PLAYERS *players, ui_state *current_state) 
 }
 
 static void handle_keypress(int key, camera *camera) {
-  switch(key) {
-    case SDLK_p:
-      toggle_pause();
-      break;
-    case SDLK_ESCAPE:
-      game_running = false;
-  }
+  if(key == SDLK_ESCAPE)
+    game_running = false;
 }
