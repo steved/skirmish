@@ -8,6 +8,8 @@
 #include <gsl/gsl_blas.h>
 #include <math.h>
 
+#define MIN_SEPARATION 2
+
 state follow = { "follow", &follow_prepare, &follow_update, &follow_cleanup };
 
 void follow_prepare(unit *un, void *data) {
@@ -39,16 +41,15 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
   gsl_vector *next_pos = gsl_vector_calloc(3);
   gsl_vector_memcpy(next_pos, leader->position);
   gsl_vector_add(next_pos, leader->velocity);
-  if(leader->state->value != &move_to_node && leader->state->value != &move_to)
-    gsl_vector_sub(next_pos, un->state_data.following.offset);
+  gsl_vector_sub(next_pos, un->state_data.following.offset);
 
   bool there = move_unit_towards(un, next_pos, players);
   gsl_vector_free(next_pos);
 
   if(leader->state->value == &move_to_node || leader->state->value == &move_to) {
     // truncate to the leader's velocity
-    gsl_vector_set(un->velocity, 0, x(un->velocity) * fabs(x(leader->velocity)));
-    gsl_vector_set(un->velocity, 1, y(un->velocity) * fabs(y(leader->velocity)));
+    //gsl_vector_set(un->velocity, 0, x(un->velocity) * fabs(x(leader->velocity)));
+    //gsl_vector_set(un->velocity, 1, y(un->velocity) * fabs(y(leader->velocity)));
 
     double norm;
     unit *neighbor;
@@ -60,7 +61,7 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
       gsl_vector_memcpy(separation, un->position);
       neighbor = (unit *) node->value;
       gsl_vector_sub(separation, neighbor->position);
-      radius = neighbor->collision_radius + un->collision_radius;
+      radius = (neighbor->collision_radius + un->collision_radius) + MIN_SEPARATION;
       if(neighbor != un && abs(lround(x(separation))) <= radius && abs(lround(y(separation))) <= radius) {
         gsl_vector_sub(separation, neighbor->velocity);
         gsl_vector_scale(separation, radius);
@@ -70,7 +71,7 @@ bool follow_update(PLAYERS *players, camera *cam, unit *un) {
       }
       node = node->next;
     }
-    
+
     /*for(int p = 0; p < players->num; p++) {
       player *pl = players->players[p];
       for(int d = 0; d < pl->num_divisions; d++) {
