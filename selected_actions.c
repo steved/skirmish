@@ -96,7 +96,7 @@ void selected_units_attack(unit *un) {
   unit *selected;
   while(node) {
     selected = (unit *) node->value;
-    immedate_change_to_unit_state(selected, &attack, un);
+    immediate_change_to_unit_state(selected, &attack, un);
 
     node = node->next;
   }

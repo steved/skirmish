@@ -6,7 +6,7 @@ void push_unit_state(unit *u, state *st, void *data) {
   u->state = ll_add_to_bottom(u->state, st, data);
 }
 
-void immedate_change_to_unit_state(unit *u, state *st, void *data) {
+void immediate_change_to_unit_state(unit *u, state *st, void *data) {
   cleanup_current_state(u);
 
   u->state = ll_add(u->state, st);

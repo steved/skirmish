@@ -16,6 +16,6 @@ typedef struct state {
 
 void push_unit_state(unit *, state *, void *);
 void pop_unit_state(unit *);
-void immedate_change_to_unit_state(unit *, state *, void *);
+void immediate_change_to_unit_state(unit *, state *, void *);
 
 #endif
