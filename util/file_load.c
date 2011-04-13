@@ -4,6 +4,7 @@
 #include "units/romans.h"
 
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -55,6 +56,8 @@ PLAYERS *read_file(char *name) {
       // TODO standardize either in file loaded or elsewhere
       div->structure.num_per_row = 5;
       div->structure.row_padding = 10;
+      div->structure.angle = M_PI_2 * i;
+      printf("%f\n", div->structure.angle);
       assert(div != NULL);
 
       // read in division num

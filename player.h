@@ -15,6 +15,7 @@ typedef struct division_structure {
 
   int num_per_row; // how many units per row
   int row_padding; // how much padding between each row
+  float angle; // offset angle for each unit (radians)
 } structure;
 
 typedef struct division {

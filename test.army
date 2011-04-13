@@ -1,4 +1,4 @@
-2 # number of players
+4 # number of players
 0 # first player
 1 # human
 Steven # name
@@ -78,8 +78,51 @@ legionary_cavalry
 legionary_cavalry
 1 # second player
 0 # ai
-1 # number of divisions
+2 # number of divisions
 0 # division 0
 2 # number of units
 legionary
 legionary
+1
+2
+legionary
+legionary
+2 # third player
+0 # ai
+2 # number of divisions
+0
+2
+legionary
+legionary
+1
+10
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+3 # fourth player
+0 # ai
+2 # number of divisions
+0
+2
+legionary
+legionary
+1
+10
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+legionary_archer
+
