@@ -13,8 +13,9 @@ extern TTF_Font *font;
 VALUE o_font = 0;
 
 #ifdef RUBY_1_9
-extern void ruby_error_print();
-#define BACKTRACE ruby_error_print()
+extern VALUE rb_errinfo();
+static void rb_interface_backtrace();
+#define BACKTRACE rb_interface_backtrace()
 #elif RUBY_1_8
 #define BACKTRACE rb_backtrace()
 #endif
@@ -179,5 +180,19 @@ void rb_interface_event(SDL_Event ev) {
 void rb_interface_update() {
   rb_gc();
 }
+
+#ifdef RUBY_1_9
+static void rb_interface_backtrace() {
+  if(NIL_P(rb_errinfo()))
+    return;
+
+  VALUE ruby_errinfo = rb_errinfo();
+  VALUE ary = rb_funcall(ruby_errinfo, rb_intern("backtrace"), 0);
+
+  for (int c = 0; c < RARRAY_LEN(ary); c++) {
+    printf("\tfrom %s\n", RSTRING_PTR(RARRAY_PTR(ary)[c]));
+  }
+}
+#endif
 
 #endif

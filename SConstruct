@@ -3,7 +3,7 @@ import os
 import commands
 
 def get_ruby_config(key):
-  return commands.getoutput('ruby -rrbconfig -e "puts Config::CONFIG[\'%s\']"' % key)
+  return commands.getoutput('ruby -rrbconfig -e "puts RbConfig::CONFIG[\'%s\']"' % key)
 
 # create build environment
 env = Environment()
